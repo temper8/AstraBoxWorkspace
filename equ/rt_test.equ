@@ -12,10 +12,6 @@ NEOCL(100)<:;
 
 !MIXINT(21,0)::0.12;
 
-
- 
-
-
 !!=========Ion temperature============
 !!TI*:Eq:2.5;   ! IYS added a convection
 TI:AS;
@@ -173,5 +169,6 @@ L_LINT_2;
 V_UPLB_2; 
 ICD_ILHB_-21;
 Vexp_ZRD2_-2;
+
 
 
