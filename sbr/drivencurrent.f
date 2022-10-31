@@ -485,7 +485,7 @@ c          write(*,*)
 !	 xxp(i)=xx(i)+h/2d0
         end do
 	if (nomer.gt.9) then 
-	open(iunit,file='RESULT2019/xxx.dat',position="append")
+	open(iunit,file='lhcd/RESULT2019/xxx.dat',position="append")
 !	check1=xx(4)-h/2d0-xx(4)+h/2d0
 !	check2=xx(5)+h/2d0-xxp(5)
 !	check3=xx(5)-h/2d0-xxm(5)
@@ -520,7 +520,7 @@ c          write(*,*)
 !!!!!!!!!!!!!EVALUATING DIFFUSION!!!!!!!!!!!!!!!!!!
 !!	write(*,*)'OSHIBKA, j=',j
 	if (nomer.gt.9) then 
-	open(iunit,file='RESULT2019/dddd.dat',position="append")
+	open(iunit,file='lhcd/RESULT2019/dddd.dat',position="append")
 	end if
         allocate(d1(n+1),d2(n+1),d3(n+1))	
 	do i=1,n+1
@@ -576,7 +576,7 @@ c          write(*,*)
          fj(i+1)=y(i)
         end do
 	if (nomer.gt.9) then 
-	open(iunit,file='RESULT2019/distribution.dat',position="append")
+	open(iunit,file='lhcd/RESULT2019/distribution.dat',position="append")
 	do i=1,n
 !	write(iunit,*)i,fj(i+1)
 	end do
@@ -688,7 +688,7 @@ c          write(*,*)
       c(1)=as(2)*(kappa/h**2+bplus/h)
       b(1)=-(1d0/dt+a(1)+c(1)+dc)
       f(1)=-y(1)/dt-a(1)*ybeg
-	open(iunit,file='RESULT2019/RAZNICA.dat',position="append")
+	open(iunit,file='lhcd/RESULT2019/RAZNICA.dat',position="append")
       do i=2,n
 !       sum=1d0      !(kinv(xx(i+1)-h/2d0,d2(i+1)))+kinv(xx(i+1)+h/2d0,d3(i+1)))*h/2d0
 !      sum2=(rplusk(xx(i),d1(i))+rplusk(xx(i+1),d1(i+1)))*h/2d0
@@ -735,7 +735,7 @@ c          write(*,*)
 !       c2(i)=c1(i)-c(i)
 !       b2(i)=b1(i)-b(i)
 !       f2(i)=f1(i)-f(i)
-!	open(iunit2,file='RESULT2019/abcr.dat',position="append")
+!	open(iunit2,file='lhcd/RESULT2019/abcr.dat',position="append")
 !        if(dabs(c2(i)).gt.0d0) then
 !	write(iunit,*)f2(i),f1(i),f(i)
 !	end if
@@ -802,7 +802,7 @@ c          write(*,*)
       integer iunit
       real*8 x,dif,d,razn
 !	razn=dif-d(x)
-!	open(iunit,file='RESULT2019/kkk.dat',position="append")
+!	open(iunit,file='lhcd/RESULT2019/kkk.dat',position="append")
 !	if(dabs(razn).gt.0d0) then
 !	write(iunit,*)razn
 !	end if
@@ -817,7 +817,7 @@ c          write(*,*)
       integer iunit
       real*8 x,dif,d,razn
 !	razn=dif-d(x)
-!	open(iunit,file='RESULT2019/kkk.dat',position="append")
+!	open(iunit,file='lhcd/RESULT2019/kkk.dat',position="append")
 !	if(dabs(razn).gt.0d0) then
 !	write(iunit,*)razn
 !	end if
@@ -841,7 +841,7 @@ c          write(*,*)
       kinv2=x**3/(d(x)*x**3+1d0)
 !	kino=x**3/(dif*x**3+1d0)
 !	razn=kino-kinv2
-!	open(iunit,file='RESULT2019/kino.dat',position="append")!
+!	open(iunit,file='lhcd/RESULT2019/kino.dat',position="append")!
 !	if(dabs(razn).gt.0d0) then
 !	write(iunit,*)razn
 !	end if
@@ -873,7 +873,7 @@ c          write(*,*)
 !      curtime0=curtime+0.000000001
 !      if((tcur-curtime)*(tcur-curtime0).lt.zero) then
 !       if((tcur-0.0301)*(tcur-0.0302).lt.zero) then
-!       open(iunit6,file='RESULT2019/ddc.dat',position="append")
+!       open(iunit6,file='lhcd/RESULT2019/ddc.dat',position="append")
 !      do i1=1,500
 !      b=b1+(b2/500)*(i1-1)
 !      diffusion(i1)=d(b)
