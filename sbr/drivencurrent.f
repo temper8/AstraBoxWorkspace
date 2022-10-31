@@ -578,7 +578,7 @@ c          write(*,*)
 	if (nomer.gt.9) then 
 	open(iunit,file='lhcd/distribution/distribution.dat',position="append")
 	do i=1,n
-      	write(iunit,*)i,fj(i+1)
+!      	write(iunit,*)i,fj(i+1)
 	end do
 	end if
 	close(iunit)
