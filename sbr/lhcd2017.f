@@ -4337,7 +4337,7 @@ cc      common /xn1xn2/ an1,an2
       if(iview.eq.0) return
       print *, 'view_time=',tview
       print *, name(m)
-      write(fname,'("lhcd/out/traj", f17.16,".dat")') tview
+      write(fname,'("lhcd/out/traj", f17.15,".dat")') tview
       print *, fname
       name(m) = fname
       print *, name(m)
