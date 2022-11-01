@@ -1,15 +1,15 @@
 {
-  "name": "zero3",
+  "name": "Gauss_1",
   "setting": {
     "Comments": {
-      "value": "\u0412\u0441\u043a\u0438\u0435 \u0441\u043b\u043e\u0432\u0430\n\n\n\n\n\n\n\n\n",
+      "value": "Comments about ....\n\n\n",
       "title": "Comments",
       "type": "text"
     },
     "Physical parameters": {
       "Freq": {
         "title": "Frequency",
-        "value": 0.5,
+        "value": 5.0,
         "unit": "GHz",
         "type": "float",
         "description": "RF frequency, GHz"
@@ -310,13 +310,13 @@
       }
     },
     "spectrum": {
-      "spectrum_type": "Gaussian",
+      "spectrum_type": "gaussian",
       "options": {
         "x_min": -40.0,
         "x_max": 40.0,
         "step": 0.25,
-        "bias": 0.0,
-        "sigma": 1.5
+        "bias": 10.0,
+        "sigma": 2.5
       }
     }
   }
