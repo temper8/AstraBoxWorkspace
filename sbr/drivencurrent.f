@@ -576,12 +576,14 @@ c          write(*,*)
          fj(i+1)=y(i)
         end do
 	if (nomer.gt.9) then 
-	open(iunit,file='lhcd/distribution/distribution.dat',position="append")
-	do i=1,n
-!      	write(iunit,*)i,fj(i+1)
-	end do
+            !print *, "fk time=", time
+            call write_distribution(fj, n, time)
+!	open(iunit,file='lhcd/distribution/distribution.dat',position="append")
+!	      do i=1,n
+!      	      write(iunit,*)i,fj(i+1)
+!	      end do
 	end if
-	close(iunit)
+!	close(iunit)
         do i=2,i0-1
          if(vij(i,j).lt.xend) then
           call lock(x,n+2,vij(i,j),klo,khi,ierr)
