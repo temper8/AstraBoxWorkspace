@@ -8,7 +8,7 @@
       include	'for/status.inc'
       include	'for/outcmn.inc'
       include	'for/timeoutput.inc'      
-      print *, "time", time
+      !print *, "time=", time
       CHORDN = LINEAV(1)
       NTRUN = NTIMES
       call TYPDSP_EXT(0,CHORDN,NTRUN,TTOUT,TOUT)
