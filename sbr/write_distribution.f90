@@ -1,6 +1,6 @@
-C 
+ 
         subroutine write_distribution(fj,N,time)
-C
+
         implicit none
         integer i, N, iunit
         integer itime
@@ -8,7 +8,7 @@ C
         real*8 time
         real*8 fj(*)
         character(80) fname
-        
+        print *, " fortran 90"
         itime = INT(time*100000)
         if (MOD(itime, 10) == 0) then
             print *, N, time, itime, MOD(itime, 10)
@@ -21,3 +21,5 @@ C
             close(iunit)
         end if
         end subroutine
+
+
