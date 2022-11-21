@@ -21,7 +21,7 @@
       inpt=NA1
       allocate(outjp(inpt),outjm(inpt),ohjp(inpt),ohjm(inpt))
       do i=1,inpt
-       afld(i)=UPL(i)/RTOR/GP2 !!variant
+          afld(i)=UPL(i)/RTOR/GP2 !!variant
       end do
 !
 !!!!!!!!!!!!! starting LH current calculation !!!!!!!!!!!!!!!!!
@@ -40,51 +40,51 @@
       cm0=zero
 !
 !!positive spectrum:
-       ispectr=1
-       call lhcurrent(outjp,ohjp,cup,cup0,inpt,ispectr)
-       if(cup0.ne.zero) then
-        cp0=aiint(ohjp,roc)
-        if(cp0.ne.zero) then
-         do i=1,inpt
-          ohjp(i)=cup0*ohjp(i)/cp0
-         end do
-        end if
-       end if
-       if(cup.ne.zero) then
-        cp=aiint(outjp,roc)
-        if(cp.ne.zero) then
-         do i=1,inpt
-          outjp(i)=cup*outjp(i)/cp
-         end do
-        end if
-       end if
+      ispectr=1
+      call lhcurrent(outjp,ohjp,cup,cup0,inpt,ispectr)
+      if(cup0.ne.zero) then
+          cp0=aiint(ohjp,roc)
+          if(cp0.ne.zero) then
+          do i=1,inpt
+              ohjp(i)=cup0*ohjp(i)/cp0
+          end do
+          end if
+      end if
+      if(cup.ne.zero) then
+          cp=aiint(outjp,roc)
+          if(cp.ne.zero) then
+              do i=1,inpt
+                  outjp(i)=cup*outjp(i)/cp
+              end do
+          end if
+      end if
 
 !!negative spectrum:
-       ispectr=-1
-       call lhcurrent(outjm,ohjm,cum,cum0,inpt,ispectr)
-       if(cum0.ne.zero) then
-        cm0=aiint(ohjm,roc)
-        if(cm0.ne.zero) then
-         do i=1,inpt
-          ohjm(i)=cum0*ohjm(i)/cm0
-         end do
-        end if
-       end if
-       if(cum.ne.zero) then
-        cm=aiint(outjm,roc)
-        if(cm.ne.zero) then
-         do i=1,inpt
-          outjm(i)=cum*outjm(i)/cm
-         end do
-        end if
-       end if
+      ispectr=-1
+      call lhcurrent(outjm,ohjm,cum,cum0,inpt,ispectr)
+      if(cum0.ne.zero) then
+          cm0=aiint(ohjm,roc)
+          if(cm0.ne.zero) then
+            do i=1,inpt
+                ohjm(i)=cum0*ohjm(i)/cm0
+          end do
+          end if
+      end if
+      if(cum.ne.zero) then
+          cm=aiint(outjm,roc)
+          if(cm.ne.zero) then
+              do i=1,inpt
+                  outjm(i)=cum*outjm(i)/cm
+              end do
+          end if
+      end if
 
       do i=1,inpt
-       outj(i)=outjp(i)+outjm(i)
-       sigmaj(i)=zero
-       if(dabs(afld(i)).gt.eps) then
-        sigmaj(i)=(ohjp(i)+ohjm(i))/afld(i)
-       end if
+          outj(i)=outjp(i)+outjm(i)
+          sigmaj(i)=zero
+          if(dabs(afld(i)).gt.eps) then
+              sigmaj(i)=(ohjp(i)+ohjm(i))/afld(i)
+          end if
 !!!!       write(*,*) i,outj(i)
       end do
 !
@@ -100,8 +100,8 @@
 !
 !! calculation of distribution functions at time t1=t+dtau !!
       do i=1,ntau
-       write(*,*)'fokkerplanck №',i,'of',ntau
-       call fokkerplanck(dt,time,i)
+          write(*,*)'fokkerplanck №',i,'of',ntau
+          call fokkerplanck(dt,time,i)
       end do
 !
       deallocate(outjp,outjm,ohjp,ohjm)
@@ -144,28 +144,28 @@
       cfull0=zero
       k=(3-ispectr)/2
       do j=1,nr
-       do i=1,i0
-        vj(i)=vij(i,j) !Vpar/Vt
-        fj0(i)=fij0(i,j,k)
-        fj(i)=fij(i,j,k)-fij0(i,j,k)
+          do i=1,i0
+              vj(i)=vij(i,j) !Vpar/Vt
+              fj0(i)=fij0(i,j,k)
+              fj(i)=fij(i,j,k)-fij0(i,j,k)
 !!        fj(i)=zero
 !!        if((vj(i)-zv1(j,k))*(vj(i)-zv2(j,k)).le.zero) then
 !!         fj(i)=fij(i,j,k)-fij0(i,j,k)
 !!        end if
-       end do
-       r=dble(j)/dble(nr+1)
-       if(inew.eq.0) then !vardens
-        pn=fn1(r,fnr)
-       else
-        pn=fn2(r,fnr,fnrr)
-       end if
-       vt=fvt(r)
-       vto=vt/vt0
-       call currlhcd(i0,vj,fj,fj0,curs,curs0)
-       cur(j)=curs*pn*ccur*curdir*vto  !Ampere/cm2
-       cfull=cfull+cur(j)*sk(j)
-       cur0(j)=curs0*pn*ccur*curdir*vto  !Ampere/cm2
-       cfull0=cfull0+cur0(j)*sk(j)
+          end do
+          r=dble(j)/dble(nr+1)
+          if(inew.eq.0) then !vardens
+              pn=fn1(r,fnr)
+          else
+              pn=fn2(r,fnr,fnrr)
+          end if
+          vt=fvt(r)
+          vto=vt/vt0
+          call currlhcd(i0,vj,fj,fj0,curs,curs0)
+          cur(j)=curs*pn*ccur*curdir*vto  !Ampere/cm2
+          cfull=cfull+cur(j)*sk(j)
+          cur0(j)=curs0*pn*ccur*curdir*vto  !Ampere/cm2
+          cfull0=cfull0+cur0(j)*sk(j)
 !!!       tok(j)=cur(j)*sk(j) !Ampere
 !!!       write(*,88) dble(j),cur(j)*sk(j)
       end do
@@ -182,33 +182,33 @@
       currnt(1)=currn*1.d-2          ! Jstoped, MA/m^2
       rxx(1)=zero
       do j=1,nr
-       rxx(j+1)=dble(j)/dble(nr+1)
-       currn=cur(j)                   ! Jstopped, A/cm^2
-       currnt(j+1)=currn*1.d-2        ! Jstoped, MA/m^2
+          rxx(j+1)=dble(j)/dble(nr+1)
+          currn=cur(j)                   ! Jstopped, A/cm^2
+          currnt(j+1)=currn*1.d-2        ! Jstoped, MA/m^2
       end do
       nrr=nr+2
       rxx(nrr)=1.d0
       currnt(nr+2)=zero
 !
       if(ismthout.ne.0) then
-       do i=1,nrr
-        wrk(i)=currnt(i)
-       end do
-       call fsmoth4(rxx,wrk,nrr,currnt)
+          do i=1,nrr
+              wrk(i)=currnt(i)
+          end do
+          call fsmoth4(rxx,wrk,nrr,currnt)
       end if
 !
       rh(1)=rh1
       if(rh(inpt).gt.1d0) rh(inpt)=1.d0
       do j=1,inpt
-       call lock2(rxx,nrr,rh(j),klo,khi,ierr)
-       if(ierr.ne.0) then
-        write(*,*)'lock2 error in current profile for ASTRA'
-        write(*,*)'ierr=',ierr,' j=',j,' rh(j)=',rh(j)
-        write(*,*)'rxx(1)=',rxx(1),' rxx(nrr)=',rxx(nrr)
-        pause
-       end if
-       call linf(rxx,currnt,rh(j),fout,klo,khi)
-       outj(j)=fout
+          call lock2(rxx,nrr,rh(j),klo,khi,ierr)
+          if(ierr.ne.0) then
+               write(*,*)'lock2 error in current profile for ASTRA'
+               write(*,*)'ierr=',ierr,' j=',j,' rh(j)=',rh(j)
+               write(*,*)'rxx(1)=',rxx(1),' rxx(nrr)=',rxx(nrr)
+               pause
+          end if
+          call linf(rxx,currnt,rh(j),fout,klo,khi)
+          outj(j)=fout
       end do
       rh(1)=zero
 
@@ -217,33 +217,33 @@
       currnt(1)=currn*1.d-2          ! Jstoped, MA/m^2
       rxx(1)=zero
       do j=1,nr
-       rxx(j+1)=dble(j)/dble(nr+1)
-       currn=cur0(j)                   ! Jstopped, A/cm^2
-       currnt(j+1)=currn*1.d-2        ! Jstoped, MA/m^2
+          rxx(j+1)=dble(j)/dble(nr+1)
+          currn=cur0(j)                   ! Jstopped, A/cm^2
+          currnt(j+1)=currn*1.d-2        ! Jstoped, MA/m^2
       end do
       nrr=nr+2
       rxx(nrr)=1.d0
       currnt(nr+2)=zero
 !
       if(ismthout.ne.0) then
-       do i=1,nrr
-        wrk(i)=currnt(i)
-       end do
-       call fsmoth4(rxx,wrk,nrr,currnt)
+          do i=1,nrr
+              wrk(i)=currnt(i)
+          end do
+          call fsmoth4(rxx,wrk,nrr,currnt)
       end if
 !
       rh(1)=rh1
       if(rh(inpt).gt.1d0) rh(inpt)=1.d0
       do j=1,inpt
-       call lock2(rxx,nrr,rh(j),klo,khi,ierr)
-       if(ierr.ne.0) then
-        write(*,*)'#2 lock2 error in current profile for ASTRA'
-        write(*,*)'ierr=',ierr,' j=',j,' rh(j)=',rh(j)
-        write(*,*)'rxx(1)=',rxx(1),' rxx(nrr)=',rxx(nrr)
-        pause
-       end if
-       call linf(rxx,currnt,rh(j),fout,klo,khi)
-       ohj(j)=fout
+          call lock2(rxx,nrr,rh(j),klo,khi,ierr)
+          if(ierr.ne.0) then
+              write(*,*)'#2 lock2 error in current profile for ASTRA'
+              write(*,*)'ierr=',ierr,' j=',j,' rh(j)=',rh(j)
+              write(*,*)'rxx(1)=',rxx(1),' rxx(nrr)=',rxx(nrr)
+              pause
+          end if
+          call linf(rxx,currnt,rh(j),fout,klo,khi)
+          ohj(j)=fout
       end do
       rh(1)=zero
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -261,9 +261,9 @@
       curs=zero
       curs0=zero
       do k=1,i0-1
-       vl=v(k)
-       vr=v(k+1)
-       fl=f(k)
+          vl=v(k)
+          vr=v(k+1)
+          fl=f(k)
        fr=f(k+1)
        curs=curs+(fl*vl+fr*vr)/2d0*(vr-vl)
        fl=f0(k)
