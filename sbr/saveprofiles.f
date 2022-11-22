@@ -52,6 +52,7 @@
      &,plaunp,plaunm,ip,im
       common/ne_cheb/chebne(50),chebdne(50),chebddne(50),ncheb
       real*8 efld(100),r,vmax,fvt,funmaxwell,fmaxw
+      real*8 fmaxw_classic, fmaxw_ext
       real*8 pme,pqe,pi4,c0,zff,zefff,fnr,fnrr
       real*8 pn,fn1,fn2,gst,dens,tmp,ft,vt,vclt
       integer i0
@@ -301,7 +302,8 @@ cccc   "poloidal magnetic field":
          vmax=2.d0*vclt
          do i=1,i0
           vij(i,j)=dble(i-1)*vmax/dble(i0-1)
-          fij(i,j,k)=fmaxw(vij(i,j),znak*enorm(j),dfij(i,j,k))
+          fij(i,j,1) = fmaxw_classic(vij(i,j), enorm(j), dfij(i,j,1))
+          fij(i,j,2) =     fmaxw_ext(vij(i,j), enorm(j), dfij(i,j,2))          
 !          write(96,*) i,fij(i,j,k)
 !!!!          fij(i,j,k)=fmaxw(vij(i,j),zero,dfij(i,j,k))
           if(vij(i,j).ge.vclt) then
