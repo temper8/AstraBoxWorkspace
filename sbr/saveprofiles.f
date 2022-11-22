@@ -294,26 +294,18 @@ cccc   "poloidal magnetic field":
 !
  !     open(96, file='lhcd/out/difsave.dat', position='append')
       if(calls.eq.zero) then
-       do k=1,2
-        znak=2.d0*dble(k)-3.d0
-        do j=1,nr
+       do j=1,nr
          r=dble(j)/dble(nr+1)
          vclt=3.d10/fvt(r)
-         vmax=2.d0*vclt
-         do i=1,i0
-          vij(i,j)=dble(i-1)*vmax/dble(i0-1)
-          fij(i,j,1) = fmaxw_classic(vij(i,j), enorm(j), dfij(i,j,1))
-          fij(i,j,2) =     fmaxw_ext(vij(i,j), enorm(j), dfij(i,j,2))          
-!          write(96,*) i,fij(i,j,k)
-!!!!          fij(i,j,k)=fmaxw(vij(i,j),zero,dfij(i,j,k))
-          if(vij(i,j).ge.vclt) then
-           fij(i,j,k)=zero
-           dfij(i,j,k)=zero
-          end if
-          fij0(i,j,k)=fij(i,j,k)
-          dij(i,j,k)=zero
-         end do
-        end do
+
+         call init_vi(vij(:,j), vclt)
+
+         call init_fmaxw_classic(fij(:,j,1),dfij(:,j,1),vclt,enorm(j))
+     
+         call init_fmaxw_ext(fij(:,j,2), dfij(:,j,2), vclt, enorm(j))     
+
+        fij0(:,:,:)=fij(:,:,:)
+        dij(:,:,:)=zero
        end do
       end if
       calls=1.d0

@@ -1,3 +1,49 @@
+!!!!!!!!!!!!
+      subroutine init_vi(vi, vclt)
+            integer, parameter :: i0 = 1002
+            real*8 vi(i0)
+            real*8 vclt, vmax, enorm
+
+            vmax = 2.d0*vclt
+            do i=1,i0
+                  vi(i)=dble(i-1)*vmax/dble(i0-1)
+            end do
+      end subroutine
+
+      subroutine init_fmaxw_classic(fi, dfi, vclt, enorm)
+            integer, parameter :: i0 = 1002
+            real*8 fi(i0), dfi(i0)
+            real*8 vi, vclt, vmax, enorm
+
+            vmax = 2.d0*vclt
+            do i=1,i0
+                  vi = dble(i-1)*vmax/dble(i0-1)
+                  if(vi < vclt) then
+                        fi(i) = fmaxw_classic(vi, enorm, dfi(i))
+                  else
+                        fi(i) = zero
+                        dfi(i) = zero
+                  end if
+            end do
+      end subroutine
+
+      subroutine init_fmaxw_ext(fi, dfi, vclt, enorm)
+            integer, parameter :: i0 = 1002
+            real*8 fi(i0), dfi(i0)
+            real*8 vi, vclt, vmax, enorm
+
+            vmax=2.d0*vclt
+            do i=1,i0
+                  vi = dble(i-1)*vmax/dble(i0-1)
+                  if(vi < vclt) then
+                        fi(i) = fmaxw_ext(vi, enorm, dfi(i))
+                  else
+                        fi(i) = zero
+                        dfi(i) = zero
+                  end if
+            end do
+      end subroutine      
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       double precision function funmaxwell(v,dfunmaxwell)
       implicit none
