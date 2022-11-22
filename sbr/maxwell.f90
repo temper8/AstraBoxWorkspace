@@ -110,48 +110,50 @@
 
       double precision function psiq(v,alfa2)
 !!! psiq=exp(ksiV**2)*erfcc(ksiV)*exp(-0.25/alfa2)
-      implicit none
-      double precision v,alfa2,df
-      double precision x,t,z,f,asymp,alfa,q,u
-      double precision zero,zmax,pisqrt
-      parameter(zero=0.d0,zmax=10.d0,pisqrt=1.77245385090552d0)
-      alfa=dsqrt(alfa2)
-      q=-0.25d0/alfa2
-      x=0.5d0*(alfa*v**2-1.d0/alfa)
-      z=abs(x)
-      if(z.gt.zmax) then !asymptotics
-       f=dexp(q)*(1.d0-0.5d0/z**2+0.75d0/z**4-15.d0/8.d0/z**6)/z/pisqrt
-      else
-       t=1.d0/(1.d0+0.5d0*z)
-       f=t*exp(q-1.26551223d0+t*(1.00002368d0+t*(.37409196d0+t*&
-      &(.09678418d0+t*(-.18628806d0+t*(.27886807d0+t*(-1.13520398d0+t*&
-      &(1.48851587d0+t*(-.82215223d0+t*.17087277d0)))))))))
-      end if
-      if(x.lt.zero) then
-       u=-0.5d0*v**2+0.25d0*alfa2*v**4 !u=x**2-0.25d0/alfa2
-       f=2.d0*dexp(u)-f
-      end if
-      psiq=f
-      return
-      end
+            implicit none
+            double precision v,alfa2,df
+            double precision x,t,z,f,asymp,alfa,q,u
+            double precision zero,zmax,pisqrt
+            parameter(zero=0.d0,zmax=10.d0,pisqrt=1.77245385090552d0)
+            
+            alfa=dsqrt(alfa2)
+            q=-0.25d0/alfa2
+            x=0.5d0*(alfa*v**2-1.d0/alfa)
+            z=abs(x)
+            if(z.gt.zmax) then !asymptotics
+                  f=dexp(q)*(1.d0-0.5d0/z**2+0.75d0/z**4-15.d0/8.d0/z**6)/z/pisqrt
+            else
+                  t=1.d0/(1.d0+0.5d0*z)
+                  f=t*exp(q-1.26551223d0+t*(1.00002368d0+t*(.37409196d0+t*&
+                  &(.09678418d0+t*(-.18628806d0+t*(.27886807d0+t*(-1.13520398d0+t*&
+                  &(1.48851587d0+t*(-.82215223d0+t*.17087277d0)))))))))
+            end if
+            if(x.lt.zero) then
+                  u=-0.5d0*v**2+0.25d0*alfa2*v**4 !u=x**2-0.25d0/alfa2
+                  f=2.d0*dexp(u)-f
+            end if
+            psiq=f
+            return
+            end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
       function erfcc(x)
-      implicit none
-      double precision erfcc,x
-      double precision t,z,zero,zmax,pisqrt
-      parameter(zero=0.d0,zmax=10.d0,pisqrt=1.77245385090552d0)
-      z=abs(x)
-      if(z.gt.zmax) then !asymptotics
-       erfcc=(1.d0-0.5d0/z**2+0.75d0/z**4-15.d0/8.d0/z**6)/z/pisqrt
-       erfcc=exp(-z*z)*erfcc
-      else
-       t=1.d0/(1.d0+0.5d0*z)
-       erfcc=t*exp(-z*z-1.26551223d0+t*(1.00002368d0+t*(.37409196d0+t*&
-      &(.09678418d0+t*(-.18628806d0+t*(.27886807d0+t*(-1.13520398d0+t*&
-      &(1.48851587d0+t*(-.82215223d0+t*.17087277d0)))))))))
-      end if
-      if(x.lt.zero) erfcc=2.d0-erfcc
-      return
-      end
+            implicit none
+            double precision erfcc,x
+            double precision t,z,zero,zmax,pisqrt
+            parameter(zero=0.d0,zmax=10.d0,pisqrt=1.77245385090552d0)
+            
+            z=abs(x)
+            if(z.gt.zmax) then !asymptotics
+                  erfcc=(1.d0-0.5d0/z**2+0.75d0/z**4-15.d0/8.d0/z**6)/z/pisqrt
+                  erfcc=exp(-z*z)*erfcc
+            else
+                  t=1.d0/(1.d0+0.5d0*z)
+                  erfcc=t*exp(-z*z-1.26551223d0+t*(1.00002368d0+t*(.37409196d0+t*&
+                  &(.09678418d0+t*(-.18628806d0+t*(.27886807d0+t*(-1.13520398d0+t*&
+                  &(1.48851587d0+t*(-.82215223d0+t*.17087277d0)))))))))
+            end if
+            if(x.lt.zero) erfcc=2.d0-erfcc
+            return
+            end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
