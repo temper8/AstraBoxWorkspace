@@ -46,62 +46,65 @@
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       double precision function funmaxwell(v,dfunmaxwell)
-      implicit none
-      real*8 v,dfunmaxwell,arg,pi2sqrt
-      parameter(pi2sqrt=2.506628274631d0)
-      arg=-0.5d0*v**2
-      funmaxwell=dexp(arg)/pi2sqrt
-      dfunmaxwell=-v*funmaxwell
+            implicit none
+            real*8 v,dfunmaxwell,arg,pi2sqrt
+            parameter(pi2sqrt=2.506628274631d0)
+
+            arg=-0.5d0*v**2
+            funmaxwell=dexp(arg)/pi2sqrt
+            dfunmaxwell=-v*funmaxwell
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       double precision function fmaxw_classic(v,alfa2,dfmaxw)
-      implicit none
-      real*8 v,alfa2,dfmaxw
-      real*8 arg,alfa,api,b,psiq,f,df,erfcc
-      real*8 pi2sqrt,pisqrt,zero
-      parameter(pi2sqrt=2.506628274631d0,pisqrt=1.77245385090552d0)
-      parameter(zero=0.d0)
-       arg=-0.5d0*v**2*(1.d0+0.5d0*alfa2*v**2)
-       fmaxw_classic=dexp(arg)/pi2sqrt
-       dfmaxw=-v*(1.d0+alfa2*v**2)*fmaxw_classic
+            implicit none
+            real*8 v,alfa2,dfmaxw
+            real*8 arg,alfa,api,b,psiq,f,df,erfcc
+            real*8 pi2sqrt,pisqrt,zero
+            parameter(pi2sqrt=2.506628274631d0,pisqrt=1.77245385090552d0)
+            parameter(zero=0.d0)
+            
+            arg=-0.5d0*v**2*(1.d0+0.5d0*alfa2*v**2)
+            fmaxw_classic=dexp(arg)/pi2sqrt
+            dfmaxw=-v*(1.d0+alfa2*v**2)*fmaxw_classic
       end
 
       double precision function fmaxw_ext(v,alfa2,dfmaxw)
-      implicit none
-      real*8 v,alfa2,dfmaxw
-      real*8 arg,alfa,api,b,psiq,f,df,erfcc
-      real*8 pi2sqrt,pisqrt,zero
-      parameter(pi2sqrt=2.506628274631d0,pisqrt=1.77245385090552d0)
-      parameter(zero=0.d0)
-       alfa=dsqrt(alfa2)
-       api=2.d0*alfa*dexp(-0.25d0/alfa2)/pisqrt
-       b=2.d0-erfcc(0.5d0/alfa)+api
-       f=psiq(v,alfa2)
-       fmaxw_ext=(f+api)/b/pi2sqrt
-       df=-v*((1.d0-alfa2*v**2)*f+api)
-       dfmaxw=df/b/pi2sqrt
+            implicit none
+            real*8 v,alfa2,dfmaxw
+            real*8 arg,alfa,api,b,psiq,f,df,erfcc
+            real*8 pi2sqrt,pisqrt,zero
+            parameter(pi2sqrt=2.506628274631d0,pisqrt=1.77245385090552d0)
+            parameter(zero=0.d0)
+
+            alfa=dsqrt(alfa2)
+            api=2.d0*alfa*dexp(-0.25d0/alfa2)/pisqrt
+            b=2.d0-erfcc(0.5d0/alfa)+api
+            f=psiq(v,alfa2)
+            fmaxw_ext=(f+api)/b/pi2sqrt
+            df=-v*((1.d0-alfa2*v**2)*f+api)
+            dfmaxw=df/b/pi2sqrt
       end
 
       double precision function fmaxw(v,alfa2,dfmaxw)
-      implicit none
-      real*8 v,alfa2,dfmaxw
-      real*8 arg,alfa,api,b,psiq,f,df,erfcc
-      real*8 pi2sqrt,pisqrt,zero
-      parameter(pi2sqrt=2.506628274631d0,pisqrt=1.77245385090552d0)
-      parameter(zero=0.d0)
-      if(alfa2.le.zero) then
-       arg=-0.5d0*v**2*(1.d0-0.5d0*alfa2*v**2)
-       fmaxw=dexp(arg)/pi2sqrt
-       dfmaxw=-v*(1.d0-alfa2*v**2)*fmaxw
-      else
-       alfa=dsqrt(alfa2)
-       api=2.d0*alfa*dexp(-0.25d0/alfa2)/pisqrt
-       b=2.d0-erfcc(0.5d0/alfa)+api
-       f=psiq(v,alfa2)
-       fmaxw=(f+api)/b/pi2sqrt
-       df=-v*((1.d0-alfa2*v**2)*f+api)
-       dfmaxw=df/b/pi2sqrt
-      end if
+            implicit none
+            real*8 v,alfa2,dfmaxw
+            real*8 arg,alfa,api,b,psiq,f,df,erfcc
+            real*8 pi2sqrt,pisqrt,zero
+            parameter(pi2sqrt=2.506628274631d0,pisqrt=1.77245385090552d0)
+            parameter(zero=0.d0)
+            if(alfa2.le.zero) then
+                  arg=-0.5d0*v**2*(1.d0-0.5d0*alfa2*v**2)
+                  fmaxw=dexp(arg)/pi2sqrt
+                  dfmaxw=-v*(1.d0-alfa2*v**2)*fmaxw
+            else
+                  alfa=dsqrt(alfa2)
+                  api=2.d0*alfa*dexp(-0.25d0/alfa2)/pisqrt
+                  b=2.d0-erfcc(0.5d0/alfa)+api
+                  f=psiq(v,alfa2)
+                  fmaxw=(f+api)/b/pi2sqrt
+                  df=-v*((1.d0-alfa2*v**2)*f+api)
+                  dfmaxw=df/b/pi2sqrt
+            end if
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
