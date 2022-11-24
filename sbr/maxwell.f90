@@ -1,8 +1,9 @@
 !!!!!!!!!!!!
-      subroutine init_vi(vi, vclt)
+      subroutine init_vi(vclt, vi)
             integer, parameter :: i0 = 1002
-            real*8 vi(i0)
-            real*8 vclt, vmax, enorm
+            real*8, intent(in) :: vclt
+            real*8, intent(out) :: vi(i0)            
+            real*8 vmax
 
             vmax = 2.d0*vclt
             do i=1,i0
@@ -10,10 +11,11 @@
             end do
       end subroutine
 
-      subroutine init_fmaxw_classic(fi, dfi, vclt, enorm)
+      subroutine init_fmaxw_classic(vclt, enorm, fi, dfi)
             integer, parameter :: i0 = 1002
-            real*8 fi(i0), dfi(i0)
-            real*8 vi, vclt, vmax, enorm
+            real*8, intent(in) :: vclt, enorm
+            real*8, intent(out) :: fi(i0), dfi(i0)
+            real*8 vi, vmax
 
             vmax = 2.d0*vclt
             do i=1,i0
@@ -27,10 +29,11 @@
             end do
       end subroutine
 
-      subroutine init_fmaxw_ext(fi, dfi, vclt, enorm)
+      subroutine init_fmaxw_ext(vclt, enorm, fi, dfi)
             integer, parameter :: i0 = 1002
-            real*8 fi(i0), dfi(i0)
-            real*8 vi, vclt, vmax, enorm
+            real*8, intent(in) :: vclt, enorm
+            real*8, intent(out) :: fi(i0), dfi(i0)
+            real*8 vi, vmax
 
             vmax=2.d0*vclt
             do i=1,i0

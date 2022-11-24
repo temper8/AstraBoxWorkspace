@@ -291,22 +291,17 @@ cccc   "poloidal magnetic field":
 !!       fst(j)=pn*xlogj*c0**4/pi4/vt**3
        fst(j)=((5.d0+zefff(r))/5.d0)*pn*xlogj*c0**4/pi4/vt**3
        end do
-!
  !     open(96, file='lhcd/out/difsave.dat', position='append')
       if(calls.eq.zero) then
        do j=1,nr
          r=dble(j)/dble(nr+1)
          vclt=3.d10/fvt(r)
-
-         call init_vi(vij(:,j), vclt)
-
-         call init_fmaxw_classic(fij(:,j,1),dfij(:,j,1),vclt,enorm(j))
-     
-         call init_fmaxw_ext(fij(:,j,2), dfij(:,j,2), vclt, enorm(j))     
-
-        fij0(:,:,:)=fij(:,:,:)
-        dij(:,:,:)=zero
+         call init_vi(vclt, vij(:,j))
+         call init_fmaxw_classic(vclt,enorm(j),fij(:,j,1),dfij(:,j,1))
+         call init_fmaxw_ext(vclt,enorm(j),fij(:,j,2),dfij(:,j,2))     
        end do
+       fij0(:,:,:)=fij(:,:,:)
+       dij(:,:,:)=zero
       end if
       calls=1.d0
 !      close(96)
