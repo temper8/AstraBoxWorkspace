@@ -1,10 +1,11 @@
 
-subroutine fokkerplanck1D(h, n, nt, d1, d2, d3, vj, fj0, dfj0)
+subroutine fokkerplanck1D(h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj, dfj0)
     implicit none
     integer, intent(in) :: n, nt
-    real*8, intent(in) :: h
+    real*8, intent(in) :: h, dt, xend
     real*8, intent(in) ::  d1(:), d2(:), d3(:), vj(:)
     real*8, intent(inout) :: fj0(:)
+    real*8, intent(inout) :: out_fj(:)
     real*8, intent (inout), optional :: dfj0(:)
 
     integer :: i0=1002
@@ -12,7 +13,7 @@ subroutine fokkerplanck1D(h, n, nt, d1, d2, d3, vj, fj0, dfj0)
     real*8,dimension(:),allocatable:: y, x, xx, a, b, c, f
     real*8,dimension(:),allocatable:: fj, dfj,  givi
     integer i, ii, it, ibeg, klo, khi, ierr, klo1, khi1
-    real*8 xend, shift, ybeg, yend, tend, dt, dff
+    real*8 shift, ybeg, yend, tend, dff
     real*8 fout1,fout2
 
     i0 = size(vj)
@@ -32,8 +33,7 @@ subroutine fokkerplanck1D(h, n, nt, d1, d2, d3, vj, fj0, dfj0)
     allocate(fj(i0))
     
     fj(:)=fj0(:)
-    
-    
+        
     do i=1,n
         call lock(vj,i0,x(i+1),klo,khi,ierr)
         if(ierr.eq.1) then
@@ -48,13 +48,14 @@ subroutine fokkerplanck1D(h, n, nt, d1, d2, d3, vj, fj0, dfj0)
     deallocate(fj)
     ybeg=fj0(1)  !boundary conditions
     yend=zero
-    
+    !call write_array(y, n, "y_start")
     !!!!!!!!!!!!   solve problem   !!!!!!!!!!!!!!!!!!!!!!!!!!
     do it=1,nt
         call abccoef(a,b,c,f,y,dt,n,ybeg,yend,xx,h,d1,d2,d3)
         call tridag(a,b,c,f,y,n)
     !!         t=dt*dble(it)
     end do
+    !call write_array(y, n, "y_end")
     
     allocate(fj(n+2))
     fj(1)=ybeg
@@ -62,6 +63,8 @@ subroutine fokkerplanck1D(h, n, nt, d1, d2, d3, vj, fj0, dfj0)
     do i=1,n
         fj(i+1)=y(i)
     end do
+    out_fj(:) = fj(:)
+    !call write_distribution(fj, n, 0.1999d0)
     do i=2,i0-1
         if(vj(i).lt.xend) then
             call lock(x,n+2,vj(i),klo,khi,ierr)
@@ -97,6 +100,7 @@ subroutine fokkerplanck1D(h, n, nt, d1, d2, d3, vj, fj0, dfj0)
             end if
     end do
 
+!   сдвиг расределения вправо. зачем-то ???
     ii=0
     ibeg=0
     do i=i0-1,1,-1
@@ -120,7 +124,8 @@ subroutine fokkerplanck1D(h, n, nt, d1, d2, d3, vj, fj0, dfj0)
         end if
     end do
     ibeg=ii
-!
+
+!   нормировка распределения
     if(ibeg.gt.0) then
         call integral(ibeg,i0,vj,fj,fout1)
         do i=1,i0
