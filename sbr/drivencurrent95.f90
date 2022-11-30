@@ -101,7 +101,7 @@
 !! calculation of distribution functions at time t1=t+dtau !!
       do i=1,ntau
           write(*,*)'fokkerplanck №',i,'of',ntau
-          call fokkerplanck(dt,time,i)
+          call fokkerplanck_new(dt,time,i)
       end do
 !
       deallocate(outjp,outjm,ohjp,ohjm)
