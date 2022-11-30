@@ -12,7 +12,8 @@ subroutine fokkerplanck_new(dtstep,time,nomer)
     integer n,i,j,it,nt,k
     real*8 xend,h,shift,ybeg,yend,tend,dt,dff
     real*8,dimension(:),allocatable:: y,x,xx,xxm,xxp,a,b,c,f
-    real*8,dimension(:),allocatable:: vj,fj,dfj,d1,d2,d3,givi
+    real*8,dimension(:),allocatable:: vj,fj,dfj,givi
+    real*8, allocatable :: d1(:),d2(:),d3(:)
     real*8 znak,alfa2,zero,dt0,h0,eps,r,fvt,fout1,fout2
     common/ef/ alfa2
     real*8 calls
@@ -22,6 +23,25 @@ subroutine fokkerplanck_new(dtstep,time,nomer)
     integer klo2,klo3,khi2,khi3,ierr1,ierr2,ierr3
     common/dddql/ d0,jindex,kindex
     parameter(zero=0.d0,dt0=0.1d0,h0=0.1d0,eps=1.d-7)
+    interface 
+    subroutine fokkerplanck1D(h, n, nt, d1, d2, d3, vj, fj0, dfj0)
+        implicit none
+        integer, parameter :: i0=1002
+        integer, intent(in) :: n, nt
+        real*8, intent(in) :: h
+        real*8, intent(in) ::  d1(:), d2(:), d3(:), vj(:)
+        real*8, intent(inout) :: fj0(:)
+        real*8, intent (inout), optional :: dfj0(:)
+    end subroutine fokkerplanck1D      
+    subroutine init_diffusion(h, n, vj, dj, d1, d2, d3)
+        implicit none
+        integer, intent(in) :: n
+        real*8, intent(in) :: h
+        real*8, dimension(:), intent(in) :: vj, dj
+        real*8, dimension(:), intent(out) :: d1, d2, d3
+    end subroutine init_diffusion
+    end interface 
+
 !
     do k=1,2
         do j=1,nr
@@ -41,18 +61,19 @@ subroutine fokkerplanck_new(dtstep,time,nomer)
                 h=xend/dble(n+1)
             end if
 
+            !print *, k, j, n, h
             allocate(d1(n+1),d2(n+1),d3(n+1))
 
             d1(:)=0d0
             d2(:)=0d0
             d3(:)=0d0
-
+             
             call fokkerplanck1D(h, n, nt, d1, d2, d3, vij(:,j), fij0(:,j,k))
 
             call init_diffusion(h, n, vij(:,j), dij(:,j,k), d1, d2, d3)
 
-            call fokkerplanck1D(h, n, nt, d1, d2, d3, vij(:,j), fij0(:,j,k))
-
+            call fokkerplanck1D(h, n, nt, d1, d2, d3, vij(:,j), fij(:,j,k), dfij(:,j,k))
+            
             deallocate(d1,d2,d3)
 
         end do
@@ -66,8 +87,14 @@ subroutine fokkerplanck_new(dtstep,time,nomer)
     real*8, intent(in) :: h
     real*8, dimension(:), intent(in) :: vj, dj
     real*8, dimension(:), intent(out) :: d1, d2, d3
-    integer, parameter :: i0=1002
+    real*8, dimension(:), allocatable :: xx
+    integer :: i0
+    integer i, klo, khi, ierr, klo1, khi1
+    integer klo2, klo3, khi2, khi3, ierr1, ierr2, ierr3
 
+    i0 = size(vj)
+
+    allocate(xx(n+1))
     do i=1,n+1
         xx(i)=h/2.d0+h*dble(i-1) !+shift
     end do
@@ -86,7 +113,7 @@ subroutine fokkerplanck_new(dtstep,time,nomer)
         end if
         if(ierr2.eq.1) then
             write(*,*)'lock error in finction d2(x)'
-            write(*,*)'j=', 123, ' v=', xxm(i)
+            write(*,*)'j=', 123, ' v=', xx(i)
             write(*,*)'klo2=', klo2, 'khi2=', khi2, 'i=',i
             write(*,*)'vj(1)=', vj(1), ' vj(i0)=', vj(i0)
             pause
@@ -94,7 +121,7 @@ subroutine fokkerplanck_new(dtstep,time,nomer)
         end if
         if(ierr3.eq.1) then
             write(*,*)'lock error in finction d2(x)'
-            write(*,*)'j=', 123, ' v=', xxp(i)
+            write(*,*)'j=', 123, ' v=', xx(i)
             write(*,*)'klo3=', klo3, 'khi3=', khi3, 'i=',i
             write(*,*)'vj(1)=', vj(1), ' vj(i0)=', vj(i0)
             pause
