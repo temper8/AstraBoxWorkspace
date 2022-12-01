@@ -1,27 +1,22 @@
 subroutine fokkerplanck_new(dtstep,time,nomer)
     implicit none
-    real*8 t,dtstep,dtau,d5,check1,check2,check3
-    integer nr,ispl,ip,im,ii,ibeg,nomer,vivod,iunit
+    real*8 t,dtstep,dtau, time
+    integer nr, nomer
     common /a0ab/ nr
-    real*8 ynzm0,pm0,plaunp,plaunm,fmaxw,time,pachka
-    common/grillspektr/ ynzm0(1001),pm0(1001),ispl, plaunp,plaunm,ip,im
     integer i0
     parameter(i0=1002)
     real*8 vij,fij0,fij,dfij,dij,enorm,fst
     common/lh/vij(i0,100),fij0(i0,100,2),fij(i0,100,2),dfij(i0,100,2), dij(i0,100,2),enorm(100),fst(100)
     integer n,i,j,it,nt,k
-    real*8 xend,h,shift,ybeg,yend,tend,dt,dff
-    real*8,dimension(:),allocatable:: y,x,xx,xxm,xxp,a,b,c,f
-    real*8,dimension(:),allocatable:: vj,fj,dfj,givi
-    real*8, allocatable :: d1(:),d2(:),d3(:)
+    real*8 xend,h,dt
+     real*8, allocatable :: d1(:),d2(:),d3(:)
     real*8, allocatable :: out_fj(:)
-    real*8 znak,alfa2,zero,dt0,h0,eps,r,fvt,fout1,fout2
+    real*8 znak,alfa2,zero,dt0,h0,eps,r,fvt
     common/ef/ alfa2
-    real*8 calls
-    common/firstcall/calls
+    
     real*8 d0
-    integer jindex,kindex,klo,khi,ierr,klo1,khi1
-    integer klo2,klo3,khi2,khi3,ierr1,ierr2,ierr3
+    integer jindex,kindex
+
     common/dddql/ d0,jindex,kindex
     parameter(zero=0.d0,dt0=0.1d0,h0=0.1d0,eps=1.d-7)
     interface 
@@ -63,6 +58,7 @@ subroutine fokkerplanck_new(dtstep,time,nomer)
             if(dtau.gt.dt0) then
                 nt=1+dtau/dt0
             end if
+            nt = 1
             dt=dtau/nt
             r=dble(j)/dble(nr+1)
             xend=3.d10/fvt(r)
@@ -92,7 +88,7 @@ subroutine fokkerplanck_new(dtstep,time,nomer)
             
             deallocate(d1,d2,d3)
             if (nomer > 9 .and. k == 2) then 
-                call write_distribution(fij(:,j,k), i0, time)
+                call write_distribution(fij0(:,j,k), i0, time)
                 !call write_distribution(out_fj, n, time)
             end if 
             deallocate(out_fj)
