@@ -58,7 +58,7 @@ subroutine fokkerplanck_new(dtstep,time,nomer)
             if(dtau.gt.dt0) then
                 nt=1+dtau/dt0
             end if
-            nt = 1
+            ! nt = 1 test ??????
             dt=dtau/nt
             r=dble(j)/dble(nr+1)
             xend=3.d10/fvt(r)
