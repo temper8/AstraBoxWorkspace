@@ -8,7 +8,7 @@ subroutine fokkerplanck1D(h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj, dfj0)
     real*8, intent(inout) :: out_fj(:)
     real*8, intent (inout), optional :: dfj0(:)
 
-    integer :: i0=1002
+    integer :: i0
     real*8, parameter :: zero=0.d0
     real*8,dimension(:),allocatable:: y, x, xx, a, b, c, f
     real*8,dimension(:),allocatable:: fj, dfj,  givi
@@ -85,20 +85,15 @@ subroutine fokkerplanck1D(h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj, dfj0)
 
     allocate(fj(i0), dfj(i0))
 
-    do i=1,i0
-        fj(i)=fj0(i)
-        dfj(i)=zero
-    end do
 
-    do i=1,i0
-        if(i.eq.1) then
-            dfj(i)=zero
-        else if(i.eq.i0) then
-                dfj(i)=(fj(i)-fj(i-1))/vj(2)
-            else
-                dfj(i)=0.5d0*(fj(i+1)-fj(i-1))/vj(2)
-            end if
+    fj(:)=fj0(:)
+    dfj(:)=zero
+
+    do i=2, i0-1
+        dfj(i)=0.5d0*(fj(i+1)-fj(i-1))/vj(2)
     end do
+    dfj(1)=zero
+    dfj(i0)=(fj(i0)-fj(i0-1))/vj(2)
 
 !   сдвиг расределения вправо. зачем-то ???
     ii=0
