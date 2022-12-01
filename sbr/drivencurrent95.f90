@@ -305,17 +305,8 @@
       c(1)=as(2)*(kappa/h**2+bplus/h)
       b(1)=-(1d0/dt+a(1)+c(1)+dc)
       f(1)=-y(1)/dt-a(1)*ybeg
-	open(iunit,file='lhcd/distribution/RAZNICA.dat',position="append")
+
       do i=2,n
-!       sum=1d0      !(kinv(xx(i+1)-h/2d0,d2(i+1)))+kinv(xx(i+1)+h/2d0,d3(i+1)))*h/2d0
-!      sum2=(rplusk(xx(i),d1(i))+rplusk(xx(i+1),d1(i+1)))*h/2d0
-      !sum2=sum2*h/2d0
-!      sum3=(rplusk2(xx(i),d1(i))+rplusk2(xx(i+1),d1(i+1)))*h/2d0
-      !sum3=sum3*h/2d0
-!	sum4=sum3-sum2
-!        if(dabs(sum4).gt.0d0) then
-!	write(iunit,*)sum2,sum3,sum4
-!	end if
        sum=(kinv(xx(i+1)-h/2d0,d2(i+1))+kinv(xx(i+1)+h/2d0,d3(i+1)))
        sum=sum*h/2d0
        as(i+1)=h/sum
@@ -331,34 +322,8 @@
        c(i)=as(i+1)*(kappa/h**2+bplus/h) 
        b(i)=-(1d0/dt+a(i)+c(i)+dc) 
        f(i)=-y(i)/dt
-
-!       sum=(kinv2(xx(i+1)-h/2d0,d2(i+1))+kinv2(xx(i+1)+h/2d0,d3(i+1)))
-!       sum=sum*h/2d0
-!       as(i+1)=h/sum
-!       r=h/2d0*dabs(rs(xx(i)+h/2d0))/k2(xx(i)+h/2d0,d3(i))
-!       kappa=1d0/(1d0+r)
-!       sum=(rmink2(xx(i),d1(i))+rmink2(xx(i+1),d1(i+1)))*h/2d0
-!       bmin=sum/h
-!       sum=(rplusk2(xx(i),d1(i))+rplusk2(xx(i+1),d1(i+1)))*h/2d0
-!       bplus=sum/h
-!       sum=qf(xx(i+1))-qf(xx(i))
-!       dc=sum/h
-!       a1(i)=as(i)*(kappa/h**2-bmin/h)
-!       c1(i)=as(i+1)*(kappa/h**2+bplus/h) 
-!       b1(i)=-(1d0/dt+a(i)+c(i)+dc) 
-!       f1(i)=-y(i)/dt
-
-!       a2(i)=a1(i)-a(i)
-!       c2(i)=c1(i)-c(i)
-!       b2(i)=b1(i)-b(i)
-!       f2(i)=f1(i)-f(i)
-!	open(iunit2,file='lhcd/distribution/abcr.dat',position="append")
-!        if(dabs(c2(i)).gt.0d0) then
-!	write(iunit,*)f2(i),f1(i),f(i)
-!	end if
-!	close(iunit2)
       end do
-	close(iunit)
+
       f(n)=f(n)-c(n)*yend
       a(1)=0d0
       c(n)=0d0
