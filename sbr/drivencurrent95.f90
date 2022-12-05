@@ -13,10 +13,10 @@
       double precision UPL(NRD)
 !
       real*8 outj(NRD),sigmaj(NRD),afld(NRD),dtau
-      integer i,inpt,ispectr,ntau
+      integer i,inpt,ispectr
       real*8,dimension(:),allocatable:: outjp,outjm,ohjp,ohjm
       real*8 dt,zero,eps,cup,cup0,cum,cum0,cp,cm,cp0,cm0,aiint
-      parameter(zero=0.d0,eps=1.d-2,ntau=10)
+      parameter(zero=0.d0,eps=1.d-2)
 !
       inpt=NA1
       allocate(outjp(inpt),outjm(inpt),ohjp(inpt),ohjm(inpt))
@@ -88,8 +88,8 @@
 !!!!       write(*,*) i,outj(i)
       end do
 !
-      dt=tau/dble(ntau) !seconds 
-      write(*,*)'time=',time,' dt=',dt
+
+      write(*,*)'time=',time
       write(*,*)'cup=',cup,' cp=',cp
       write(*,*)'cum=',cum,' cm=',cm
       write(*,*)'cup0=',cup0,' cp0=',cp0
@@ -98,11 +98,7 @@
       write(*,*)'driven current, MA=',cup+cum
       write(*,*)
 !
-!! calculation of distribution functions at time t1=t+dtau !!
-      do i=1,ntau
-          write(*,*)'fokkerplanck N',i,'of',ntau
-          call fokkerplanck_new(dt,time,i)
-      end do
+      call fokkerplanck_new(time, TAU)
 !
       deallocate(outjp,outjm,ohjp,ohjm)
 !

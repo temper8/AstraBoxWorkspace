@@ -1,15 +1,18 @@
-subroutine fokkerplanck_new(dtstep,time,nomer)
+!! calculation of distribution functions at time t1=t+dtau !!
+subroutine fokkerplanck_new(time, TAU)
     implicit none
-    real*8 t,dtstep,dtau, time
-    integer nr, nomer
+    real*8, intent(in) :: time, TAU
+    real*8 t, dtstep, dtau
+    integer nr
     common /a0ab/ nr
+    integer, parameter :: ntau = 10
     integer i0
     parameter(i0=1002)
     real*8 vij,fij0,fij,dfij,dij,enorm,fst
     common/lh/vij(i0,100),fij0(i0,100,2),fij(i0,100,2),dfij(i0,100,2), dij(i0,100,2),enorm(100),fst(100)
     integer n,i,j,it,nt,k
     real*8 xend,h,dt
-     real*8, allocatable :: d1(:),d2(:),d3(:)
+    real*8, allocatable :: d1(:),d2(:),d3(:)
     real*8, allocatable :: out_fj(:)
     real*8 znak,alfa2,zero,dt0,h0,eps,r,fvt
     !common/ef/ alfa2
@@ -47,57 +50,60 @@ subroutine fokkerplanck_new(dtstep,time,nomer)
     end subroutine write_distribution    
     end interface 
 
-    print *, 'fokkerplanck_new time = ', time
+    dtstep=TAU/dble(ntau) !seconds 
+
+    print *, 'fokkerplanck_new'
+    write(*,*)'time=',time,' dt=',dtstep
 !
-    do k=1,2
-        kindex=k ! common/dddql/ 
-        znak=2.d0*dble(k)-3.d0
-        do j=1,nr
-            jindex=j  ! common/dddql/ 
-            dtau=dtstep*fst(j)
-            nt=1
-            if(dtau.gt.dt0) then
-                nt=1+dtau/dt0
-            end if
-            ! nt = 1 test ??????
-            dt=dtau/nt
-            r=dble(j)/dble(nr+1)
-            xend=3.d10/fvt(r)
+    do i=1, ntau
+        write(*,*)'fokkerplanck N',i,'of',ntau
+        do k=1,2
+            kindex=k ! common/dddql/ 
+            znak=2.d0*dble(k)-3.d0
+            do j=1,nr
+                jindex=j  ! common/dddql/ 
+                dtau=dtstep*fst(j)
+                nt=1
+                if(dtau.gt.dt0) then
+                    nt=1+dtau/dt0
+                end if
+                dt=dtau/nt
+                r=dble(j)/dble(nr+1)
+                xend=3.d10/fvt(r)
 !!        xend=vij(i0,j)
-            n=xend/h0-1
-            h=xend/dble(n+1)
-            if(h.gt.h0) then
-                n=n+1
+                n=xend/h0-1
                 h=xend/dble(n+1)
-            end if
+                if(h.gt.h0) then
+                    n=n+1
+                    h=xend/dble(n+1)
+                end if
 
-            !print *, k, j, n, h
-            allocate(out_fj(n+2))
-            allocate(d1(n+1),d2(n+1),d3(n+1))
+                !print *, k, j, n, h
+                allocate(out_fj(n+2))
+                allocate(d1(n+1),d2(n+1),d3(n+1))
 
-            d1(:)=0d0
-            d2(:)=0d0
-            d3(:)=0d0
-            d0=zero             ! common/dddql/ 
-            alfa2=znak*enorm(j) ! common/ef/
-            call fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij0(:,j,k), out_fj)
+                d1(:)=0d0
+                d2(:)=0d0
+                d3(:)=0d0
+                d0=zero             ! common/dddql/ 
+                alfa2=znak*enorm(j) ! common/ef/
+                call fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij0(:,j,k), out_fj)
 
-            d0=1.d0             ! common/dddql/
-            alfa2=znak*enorm(j) ! common/ef/
-            call init_diffusion(h, n, vij(:,j), dij(:,j,k), d1, d2, d3)
-            call fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij(:,j,k),out_fj, dfij(:,j,k))
+                d0=1.d0             ! common/dddql/
+                alfa2=znak*enorm(j) ! common/ef/
+                call init_diffusion(h, n, vij(:,j), dij(:,j,k), d1, d2, d3)
+                call fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij(:,j,k),out_fj, dfij(:,j,k))
             
-            deallocate(d1,d2,d3)
-            if (nomer > 9 .and. k == 2) then 
-                call write_distribution(fij0(:,j,k), i0, time)
-                !call write_distribution(out_fj, n, time)
-            end if 
-            deallocate(out_fj)
+                deallocate(d1,d2,d3)
+                if (i > 9 .and. k == 2) then 
+                    call write_distribution(fij0(:,j,k), i0, time)
+                    !call write_distribution(out_fj, n, time)
+                end if 
+                deallocate(out_fj)
+            end do
+            !stop
         end do
-        !stop
-
-    end do
-    
+    end do    
  end
 
  subroutine init_diffusion(h, n, vj, dj, d1, d2, d3)
