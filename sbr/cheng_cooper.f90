@@ -7,17 +7,6 @@ subroutine cheng_cooper(nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
       real*8, intent(inout) :: y(n)
       integer i, it
       real*8 xx(n+1), a(n),b(n),c(n),f(n)
-      interface
-      subroutine abccoef(a,b,c, f, y, dt, n, ybeg, yend, xx, h, d1,d2,d3)
-            implicit none
-            real*8, intent(inout) :: a(n),b(n),c(n),f(n),y(n)
-            real*8, intent(in)    :: dt
-            integer, intent(in)   :: n
-            real*8, intent(in)    :: ybeg, yend, h
-            real*8, intent(in)    :: xx(n+1)
-            real*8, intent(in)    :: d1(n+1),d2(n+1),d3(n+1)
-      end subroutine
-      end interface
 
       do i=1,n+1
             xx(i)=h/2.d0+h*dble(i-1) !+shift
@@ -30,7 +19,7 @@ subroutine cheng_cooper(nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
 
 end subroutine
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!! -- fill abc matrix
 subroutine abccoef(a,b,c, f, y, dt, n, ybeg, yend, xx, h, d1,d2,d3)
       implicit none
       real*8, intent(inout) :: a(n),b(n),c(n),f(n),y(n)
@@ -91,107 +80,82 @@ subroutine abccoef(a,b,c, f, y, dt, n, ybeg, yend, xx, h, d1,d2,d3)
       a(1)=0d0
       c(n)=0d0
 end
+
+real*8 function rplusk(x,dif)
+      implicit none
+      integer iunit
+      real*8 x,k,rs,dif,d,razn
+      rplusk=0.5d0*(rs(x)+dabs(rs(x)))/k(x,dif)
+end
+
+real*8 function rplusk2(x,dif)
+      implicit none
+      integer iunit
+      real*8 x,k2,rs,dif,d,razn
+      rplusk2=0.5d0*(rs(x)+dabs(rs(x)))/k2(x,dif)
+end
+
+real*8 function rmink(x,dif)
+      implicit none
+      integer iunit
+      real*8 x,k,rs,dif,d,razn
+      rmink=0.5d0*(rs(x)-dabs(rs(x)))/k(x,dif)
+end
+
+real*8 function rmink2(x,dif)
+      implicit none
+      integer iunit
+      real*8 x,k2,rs,dif,d,razn
+      rmink2=0.5d0*(rs(x)-dabs(rs(x)))/k2(x,dif)
+end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        real*8 function rplusk(x,dif)
-        implicit none
-        integer iunit
-        real*8 x,k,rs,dif,d,razn
-        rplusk=0.5d0*(rs(x)+dabs(rs(x)))/k(x,dif)
-        end
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        real*8 function rplusk2(x,dif)
-        implicit none
-        integer iunit
-        real*8 x,k2,rs,dif,d,razn
-        rplusk2=0.5d0*(rs(x)+dabs(rs(x)))/k2(x,dif)
-        end
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        real*8 function rmink(x,dif)
-        implicit none
-        integer iunit
-        real*8 x,k,rs,dif,d,razn
-        rmink=0.5d0*(rs(x)-dabs(rs(x)))/k(x,dif)
-        end
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        real*8 function rmink2(x,dif)
-        implicit none
-        integer iunit
-        real*8 x,k2,rs,dif,d,razn
-        rmink2=0.5d0*(rs(x)-dabs(rs(x)))/k2(x,dif)
-        end
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        real*8 function rs(x)
-        implicit none
-        real*8 x
-        real*8 alfa2
-        common/ef/ alfa2
-         rs=1d0/x**2-alfa2
-        end
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        real*8 function q(x)
-        implicit none
-        real*8 x
-        q=2d0/x**3
-        end
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        real*8 function qf(x)
-        implicit none
-        real*8 x
-        qf=-1d0/x**2
-        end
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        real*8 function k(x,dif)
-        implicit none
-        integer iunit
-        real*8 x,dif,d,razn
-  !	razn=dif-d(x)
-  !	open(iunit,file='lhcd/distribution/kkk.dat',position="append")
-  !	if(dabs(razn).gt.0d0) then
-  !	write(iunit,*)razn
-  !	end if
-  !	close(iunit)
-  
-        k=dif+1d0/x**3
-        end
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        real*8 function k2(x,dif)
-        implicit none
-        integer iunit
-        real*8 x,dif,d,razn
-  !	razn=dif-d(x)
-  !	open(iunit,file='lhcd/distribution/kkk.dat',position="append")
-  !	if(dabs(razn).gt.0d0) then
-  !	write(iunit,*)razn
-  !	end if
-  !	close(iunit)
-  
-        k2=d(x)+1d0/x**3
-        end
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        real*8 function kinv(x,dif)
-        implicit none
-        integer iunit
-        real*8 x,dif,razn,d
-        kinv=x**3/(dif*x**3+1d0)
-        end
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        real*8 function kinv2(x,dif)
-        implicit none
-        integer iunit
-        real*8 x,dif,razn,d,kino
-        kinv2=x**3/(d(x)*x**3+1d0)
-  !	kino=x**3/(dif*x**3+1d0)
-  !	razn=kino-kinv2
-  !	open(iunit,file='lhcd/distribution/kino.dat',position="append")!
-  !	if(dabs(razn).gt.0d0) then
-  !	write(iunit,*)razn
-  !	end if
-  !	close(iunit)
-        end
+real*8 function rs(x)
+      implicit none
+      real*8 x
+      real*8 alfa2
+      common/ef/ alfa2
+      rs=1d0/x**2-alfa2
+end
+
+real*8 function q(x)
+      implicit none
+      real*8 x
+      q=2d0/x**3
+end
+
+real*8 function qf(x)
+      implicit none
+      real*8 x
+      qf=-1d0/x**2
+end
+
+real*8 function k(x,dif)
+      implicit none
+      integer iunit
+      real*8 x,dif,d,razn
+      k=dif+1d0/x**3
+end
+
+real*8 function k2(x,dif)
+      implicit none
+      integer iunit
+      real*8 x,dif,d,razn
+      k2=d(x)+1d0/x**3
+end
+
+real*8 function kinv(x,dif)
+      implicit none
+      integer iunit
+      real*8 x,dif,razn,d
+      kinv=x**3/(dif*x**3+1d0)
+end
+
+real*8 function kinv2(x,dif)
+      implicit none
+      integer iunit
+      real*8 x,dif,razn,d,kino
+      kinv2=x**3/(d(x)*x**3+1d0)
+end
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
