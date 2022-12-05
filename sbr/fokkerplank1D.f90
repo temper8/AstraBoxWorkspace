@@ -10,7 +10,7 @@ subroutine fokkerplanck1D(h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj, dfj0)
 
     integer :: i0
     real*8, parameter :: zero=0.d0
-    real*8,dimension(:),allocatable:: y, x 
+    real*8  y(n),x(n+2)
     real*8,dimension(:),allocatable:: fj, dfj,  givi
     integer i, ii, it, ibeg, klo, khi, ierr, klo1, khi1
     real*8 shift, ybeg, yend, tend, dff
@@ -25,9 +25,8 @@ subroutine fokkerplanck1D(h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj, dfj0)
         real*8, intent(inout) :: y(n)
     end subroutine
     end interface
-    i0 = size(vj)
 
-    allocate(y(n),x(n+2))
+    i0 = size(vj)
 
     !!!!!! grid !!!!!!!!!
     !!  shift=h*0.1d0 !0.01d0
@@ -82,7 +81,6 @@ subroutine fokkerplanck1D(h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj, dfj0)
         end if
     end do
     deallocate(fj)
-    deallocate(y,x)
 
     allocate(fj(i0), dfj(i0))
 
