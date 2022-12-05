@@ -1,55 +1,74 @@
-subroutine cheng_cooper(xx, h, dt, n, ybeg, yend, d1,d2,d3, y)
+subroutine cheng_cooper(nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
       implicit none
-      integer, intent(in) :: n
-      real*8, intent(in)  :: xx(:), h, dt
+      integer, intent(in) :: nt, n
+      real*8, intent(in)  :: h, dt
+      real*8, intent(in)  :: ybeg, yend
       real*8, intent(in)  :: d1(n+1),d2(n+1),d3(n+1)
       real*8, intent(inout) :: y(n)
+      integer i, it
+      real*8 xx(n+1), a(n),b(n),c(n),f(n)
+      interface
+      subroutine abccoef(a,b,c, f, y, dt, n, ybeg, yend, xx, h, d1,d2,d3)
+            implicit none
+            real*8, intent(inout) :: a(n),b(n),c(n),f(n),y(n)
+            real*8, intent(in)    :: dt
+            integer, intent(in)   :: n
+            real*8, intent(in)    :: ybeg, yend, h
+            real*8, intent(in)    :: xx(n+1)
+            real*8, intent(in)    :: d1(n+1),d2(n+1),d3(n+1)
+      end subroutine
+      end interface
 
-      real*8 a(n),b(n),c(n),f(n)
-
-      allocate(a(n),b(n),c(n), f(n))
-
-      call abccoef(a,b,c,f,y,dt,n,ybeg,yend,xx,h,d1,d2,d3)
-      call tridag(a,b,c,f,y,n)      
-
-      deallocate(a(n),b(n),c(n),f(n))
+      do i=1,n+1
+            xx(i)=h/2.d0+h*dble(i-1) !+shift
+        end do
+    
+      do it=1,nt
+            call abccoef(a,b,c,f,y,dt,n,ybeg,yend,xx,h,d1,d2,d3)
+            call tridag(a,b,c,f,y,n)      
+      end do
 
 end subroutine
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    subroutine abccoef(a,b,c, f, y, dt, n, ybeg, yend, xx, h, d1,d2,d3)
-        implicit none
-        integer i,n,iunit,iunit2
-        real*8, intent(in) :: d1(n+1),d2(n+1),d3(n+1)
-        real*8 a(n),b(n),c(n),f(n),y(n)
-        real*8 a1(n),b1(n),c1(n),f1(n),a2(n),b2(n),c2(n),f2(n)
-        real*8 dt,kinv,rs,rmink,rplusk,q,qf,r1,rmink2,rplusk2,kinv2
-        real*8 ybeg,yend,xx(*),h,r,kappa,sum,bmin,bplus,sum2,sum3,sum4
-        real*8 dc,as(n+1),k,k2,d
-        external kinv,rs,rmink,rplusk,q,kinv2,rmink2,rplusk2,d
+subroutine abccoef(a,b,c, f, y, dt, n, ybeg, yend, xx, h, d1,d2,d3)
+      implicit none
+      real*8, intent(inout) :: a(n),b(n),c(n),f(n),y(n)
+      real*8, intent(in)    :: dt
+      integer, intent(in)   :: n
+      real*8, intent(in)    :: ybeg, yend, h
+      real*8, intent(in)    :: xx(n+1)
+      real*8, intent(in)    :: d1(n+1),d2(n+1),d3(n+1)
+
+      integer i,iunit,iunit2
+      real*8 a1(n),b1(n),c1(n),f1(n),a2(n),b2(n),c2(n),f2(n)
+      real*8 kinv,rs,rmink,rplusk,q,qf,r1,rmink2,rplusk2,kinv2
+      real*8 r,kappa,sum,bmin,bplus,sum2,sum3,sum4
+      real*8 dc,as(n+1),k,k2,d
+      external kinv,rs,rmink,rplusk,q,kinv2,rmink2,rplusk2,d
   
-        sum=(kinv(xx(1) - h/2d0,d2(1)) + kinv(xx(1) + h/2d0,d3(1)))*h/2d0
-        as(1)=h/sum
+      sum=(kinv(xx(1) - h/2d0,d2(1)) + kinv(xx(1) + h/2d0,d3(1)))*h/2d0
+      as(1)=h/sum
   
-        sum=(kinv(xx(2)-h/2d0,d2(2))+kinv(xx(2)+h/2d0,d3(2)))*h/2d0
-        as(2)=h/sum
+      sum=(kinv(xx(2)-h/2d0,d2(2))+kinv(xx(2)+h/2d0,d3(2)))*h/2d0
+      as(2)=h/sum
   
-        r=h/2d0*dabs(rs(xx(1)+h/2d0,d3(1)))/k(xx(1)+h/2d0,d3(1))
-        kappa=1d0/(1d0+r)
-        sum=(rmink(xx(1), d1(1)) + rmink(xx(2), d1(2)))*h/2d0
-        bmin=sum/h
+      r=h/2d0*dabs(rs(xx(1)+h/2d0,d3(1)))/k(xx(1)+h/2d0,d3(1))
+      kappa=1d0/(1d0+r)
+      sum=(rmink(xx(1), d1(1)) + rmink(xx(2), d1(2)))*h/2d0
+      bmin=sum/h
   
-        sum = (rplusk(xx(1), d1(1)) + rplusk(xx(2), d1(2)))*h/2d0
-        bplus = sum/h
+      sum = (rplusk(xx(1), d1(1)) + rplusk(xx(2), d1(2)))*h/2d0
+      bplus = sum/h
   
-        sum = qf(xx(2))-qf(xx(1))
-        dc = sum/h
+      sum = qf(xx(2))-qf(xx(1))
+      dc = sum/h
   
-        a(1) = as(1)*(kappa/h**2 - bmin/h)
-        c(1) = as(2)*(kappa/h**2 + bplus/h)
-        b(1) = -(1d0/dt+a(1) + c(1) + dc)
-        f(1) = -y(1)/dt-a(1)*ybeg
-        do i=2,n
+      a(1) = as(1)*(kappa/h**2 - bmin/h)
+      c(1) = as(2)*(kappa/h**2 + bplus/h)
+      b(1) = -(1d0/dt+a(1) + c(1) + dc)
+      f(1) = -y(1)/dt-a(1)*ybeg
+      do i=2,n
             sum = (kinv(xx(i+1) - h/2d0, d2(i+1)) + kinv(xx(i+1) + h/2d0, d3(i+1)))
             sum = sum*h/2d0
             as(i+1) = h/sum
@@ -67,12 +86,12 @@ end subroutine
             c(i) = as(i+1)*(kappa/h**2 + bplus/h) 
             b(i) = -(1d0/dt + a(i) + c(i) + dc) 
             f(i) = -y(i)/dt
-        end do
-        f(n)=f(n)-c(n)*yend
-        a(1)=0d0
-        c(n)=0d0
-        end
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      end do
+      f(n)=f(n)-c(n)*yend
+      a(1)=0d0
+      c(n)=0d0
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         real*8 function rplusk(x,dif)
         implicit none
         integer iunit
@@ -173,3 +192,30 @@ end subroutine
   !	end if
   !	close(iunit)
         end
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+subroutine tridag(a,b,c,r,u,n)
+      implicit none
+      integer n,nmax
+      real*8 a(n),b(n),c(n),r(n),u(n)
+      parameter (nmax=1000000)
+      integer j
+      real*8 bet,gam(nmax)
+
+      if(b(1).eq.0.d0) pause 'tridag: rewrite equations'
+      bet=b(1)
+      u(1)=r(1)/bet
+      do j=2,n
+            gam(j)=c(j-1)/bet
+            bet=b(j)-a(j)*gam(j)
+            if(bet.eq.0.d0) then
+                  write(*,*)'b(j)=',b(j),'a(j)=',a(j),'gam(j)=',gam(j)
+                  pause 'tridag failed'
+            end if
+            u(j)=(r(j)-a(j)*u(j-1))/bet
+      end do
+      do j=n-1,1,-1
+            u(j)=u(j)-gam(j+1)*u(j+1)
+      end do
+end subroutine

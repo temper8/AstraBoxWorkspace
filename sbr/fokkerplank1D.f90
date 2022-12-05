@@ -10,15 +10,24 @@ subroutine fokkerplanck1D(h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj, dfj0)
 
     integer :: i0
     real*8, parameter :: zero=0.d0
-    real*8,dimension(:),allocatable:: y, x, xx, a, b, c, f
+    real*8,dimension(:),allocatable:: y, x 
     real*8,dimension(:),allocatable:: fj, dfj,  givi
     integer i, ii, it, ibeg, klo, khi, ierr, klo1, khi1
     real*8 shift, ybeg, yend, tend, dff
     real*8 fout1,fout2
-
+    interface 
+    subroutine cheng_cooper(nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
+        implicit none
+        integer, intent(in) :: nt, n
+        real*8, intent(in)  :: h, dt
+        real*8, intent(in)  :: ybeg, yend        
+        real*8, intent(in)  :: d1(n+1),d2(n+1),d3(n+1)
+        real*8, intent(inout) :: y(n)
+    end subroutine
+    end interface
     i0 = size(vj)
 
-    allocate(y(n),x(n+2),xx(n+1), a(n),b(n),c(n),f(n))
+    allocate(y(n),x(n+2))
 
     !!!!!! grid !!!!!!!!!
     !!  shift=h*0.1d0 !0.01d0
@@ -26,9 +35,6 @@ subroutine fokkerplanck1D(h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj, dfj0)
         x(i)=h*dble(i-1) !+shift
     end do
 
-    do i=1,n+1
-        xx(i)=h/2.d0+h*dble(i-1) !+shift
-    end do
 
     allocate(fj(i0))
     
@@ -48,13 +54,8 @@ subroutine fokkerplanck1D(h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj, dfj0)
     deallocate(fj)
     ybeg=fj0(1)  !boundary conditions
     yend=zero
-    !call write_array(y, n, "y_start")
     !!!!!!!!!!!!   solve problem   !!!!!!!!!!!!!!!!!!!!!!!!!!
-    do it=1,nt
-        call abccoef(a,b,c,f,y,dt,n,ybeg,yend,xx,h,d1,d2,d3)
-        call tridag(a,b,c,f,y,n)
-    !!         t=dt*dble(it)
-    end do
+    call cheng_cooper(nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
     !call write_array(y, n, "y_end")
     
     allocate(fj(n+2))
@@ -81,7 +82,7 @@ subroutine fokkerplanck1D(h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj, dfj0)
         end if
     end do
     deallocate(fj)
-    deallocate(y,x,xx,a,b,c,f)
+    deallocate(y,x)
 
     allocate(fj(i0), dfj(i0))
 
