@@ -1,5 +1,6 @@
-subroutine cheng_cooper(nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
+subroutine cheng_cooper(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
       implicit none
+      real*8, intent(in)  :: alfa2      
       integer, intent(in) :: nt, n
       real*8, intent(in)  :: h, dt
       real*8, intent(in)  :: ybeg, yend
@@ -13,15 +14,16 @@ subroutine cheng_cooper(nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
         end do
     
       do it=1,nt
-            call abccoef(a,b,c,f,y,dt,n,ybeg,yend,xx,h,d1,d2,d3)
+            call abccoef(alfa2, a,b,c,f,y,dt,n,ybeg,yend,xx,h,d1,d2,d3)
             call tridag(a,b,c,f,y,n)      
       end do
 
 end subroutine
 
 !!!!!!! -- fill abc matrix
-subroutine abccoef(a,b,c, f, y, dt, n, ybeg, yend, xx, h, d1,d2,d3)
+subroutine abccoef(alfa2, a,b,c, f, y, dt, n, ybeg, yend, xx, h, d1,d2,d3)
       implicit none
+      real*8, intent(in)    :: alfa2
       real*8, intent(inout) :: a(n),b(n),c(n),f(n),y(n)
       real*8, intent(in)    :: dt
       integer, intent(in)   :: n
@@ -36,18 +38,18 @@ subroutine abccoef(a,b,c, f, y, dt, n, ybeg, yend, xx, h, d1,d2,d3)
       real*8 dc,as(n+1),k,k2,d
       external kinv,rs,rmink,rplusk,q,kinv2,rmink2,rplusk2,d
   
-      sum=(kinv(xx(1) - h/2d0,d2(1)) + kinv(xx(1) + h/2d0,d3(1)))*h/2d0
+      sum=(kinv(xx(1) - h/2d0, d2(1), alfa2) + kinv(xx(1) + h/2d0, d3(1), alfa2))*h/2d0
       as(1)=h/sum
   
-      sum=(kinv(xx(2)-h/2d0,d2(2))+kinv(xx(2)+h/2d0,d3(2)))*h/2d0
+      sum=(kinv(xx(2)-h/2d0, d2(2), alfa2)+kinv(xx(2)+h/2d0, d3(2), alfa2))*h/2d0
       as(2)=h/sum
   
-      r=h/2d0*dabs(rs(xx(1)+h/2d0,d3(1)))/k(xx(1)+h/2d0,d3(1))
+      r=h/2d0*dabs(rs(xx(1)+h/2d0, d3(1), alfa2))/k(xx(1)+h/2d0, d3(1))
       kappa=1d0/(1d0+r)
-      sum=(rmink(xx(1), d1(1)) + rmink(xx(2), d1(2)))*h/2d0
+      sum=(rmink(xx(1), d1(1), alfa2) + rmink(xx(2), d1(2), alfa2))*h/2d0
       bmin=sum/h
   
-      sum = (rplusk(xx(1), d1(1)) + rplusk(xx(2), d1(2)))*h/2d0
+      sum = (rplusk(xx(1), d1(1), alfa2) + rplusk(xx(2), d1(2), alfa2))*h/2d0
       bplus = sum/h
   
       sum = qf(xx(2))-qf(xx(1))
@@ -62,11 +64,11 @@ subroutine abccoef(a,b,c, f, y, dt, n, ybeg, yend, xx, h, d1,d2,d3)
             sum = sum*h/2d0
             as(i+1) = h/sum
 
-            r = h/2d0*dabs(rs(xx(i) + h/2d0))/k(xx(i) + h/2d0,d3(i))
+            r = h/2d0*dabs(rs(xx(i) + h/2d0, alfa2))/k(xx(i) + h/2d0, d3(i))
             kappa=1d0/(1d0+r)
-            sum = (rmink(xx(i), d1(i)) + rmink(xx(i+1), d1(i+1)))*h/2d0
+            sum = (rmink(xx(i), d1(i), alfa2) + rmink(xx(i+1), d1(i+1), alfa2))*h/2d0
             bmin = sum/h
-            sum = (rplusk(xx(i), d1(i)) + rplusk(xx(i+1), d1(i+1)))*h/2d0
+            sum = (rplusk(xx(i), d1(i), alfa2) + rplusk(xx(i+1), d1(i+1), alfa2))*h/2d0
             bplus = sum/h
             sum = qf(xx(i+1)) - qf(xx(i))
             dc = sum/h
@@ -81,39 +83,43 @@ subroutine abccoef(a,b,c, f, y, dt, n, ybeg, yend, xx, h, d1,d2,d3)
       c(n)=0d0
 end
 
-real*8 function rplusk(x,dif)
+real*8 function rplusk(x,dif, alfa2)
       implicit none
       integer iunit
       real*8 x,k,rs,dif,d,razn
-      rplusk=0.5d0*(rs(x)+dabs(rs(x)))/k(x,dif)
+      real*8 alfa2      
+      rplusk=0.5d0*(rs(x, alfa2)+dabs(rs(x, alfa2)))/k(x,dif)
 end
 
-real*8 function rplusk2(x,dif)
+real*8 function rplusk2(x,dif, alfa2)
       implicit none
       integer iunit
       real*8 x,k2,rs,dif,d,razn
-      rplusk2=0.5d0*(rs(x)+dabs(rs(x)))/k2(x,dif)
+      real*8 alfa2      
+      rplusk2=0.5d0*(rs(x, alfa2)+dabs(rs(x, alfa2)))/k2(x,dif)
 end
 
-real*8 function rmink(x,dif)
+real*8 function rmink(x,dif, alfa2)
       implicit none
       integer iunit
       real*8 x,k,rs,dif,d,razn
-      rmink=0.5d0*(rs(x)-dabs(rs(x)))/k(x,dif)
+      real*8 alfa2      
+      rmink=0.5d0*(rs(x, alfa2)-dabs(rs(x, alfa2)))/k(x,dif)
 end
 
-real*8 function rmink2(x,dif)
+real*8 function rmink2(x,dif, alfa2)
       implicit none
       integer iunit
       real*8 x,k2,rs,dif,d,razn
-      rmink2=0.5d0*(rs(x)-dabs(rs(x)))/k2(x,dif)
+      real*8 alfa2      
+      rmink2=0.5d0*(rs(x, alfa2)-dabs(rs(x, alfa2)))/k2(x,dif)
 end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-real*8 function rs(x)
+real*8 function rs(x, alfa2)
       implicit none
       real*8 x
       real*8 alfa2
-      common/ef/ alfa2
+      !common/ef/ alfa2
       rs=1d0/x**2-alfa2
 end
 

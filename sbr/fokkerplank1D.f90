@@ -1,6 +1,7 @@
 
-subroutine fokkerplanck1D(h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj, dfj0)
+subroutine fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj, dfj0)
     implicit none
+    real*8, intent(in)  :: alfa2     
     integer, intent(in) :: n, nt
     real*8, intent(in) :: h, dt, xend
     real*8, intent(in) ::  d1(:), d2(:), d3(:), vj(:)
@@ -16,8 +17,9 @@ subroutine fokkerplanck1D(h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj, dfj0)
     real*8 shift, ybeg, yend, tend, dff
     real*8 fout1,fout2
     interface 
-    subroutine cheng_cooper(nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
+    subroutine cheng_cooper(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
         implicit none
+        real*8, intent(in)  :: alfa2 
         integer, intent(in) :: nt, n
         real*8, intent(in)  :: h, dt
         real*8, intent(in)  :: ybeg, yend        
@@ -54,7 +56,7 @@ subroutine fokkerplanck1D(h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj, dfj0)
     ybeg=fj0(1)  !boundary conditions
     yend=zero
     !!!!!!!!!!!!   solve problem   !!!!!!!!!!!!!!!!!!!!!!!!!!
-    call cheng_cooper(nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
+    call cheng_cooper(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
     !call write_array(y, n, "y_end")
     
     allocate(fj(n+2))

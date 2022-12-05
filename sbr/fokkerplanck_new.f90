@@ -12,7 +12,7 @@ subroutine fokkerplanck_new(dtstep,time,nomer)
      real*8, allocatable :: d1(:),d2(:),d3(:)
     real*8, allocatable :: out_fj(:)
     real*8 znak,alfa2,zero,dt0,h0,eps,r,fvt
-    common/ef/ alfa2
+    !common/ef/ alfa2
     
     real*8 d0
     integer jindex,kindex
@@ -20,8 +20,9 @@ subroutine fokkerplanck_new(dtstep,time,nomer)
     common/dddql/ d0,jindex,kindex
     parameter(zero=0.d0,dt0=0.1d0,h0=0.1d0,eps=1.d-7)
     interface 
-    subroutine fokkerplanck1D(h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj, dfj0)
+    subroutine fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj, dfj0)
         implicit none
+        real*8, intent(in)  :: alfa2           
         integer, intent(in) :: n, nt
         real*8, intent(in) :: h, dt, xend
         real*8, intent(in) ::  d1(:), d2(:), d3(:), vj(:)
@@ -79,12 +80,12 @@ subroutine fokkerplanck_new(dtstep,time,nomer)
             d3(:)=0d0
             d0=zero             ! common/dddql/ 
             alfa2=znak*enorm(j) ! common/ef/
-            call fokkerplanck1D(h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij0(:,j,k), out_fj)
+            call fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij0(:,j,k), out_fj)
 
             d0=1.d0             ! common/dddql/
             alfa2=znak*enorm(j) ! common/ef/
             call init_diffusion(h, n, vij(:,j), dij(:,j,k), d1, d2, d3)
-            call fokkerplanck1D(h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij(:,j,k),out_fj, dfij(:,j,k))
+            call fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij(:,j,k),out_fj, dfij(:,j,k))
             
             deallocate(d1,d2,d3)
             if (nomer > 9 .and. k == 2) then 
