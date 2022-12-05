@@ -36,11 +36,6 @@ subroutine fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj
         x(i)=h*dble(i-1) !+shift
     end do
 
-
-    allocate(fj(i0))
-    
-    fj(:)=fj0(:)
-        
     do i=1,n
         call lock(vj,i0,x(i+1),klo,khi,ierr)
         if(ierr.eq.1) then
@@ -50,15 +45,14 @@ subroutine fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj
             pause
             stop
         end if
-        call linf(vj,fj,x(i+1),y(i),klo,khi)
+        call linf(vj,fj0,x(i+1),y(i),klo,khi)
     end do
-    deallocate(fj)
+
     ybeg=fj0(1)  !boundary conditions
     yend=zero
     !!!!!!!!!!!!   solve problem   !!!!!!!!!!!!!!!!!!!!!!!!!!
     call cheng_cooper(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
-    !call write_array(y, n, "y_end")
-    
+
     allocate(fj(n+2))
     fj(1)=ybeg
     fj(n+2)=yend
