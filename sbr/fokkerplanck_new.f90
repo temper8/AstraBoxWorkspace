@@ -48,6 +48,13 @@ subroutine fokkerplanck_new(time, TAU)
         integer, intent(in) :: N
         real*8, intent(in) :: time
     end subroutine write_distribution    
+
+    subroutine write_matrix(arr,time, array_name)
+        implicit none
+        real*8, intent(in) :: arr(:,:)
+        real*8, intent(in) :: time
+        character(len=*), intent(in) :: array_name
+    end subroutine write_matrix        
     end interface 
 
     dtstep=TAU/dble(ntau) !seconds 
@@ -85,11 +92,11 @@ subroutine fokkerplanck_new(time, TAU)
                 d1(:)=0d0
                 d2(:)=0d0
                 d3(:)=0d0
-                d0=zero             ! common/dddql/ 
+                !d0=zero             ! common/dddql/ 
                 alfa2=znak*enorm(j) ! common/ef/
                 call fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij0(:,j,k), out_fj)
 
-                d0=1.d0             ! common/dddql/
+                !d0=1.d0             ! common/dddql/
                 alfa2=znak*enorm(j) ! common/ef/
                 call init_diffusion(h, n, vij(:,j), dij(:,j,k), d1, d2, d3)
                 call fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij(:,j,k),out_fj, dfij(:,j,k))
@@ -104,6 +111,7 @@ subroutine fokkerplanck_new(time, TAU)
             !stop
         end do
     end do    
+    call write_matrix(fij0(:,1:nt,1), time, 'maxwell')
  end
 
  subroutine init_diffusion(h, n, vj, dj, d1, d2, d3)
