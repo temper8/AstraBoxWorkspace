@@ -4,16 +4,17 @@ subroutine write_matrix(arr, time, array_name)
     real*8, intent(in) :: time
     character(len=*), intent(in) :: array_name
     
-    integer i, N
+    integer i, N, nshape(2)
     character(120) fname
     integer, parameter :: iu = 21
 
-    print *, 'write_matrix:', array_name, time
+    nshape=shape(arr) 
+    print *, 'write_matrix:', array_name, nshape
+    N = nshape(1)
+    print *, N
     write(fname,'("lhcd/", A,"/mat", f9.7,".dat")') array_name, time
-
     print *, fname
     open(iu, file=fname,position="append")
-        N = 150
         do i=1, N
             write (iu,' ( I4.4, 100(ES21.14))') i, arr(i, :)
         end do
