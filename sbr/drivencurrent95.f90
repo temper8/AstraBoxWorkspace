@@ -126,7 +126,14 @@
       real*8,dimension(:),allocatable:: vj, fj, fj0, cur, cur0, currnt, rxx, wrk
       real*8 zero
       parameter(zero=0.d0, ismthout=1)
-!
+      interface 
+      function currlhcd(v,f) result(curs)
+            implicit none
+            real*8 v(:),f(:)
+            real*8 curs
+      end function
+      end interface
+
       allocate(vj(i0),fj(i0),fj0(i0),cur(nr),cur0(nr),currnt(nr+2),rxx(nr+2),wrk(nr+2))
 !---------------------------------------------------
 ! initial constants
@@ -153,9 +160,10 @@
           end if
           vt=fvt(r)
           vto=vt/vt0
-          call currlhcd(i0,vj,fj,fj0,curs,curs0)
+          curs  = currlhcd(vj,fj)
           cur(j)=curs*pn*ccur*curdir*vto  !Ampere/cm2
           cfull=cfull+cur(j)*sk(j)
+          curs0 = currlhcd(vj,fj0)          
           cur0(j)=curs0*pn*ccur*curdir*vto  !Ampere/cm2
           cfull0=cfull0+cur0(j)*sk(j)
       end do
@@ -241,8 +249,25 @@
       deallocate(vj,fj,fj0,cur,cur0,currnt,rxx,wrk)
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+function currlhcd(v,f) result(curs)
+      implicit none
+      real*8 v(:),f(:)
+      real*8 curs      
+      integer i0,k
 
-subroutine currlhcd(i0,v,f,f0,curs,curs0)
+      real*8 vl,vr,fl,fr
+      curs=0.d0
+      i0 = size(v)
+      do k=1,i0-1
+            vl=v(k)
+            vr=v(k+1)
+            fl=f(k)
+            fr=f(k+1)
+            curs=curs+(fl*vl+fr*vr)/2d0*(vr-vl)
+      end do
+end
+
+subroutine currlhcd_old(i0,v,f,f0,curs,curs0)
       implicit none
       integer i0,k
       real*8 v(*),f(*),f0(*),curs,curs0
