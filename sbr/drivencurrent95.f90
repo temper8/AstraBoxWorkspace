@@ -144,10 +144,6 @@
               vj(i)=vij(i,j) !Vpar/Vt
               fj0(i)=fij0(i,j,k)
               fj(i)=fij(i,j,k)-fij0(i,j,k)
-!!        fj(i)=zero
-!!        if((vj(i)-zv1(j,k))*(vj(i)-zv2(j,k)).le.zero) then
-!!         fj(i)=fij(i,j,k)-fij0(i,j,k)
-!!        end if
           end do
           r=dble(j)/dble(nr+1)
           if(inew.eq.0) then !vardens
@@ -162,8 +158,6 @@
           cfull=cfull+cur(j)*sk(j)
           cur0(j)=curs0*pn*ccur*curdir*vto  !Ampere/cm2
           cfull0=cfull0+cur0(j)*sk(j)
-!!!       tok(j)=cur(j)*sk(j) !Ampere
-!!!       write(*,88) dble(j),cur(j)*sk(j)
       end do
       cuj=cfull*1d-6   !driven current, MA
       cujoh=cfull0*1d-6   !driven current, MA
@@ -248,7 +242,7 @@
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-      subroutine currlhcd(i0,v,f,f0,curs,curs0)
+subroutine currlhcd(i0,v,f,f0,curs,curs0)
       implicit none
       integer i0,k
       real*8 v(*),f(*),f0(*),curs,curs0
@@ -257,16 +251,16 @@
       curs=zero
       curs0=zero
       do k=1,i0-1
-          vl=v(k)
-          vr=v(k+1)
-          fl=f(k)
-       fr=f(k+1)
-       curs=curs+(fl*vl+fr*vr)/2d0*(vr-vl)
-       fl=f0(k)
-       fr=f0(k+1)
-       curs0=curs0+(fl*vl+fr*vr)/2d0*(vr-vl)
+            vl=v(k)
+            vr=v(k+1)
+            fl=f(k)
+            fr=f(k+1)
+            curs=curs+(fl*vl+fr*vr)/2d0*(vr-vl)
+            fl=f0(k)
+            fr=f0(k+1)
+            curs0=curs0+(fl*vl+fr*vr)/2d0*(vr-vl)
       end do
-      end
+end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
