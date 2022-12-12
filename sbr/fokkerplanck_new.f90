@@ -19,7 +19,6 @@ subroutine fokkerplanck_new(time, TAU)
     
     real*8 d0
     integer jindex,kindex
-
     common/dddql/ d0,jindex,kindex
     parameter(zero=0.d0,dt0=0.1d0,h0=0.1d0,eps=1.d-7)
     interface 
@@ -55,6 +54,14 @@ subroutine fokkerplanck_new(time, TAU)
         real*8, intent(in) :: time
         character(len=*), intent(in) :: array_name
     end subroutine write_matrix        
+
+    subroutine write_v_array(v, a, time, array_name)
+        implicit none
+        real*8, intent(in) :: v(:,:)    
+        real*8, intent(in) :: a(:,:,:)
+        real*8, intent(in) :: time
+        character(len=*), intent(in) :: array_name
+    end subroutine    
     end interface 
 
     dtstep=TAU/dble(ntau) !seconds 
@@ -110,10 +117,13 @@ subroutine fokkerplanck_new(time, TAU)
             end do
             !stop
         end do
-    end do    
-    call write_matrix(fij0(1:i0,1:nt,2), time, 'maxwell')
-    call write_matrix(dij(1:i0,1:nt,1), time, 'diffusion')
+    end do
+
+    call write_v_array(vij, fij0(:,1:nr,:), time, 'maxwell')
+    call write_v_array(vij,  dij(:,1:nr,:), time, 'diffusion')
+    !call write_matrix(dij(1:i0,1:nr,1), time, 'diffusion')
  end
+
 
  subroutine init_diffusion(h, n, vj, dj, d1, d2, d3)
     implicit none
