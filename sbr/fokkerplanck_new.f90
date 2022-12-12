@@ -111,7 +111,8 @@ subroutine fokkerplanck_new(time, TAU)
             !stop
         end do
     end do    
-    call write_matrix(fij0(:,1:nt,2), time, 'maxwell')
+    call write_matrix(fij0(1:i0,1:nt,2), time, 'maxwell')
+    call write_matrix(dij(1:i0,1:nt,1), time, 'diffusion')
  end
 
  subroutine init_diffusion(h, n, vj, dj, d1, d2, d3)
