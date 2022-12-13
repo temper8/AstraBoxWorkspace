@@ -17,7 +17,7 @@ subroutine write_v_array(v, a, time, array_name)
     print *, 'write arr:', array_name, nshape
     N = nshape(2)
     print *, N
-    write(fname,'("lhcd/", A,"/xar", f9.7,".dat")') array_name, time
+    write(fname,'("lhcd/", A,"/", f9.7,".dat")') array_name, time
     print *, fname
     open(iu, file=fname,position="append")
         do i=1, N
@@ -95,7 +95,7 @@ subroutine write_matrix(arr, time, array_name)
     print *, 'write_matrix:', array_name, nshape
     N = nshape(1)
     print *, N
-    write(fname,'("lhcd/", A,"/mat", f9.7,".dat")') array_name, time
+    write(fname,'("lhcd/", A,"/", f9.7,".dat")') array_name, time
     print *, fname
     open(iu, file=fname,position="append")
         do i=1, N
@@ -138,7 +138,7 @@ subroutine write_distribution(arr,N,time)
     itime = INT(time*100000)
     !print *, N, time, itime, MOD(itime, 10)
     if (MOD(itime, 10) == 0) then
-        write(fname,'("lhcd/distribution/dstr", f9.7,".dat")') time
+        write(fname,'("lhcd/distribution/", f9.7,".dat")') time
         !print *, fname
         open(iunit,file=fname,position="append")
         do i=1, n
