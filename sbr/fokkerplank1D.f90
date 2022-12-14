@@ -51,7 +51,7 @@ subroutine fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj
     ybeg=fj0(1)  !boundary conditions
     yend=zero
     !!!!!!!!!!!!   solve problem   !!!!!!!!!!!!!!!!!!!!!!!!!!
-    call cheng_cooper(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
+    call savelyev_shema(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
 
     allocate(fj(n+2))
     fj(1)=ybeg

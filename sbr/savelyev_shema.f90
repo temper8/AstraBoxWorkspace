@@ -1,4 +1,5 @@
-subroutine cheng_cooper(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
+subroutine savelyev_shema(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
+      ! разностная схема Савельева
       implicit none
       real*8, intent(in)  :: alfa2      
       integer, intent(in) :: nt, n
@@ -14,14 +15,14 @@ subroutine cheng_cooper(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
         end do
     
       do it=1,nt
-            call abccoef(alfa2, a,b,c,f,y,dt,n,ybeg,yend,xx,h,d1,d2,d3)
+            call savelyev_abccoef(alfa2, a,b,c,f,y,dt,n,ybeg,yend,xx,h,d1,d2,d3)
             call tridag(a,b,c,f,y,n)      
       end do
 
 end subroutine
 
 !!!!!!! -- fill abc matrix
-subroutine abccoef(alfa2, a,b,c, f, y, dt, n, ybeg, yend, xx, h, d1,d2,d3)
+subroutine savelyev_abccoef(alfa2, a,b,c, f, y, dt, n, ybeg, yend, xx, h, d1,d2,d3)
       implicit none
       real*8, intent(in)    :: alfa2
       real*8, intent(inout) :: a(n),b(n),c(n),f(n),y(n)
