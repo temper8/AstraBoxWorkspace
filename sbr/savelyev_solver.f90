@@ -1,5 +1,5 @@
-subroutine savelyev_shema(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
-      ! разностная схема Савельева
+subroutine savelyev_solver(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
+      ! разностная схема Савельева для уравнения Фоккера-Планка
       implicit none
       real*8, intent(in)  :: alfa2      
       integer, intent(in) :: nt, n
