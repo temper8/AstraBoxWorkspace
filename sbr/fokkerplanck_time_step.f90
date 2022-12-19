@@ -21,6 +21,11 @@ subroutine fokkerplanck_time_step(time, TAU)
     integer jindex,kindex
     common/dddql/ d0,jindex,kindex
     parameter(zero=0.d0,dt0=0.1d0,h0=0.1d0,eps=1.d-7)
+
+    integer iptnew
+    real*8 dijk, vrjnew
+    common/t01/dijk(101,100,2), vrjnew(101,100,2), iptnew
+
     interface 
     subroutine fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj, dfj0)
         implicit none
@@ -40,6 +45,16 @@ subroutine fokkerplanck_time_step(time, TAU)
         real*8, dimension(:), intent(in) :: vj, dj
         real*8, dimension(:), intent(out) :: d1, d2, d3
     end subroutine init_diffusion
+
+    subroutine prepare_diffusion(h, n, iptnew, vrjnew, dijk, d1, d2)
+        ! для версии чанга купера
+        implicit none
+        integer, intent(in) :: n
+        real*8, intent(in) :: h
+        integer, intent(in) :: iptnew
+        real*8, dimension(:), intent(in) :: vrjnew, dijk
+        real*8, dimension(:), intent(out) :: d1, d2
+    end subroutine
 
     subroutine write_distribution(arr,N,time)
         implicit none
@@ -105,7 +120,8 @@ subroutine fokkerplanck_time_step(time, TAU)
 
                 !d0=1.d0             ! common/dddql/
                 alfa2=znak*enorm(j) ! common/ef/
-                call init_diffusion(h, n, vij(:,j), dij(:,j,k), d1, d2, d3)
+                !call init_diffusion(h, n, vij(:,j), dij(:,j,k), d1, d2, d3)
+                call prepare_diffusion(h, n, iptnew, vrjnew(:,j,k), dijk(:,j,k), d1, d2)
                 call fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij(:,j,k),out_fj, dfij(:,j,k))
             
                 deallocate(d1,d2,d3)
@@ -124,6 +140,50 @@ subroutine fokkerplanck_time_step(time, TAU)
     !call write_matrix(dij(1:i0,1:nr,1), time, 'diffusion')
  end
 
+
+subroutine prepare_diffusion(h, n, iptnew, vrjnew, dijk, d1, d2)
+    ! для версии чанга купера
+    implicit none
+    integer, intent(in) :: n
+    real*8, intent(in) :: h
+    integer, intent(in) :: iptnew
+    real*8, dimension(:), intent(in) :: vrjnew, dijk
+    real*8, dimension(:), intent(out) :: d1, d2
+    real*8, dimension(:), allocatable :: xx
+    integer i, klo, khi, ierr, klo1, khi1
+
+    allocate(xx(n+1))
+    do i=1,n+1
+        xx(i)=h/2.d0+h*dble(i-1) !+shift
+    end do
+
+    D2=dijk(:)
+
+    do i=1,n+1
+        if(xx(i).gt.vrjnew(iptnew)) then
+            D1(i) = 0d0
+        else
+            call lock(vrjnew(:), iptnew, xx(i),klo,khi,ierr)
+            if(ierr.eq.1) then
+                write(*,*)'lock error in finction d(x)'
+                write(*,*)'j=',123,' v=',xx(i)
+                write(*,*)'vj(1)=',vrjnew(1),' vj(i0)=' ,vrjnew(iptnew)
+                pause
+                stop
+            end if
+            call polint(vrjnew(klo),dijk(klo),2,xx(i),D1(i),ierr)
+    
+!           D1(i)=dij(klo,j,k)
+    
+            if(D1(i).lt.0d0) then
+                write(*,*)'diff is  negative; check drivencurrent 558'
+                write(*,*) 'xx(i)=', xx(i), 'D1(i)=', D1(i)
+                pause
+                stop
+            endif
+        endif
+    enddo
+end subroutine
 
  subroutine init_diffusion(h, n, vj, dj, d1, d2, d3)
     implicit none
