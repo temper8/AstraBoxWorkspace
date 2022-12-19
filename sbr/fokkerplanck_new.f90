@@ -126,6 +126,7 @@ subroutine fokkerplanck_new(time, TAU)
 
 
  subroutine init_diffusion(h, n, vj, dj, d1, d2, d3)
+    ! инициализация диффузии для схемы савельева
     implicit none
     integer, intent(in) :: n
     real*8, intent(in) :: h
