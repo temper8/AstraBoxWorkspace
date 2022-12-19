@@ -26,13 +26,12 @@ subroutine fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj
         real*8, intent(in)  :: d1(n+1),d2(n+1),d3(n+1)
         real*8, intent(inout) :: y(n)
     end subroutine
-    subroutine burying_procedure(f0, dv, ibeg, df0)
+    subroutine burying_procedure(v, f0, df0)
         ! процедура закапывания
         implicit none
+        real*8,  intent(in)     :: v(:)        
         real*8,  intent(inout)  :: f0(:)
-        real*8,  intent(in)     :: dv
         real*8,  intent (inout), optional :: df0(:)
-        integer, intent(out) :: ibeg
     end subroutine            
     end interface
 
@@ -86,50 +85,24 @@ subroutine fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj
     end do
     deallocate(fj)
 
-
-
     if (present(dfj0)) then
-        call burying_procedure(fj0, vj(2), ibeg, dfj0)
+        call burying_procedure(vj, fj0, dfj0)
     else 
-        call burying_procedure(fj0, vj(2), ibeg)
+        call burying_procedure(vj, fj0)
     end if
 
-    allocate(fj(i0), dfj(i0))
-    fj(:)=fj0(:)
-!   нормировка распределения
-    if(ibeg.gt.0) then
-        call integral(ibeg,i0,vj,fj,fout1)
-        do i=1,i0
-            fj(i)=fj0(i)
-            if (present(dfj0)) then
-                dfj(i)=dfj0(i+1)
-            end if
-        end do
-        call integral(ibeg,i0,vj,fj,fout2)
-        do i=ibeg,i0
-            fj0(i)=fj(i)*fout1/fout2
-            if (present(dfj0)) then
-                dfj0(i)=dfj(i)*fout1/fout2
-            end if            
-        end do
-!!      write(*,*)'#1 j,k,ibeg=',j,k,ibeg
-!!      write(*,*)'#1 v(ibeg)=',vj(ibeg),' f1/f2=',fout1/fout2
-    end if
-    deallocate(fj,dfj)
 
 end subroutine fokkerplanck1D
 
-
-subroutine burying_procedure(f0, dv, ibeg, df0)
+subroutine burying_procedure(v, f0, df0)
     ! процедура закапывания
     implicit none
+    real*8,  intent(in)     :: v(:)        
     real*8,  intent(inout)  :: f0(:)
-    real*8,  intent(in)     :: dv
     real*8,  intent (inout), optional :: df0(:)
-    integer, intent(out) :: ibeg
-
-    integer i, ii,  i0
+    integer i, ii,  i0, ibeg
     real*8, allocatable  :: f(:), df(:)
+    real*8 fout1, fout2
 
     i0 = size(f0)
     allocate(f(i0), df(i0))
@@ -138,10 +111,10 @@ subroutine burying_procedure(f0, dv, ibeg, df0)
     df(:)=0d0
 
     do i=2, i0-1
-        df(i)=0.5d0*(f(i+1)-f(i-1))/dv
+        df(i)=0.5d0*(f(i+1)-f(i-1))/v(2)
     end do
     df(1)=0d0
-    df(i0)=(f(i0)-f(i0-1))/dv
+    df(i0)=(f(i0)-f(i0-1))/v(2)
 
 !   сдвиг расределения вправо. зачем-то ???
     ii=0
@@ -166,6 +139,23 @@ subroutine burying_procedure(f0, dv, ibeg, df0)
             ii=i
         end if
     end do
+
+    if(ibeg.gt.0) then
+        call integral(ibeg,i0,v,f,fout1)
+        f(:) = f0(:)
+        if (present(df0)) then
+            df(:) = df0(:)
+        end if
+        
+        call integral(ibeg,i0,v,f,fout2)
+        f0(ibeg:i0) = f(ibeg:i0)*fout1/fout2
+        if (present(df0)) then
+            df0(ibeg:i0) = df(ibeg:i0)*fout1/fout2
+        end if            
+!!      write(*,*)'#1 j,k,ibeg=',j,k,ibeg
+!!      write(*,*)'#1 v(ibeg)=',vj(ibeg),' f1/f2=',fout1/fout2
+    end if
+
     deallocate(f,df)
     ibeg=ii
 end subroutine
