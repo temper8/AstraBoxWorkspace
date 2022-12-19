@@ -233,9 +233,14 @@ cccc   "poloidal magnetic field":
       real*8,dimension(:),allocatable:: vvj,vdfj
       integer kpt1,kpt3
       parameter(kpt1=20,kpt3=20)
-      double precision vrj(101),dj(101),djnew(1001),vrjnew(1001)
+      double precision vrj(101),dj(101),djnew(1001)
       double precision dj2(101),d2j(101)
       common/testf/ tcur
+
+      integer iptnew
+      real*8 dijk, vrjnew
+      common/t01/dijk(101,100,2), vrjnew(101,100,2), iptnew
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
       if(p_in.eq.zero) then
@@ -1029,6 +1034,8 @@ c------------------------------------------
        do i=1,ipt
         vrj(i)=vgrid(i,j)/vto      !Vpar/Vt
         dj(i)=dql(i,j)*dconst*vto  !D_normir
+        vrjnew(i,j,k)=vrj(i)
+        dijk(i,j,k)=dj(i)
        end do
        do i=1,i0
         if(vij(i,j).ge.vmax) then
