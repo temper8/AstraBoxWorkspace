@@ -6,9 +6,10 @@ subroutine teplova_khavin_solver(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
     real*8, intent(in)  :: h, dt
     real*8, intent(in)  :: ybeg, yend
     real*8, intent(in)  :: d1(n+1),d2(n+1),d3(n+1)
-    real*8, intent(inout) :: y(n), y1(n)
+    real*8, intent(inout) :: y(n)
     integer i, it
     real*8 xx(n+1), a(n),b(n),c(n),f(n)
+    real*8 y1(n)
 
     do i=1,n+1
           xx(i)=h/2.d0+h*dble(i-1) !+shift
@@ -48,15 +49,14 @@ subroutine TK_abcoef(alfa2, A,B,C,f,Y,k,n,ybeg,yend,xx,h,df)
     implicit none
     real*8, intent(in)    :: alfa2
     real*8, intent(inout) :: a(n),b(n),c(n),f(n),y(n)
-    real*8, intent(in)    :: dt
     integer, intent(in)   :: n
     real*8, intent(in)    :: ybeg, yend, h
     real*8, intent(in)    :: xx(n+1)
     real*8, intent(in)    :: df(n+1)
 
     integer i
-    real*8 k,df(n)
-    real*8 C1,B1,z,w,r,dlt,alfa2
+    real*8 k
+    real*8 C1, B1, z, w, r, dlt
     real*8 tmp1,tmp2,tmp3
     external C1,w,B1,dlt
     r=k/h
