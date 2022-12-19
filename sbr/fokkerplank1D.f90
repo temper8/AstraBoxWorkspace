@@ -17,7 +17,7 @@ subroutine fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj
     real*8 shift, ybeg, yend, tend, dff
     real*8 fout1,fout2
     interface 
-    subroutine cheng_cooper(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
+    subroutine savelyev_solver(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
         implicit none
         real*8, intent(in)  :: alfa2 
         integer, intent(in) :: nt, n
@@ -26,6 +26,14 @@ subroutine fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj
         real*8, intent(in)  :: d1(n+1),d2(n+1),d3(n+1)
         real*8, intent(inout) :: y(n)
     end subroutine
+    subroutine burying_procedure(f0, dv, ibeg, df0)
+        ! процедура закапывания
+        implicit none
+        real*8,  intent(inout)  :: f0(:)
+        real*8,  intent(in)     :: dv
+        real*8,  intent (inout), optional :: df0(:)
+        integer, intent(out) :: ibeg
+    end subroutine            
     end interface
 
     i0 = size(vj)
@@ -78,43 +86,16 @@ subroutine fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj
     end do
     deallocate(fj)
 
+
+
+    if (present(dfj0)) then
+        call burying_procedure(fj0, vj(2), ibeg, dfj0)
+    else 
+        call burying_procedure(fj0, vj(2), ibeg)
+    end if
+
     allocate(fj(i0), dfj(i0))
-
-
     fj(:)=fj0(:)
-    dfj(:)=zero
-
-    do i=2, i0-1
-        dfj(i)=0.5d0*(fj(i+1)-fj(i-1))/vj(2)
-    end do
-    dfj(1)=zero
-    dfj(i0)=(fj(i0)-fj(i0-1))/vj(2)
-
-!   сдвиг расределения вправо. зачем-то ???
-    ii=0
-    ibeg=0
-    do i=i0-1,1,-1
-        if(dfj(i).gt.zero) then
-!          write(*,*) '#1 positive derivs'
-!          write(*,*) '#1 df>0: i,j,k=',i,j,k
-!          write(*,*) '#1 dfj(i),i,j,k=',dfj(i),i,j,k
-!          write(*,*)
-            fj0(i)=fj0(i+1)
-            if (present(dfj0)) then
-                dfj0(i)=dfj0(i+1)
-            end if
-            ii=i
-        end if
-        if(fj0(i).lt.fj0(i+1)) then 
-            fj0(i)=fj0(i+1)
-            if (present(dfj0)) then
-                dfj0(i)=dfj0(i+1)
-            end if            
-            ii=i
-        end if
-    end do
-    ibeg=ii
-
 !   нормировка распределения
     if(ibeg.gt.0) then
         call integral(ibeg,i0,vj,fj,fout1)
@@ -137,3 +118,54 @@ subroutine fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj
     deallocate(fj,dfj)
 
 end subroutine fokkerplanck1D
+
+
+subroutine burying_procedure(f0, dv, ibeg, df0)
+    ! процедура закапывания
+    implicit none
+    real*8,  intent(inout)  :: f0(:)
+    real*8,  intent(in)     :: dv
+    real*8,  intent (inout), optional :: df0(:)
+    integer, intent(out) :: ibeg
+
+    integer i, ii,  i0
+    real*8, allocatable  :: f(:), df(:)
+
+    i0 = size(f0)
+    allocate(f(i0), df(i0))
+    
+    f(:)=f0(:)
+    df(:)=0d0
+
+    do i=2, i0-1
+        df(i)=0.5d0*(f(i+1)-f(i-1))/dv
+    end do
+    df(1)=0d0
+    df(i0)=(f(i0)-f(i0-1))/dv
+
+!   сдвиг расределения вправо. зачем-то ???
+    ii=0
+    ibeg=0
+    do i=i0-1,1,-1
+        if(df(i).gt.0d0) then
+!          write(*,*) '#1 positive derivs'
+!          write(*,*) '#1 df>0: i,j,k=',i,j,k
+!          write(*,*) '#1 dfj(i),i,j,k=',dfj(i),i,j,k
+!          write(*,*)
+            f0(i)=f0(i+1)
+            if (present(df0)) then
+                df0(i)=df0(i+1)
+            end if
+            ii=i
+        end if
+        if(f0(i).lt.f0(i+1)) then 
+            f0(i)=f0(i+1)
+            if (present(df0)) then
+                df0(i)=df0(i+1)
+            end if            
+            ii=i
+        end if
+    end do
+    deallocate(f,df)
+    ibeg=ii
+end subroutine
