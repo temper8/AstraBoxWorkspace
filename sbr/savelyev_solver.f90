@@ -168,11 +168,12 @@ end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine tridag(a,b,c,r,u,n)
       implicit none
-      integer n,nmax
-      real*8 a(n),b(n),c(n),r(n),u(n)
-      parameter (nmax=1000000)
+      integer, intent(in)    :: n
+      real*8,  intent(in)    :: a(n), b(n), c(n), r(n)
+      real*8,  intent(inout) :: u(n)
+      integer, parameter :: nmax=1000000
       integer j
-      real*8 bet,gam(nmax)
+      real*8 bet, gam(nmax)
 
       if(b(1).eq.0.d0) pause 'tridag: rewrite equations'
       bet=b(1)
