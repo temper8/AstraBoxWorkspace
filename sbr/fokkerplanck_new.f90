@@ -79,63 +79,64 @@ subroutine fokkerplanck_new(time, TAU)
 
     time1 = sys_time()
 
-    do i=1, ntau
-        write(*,*)'fokkerplanck N',i,'of',ntau
-        do k=1,2
-            kindex=k ! common/dddql/ 
-            znak=2.d0*dble(k)-3.d0
-            do j=1, nr
-                jindex=j  ! common/dddql/ 
-                dtau=dtstep*fst(j)
-                nt=1
-                if(dtau.gt.dt0) then
-                    nt=1+dtau/dt0
-                end if
-                dt=dtau/nt
-                r=dble(j)/dble(nr+1)
-                xend=3.d10/fvt(r)
+
+    do j=1, nr
+
+        jindex=j  ! common/dddql/ 
+        dtau=dtstep*fst(j)
+        nt=1
+        if(dtau.gt.dt0) then
+            nt=1+dtau/dt0
+        end if
+        dt=dtau/nt
+        r=dble(j)/dble(nr+1)
+        xend=3.d10/fvt(r)
 !!        xend=vij(i0,j)
-                n=xend/h0-1
-                h=xend/dble(n+1)
-                if(h.gt.h0) then
-                    n=n+1
-                    h=xend/dble(n+1)
-                end if
-
-                !print *, k, j, n, h
-                allocate(out_fj(n+2))
-                allocate(d1(n+1),d2(n+1),d3(n+1))
-
-                d1(:)=0d0
-                d2(:)=0d0
-                d3(:)=0d0
-                !d0=zero             ! common/dddql/ 
-                alfa2=znak*enorm(j) ! common/ef/
-
+        n=xend/h0-1
+        h=xend/dble(n+1)
+        if(h.gt.h0) then
+            n=n+1
+            h=xend/dble(n+1)
+        end if
                 !fp_test = FokkerPlanck1D(znak, enorm(j), v_lim, vij(:,j), fij0(:,j,k))
 
                 !call fp_test%set_diffusion(dij(:,j,k))
                 !call fp_test%solve_time_step(dt, nt)
-  
-                call fokkerplanck1D_iter(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij0(:,j,k), out_fj)
+        !print *, k, j, n, h
+        allocate(out_fj(n+2))
+        allocate(d1(n+1),d2(n+1),d3(n+1))
+        d1(:)=0d0
+        d2(:)=0d0
+        d3(:)=0d0
 
-                !d0=1.d0             ! common/dddql/
-                alfa2=znak*enorm(j) ! common/ef/
-                !call init_diffusion(h, n, vij(:,j), dij(:,j,k), d1, d2, d3)
-                call fokkerplanck1D_iter(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij(:,j,k),out_fj, dfij(:,j,k))
-            
-                deallocate(d1,d2,d3)
-                if (i > 9 .and. k == 2) then 
-                    call write_distribution(fij0(:,j,k), i0, time)
-                    !call write_distribution(out_fj, n, time)
-                end if 
-                deallocate(out_fj)
+
+        do k=1,2
+            kindex=k ! common/dddql/ 
+            znak=2.d0*dble(k)-3.d0
+            alfa2=znak*enorm(j) ! common/ef/
+            do i=1, ntau
+                call fokkerplanck1D_iter(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij0(:,j,k), out_fj)
             end do
-            !stop
         end do
+
+
+        do k=1,2
+            kindex=k ! common/dddql/ 
+            znak=2.d0*dble(k)-3.d0
+            alfa2=znak*enorm(j) ! common/ef/
+            call init_diffusion(h, n, vij(:,j), dij(:,j,k), d1, d2, d3)
+            do i=1, ntau
+                call fokkerplanck1D_iter(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij(:,j,k),out_fj, dfij(:,j,k))
+            end do
+        end do
+        deallocate(d1,d2,d3)
+        call write_distribution(fij0(:,j,k), i0, time)
+        !call write_distribution(out_fj, n, time)
+
+        deallocate(out_fj)
     end do
 
-
+    write(*,*)'fokkerplanck nr= ',nr,' ntau =',ntau
 
     call write_v_array(vij, fij0(:,1:nr,:), time, 'maxwell')
     call write_v_array(vij,  dij(:,1:nr,:), time, 'diffusion')
