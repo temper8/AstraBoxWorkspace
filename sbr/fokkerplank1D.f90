@@ -11,11 +11,10 @@ subroutine fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj
 
     integer :: i0
     real*8, parameter :: zero=0.d0
-    real*8  y(n),x(n+2)
+    real*8  y(n+2),x(n+2)
     real*8,dimension(:),allocatable:: fj, dfj,  givi
     integer i, ii, it, ibeg, klo, khi, ierr, klo1, khi1
     real*8 shift, ybeg, yend, tend, dff
-    real*8 fout1,fout2
     interface 
     subroutine savelyev_solver(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
         implicit none
@@ -26,6 +25,8 @@ subroutine fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj
         real*8, intent(in)  :: d1(n+1),d2(n+1),d3(n+1)
         real*8, intent(inout) :: y(n)
     end subroutine
+
+
     subroutine burying_procedure(v, f0, df0)
         ! процедура закапывания
         implicit none
@@ -43,7 +44,7 @@ subroutine fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj
         x(i)=h*dble(i-1) !+shift
     end do
 
-    do i=1,n
+    do i=1,n+1
         call lock(vj,i0,x(i+1),klo,khi,ierr)
         if(ierr.eq.1) then
             write(*,*)'lock error #1 in finction fokkerplanck'
@@ -55,11 +56,12 @@ subroutine fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj
         call linf(vj,fj0,x(i+1),y(i),klo,khi)
     end do
 
-    ybeg=fj0(1)  !boundary conditions
-    yend=zero
+    ybeg = fj0(1)  !boundary conditions
+    yend = fj0(i0) !zero
+    !print *, ' yend =', yend
     !!!!!!!!!!!!   solve problem   !!!!!!!!!!!!!!!!!!!!!!!!!!
-    call savelyev_solver(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
-
+    !call savelyev_solver(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
+    call teplova_khavin_solver(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
     allocate(fj(n+2))
     fj(1)=ybeg
     fj(n+2)=yend
@@ -86,9 +88,9 @@ subroutine fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj
     deallocate(fj)
 
     if (present(dfj0)) then
-        call burying_procedure(vj, fj0, dfj0)
+       ! call burying_procedure(vj, fj0, dfj0)
     else 
-        call burying_procedure(vj, fj0)
+      !  call burying_procedure(vj, fj0)
     end if
 
 
