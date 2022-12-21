@@ -1,6 +1,7 @@
 !! calculation of distribution functions at time t1=t+dtau !!
 subroutine fokkerplanck_new(time, TAU)
     use FokkerPlanck1D_mod
+    use Utils
     implicit none
 
     type(FokkerPlanck1D) fp_test1
@@ -25,7 +26,7 @@ subroutine fokkerplanck_new(time, TAU)
     integer jindex,kindex
     common/dddql/ d0,jindex,kindex
     parameter(zero=0.d0,dt0=0.1d0,h0=0.1d0,eps=1.d-7)
-
+    real time1, time2
 
    
     interface 
@@ -75,7 +76,9 @@ subroutine fokkerplanck_new(time, TAU)
 
     print *, 'fokkerplanck_new'
     write(*,*)'time=',time,' dt=',dtstep
-!
+
+    time1 = sys_time()
+
     do i=1, ntau
         write(*,*)'fokkerplanck N',i,'of',ntau
         do k=1,2
@@ -109,10 +112,10 @@ subroutine fokkerplanck_new(time, TAU)
                 !d0=zero             ! common/dddql/ 
                 alfa2=znak*enorm(j) ! common/ef/
 
-                fp_test = FokkerPlanck1D(znak, enorm(j), v_lim, vij(:,j), fij0(:,j,k))
+                !fp_test = FokkerPlanck1D(znak, enorm(j), v_lim, vij(:,j), fij0(:,j,k))
 
-                call fp_test%set_diffusion(dij(:,j,k))
-                call fp_test%solve_time_step(dt, nt)
+                !call fp_test%set_diffusion(dij(:,j,k))
+                !call fp_test%solve_time_step(dt, nt)
   
                 call fokkerplanck1D_iter(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij0(:,j,k), out_fj)
 
@@ -132,9 +135,13 @@ subroutine fokkerplanck_new(time, TAU)
         end do
     end do
 
+
+
     call write_v_array(vij, fij0(:,1:nr,:), time, 'maxwell')
     call write_v_array(vij,  dij(:,1:nr,:), time, 'diffusion')
     !call write_matrix(dij(1:i0,1:nr,1), time, 'diffusion')
+    time2 = sys_time() - time1
+    print *, 'fokkerplanck_new eval time: ', time2    
  end
 
 
