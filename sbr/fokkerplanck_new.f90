@@ -1,6 +1,10 @@
 !! calculation of distribution functions at time t1=t+dtau !!
 subroutine fokkerplanck_new(time, TAU)
+    use FokkerPlanck1D_mod
     implicit none
+
+    type(FokkerPlanck1D) fp_test1
+
     real*8, intent(in) :: time, TAU
     real*8 t, dtstep, dtau
     integer nr
@@ -21,8 +25,11 @@ subroutine fokkerplanck_new(time, TAU)
     integer jindex,kindex
     common/dddql/ d0,jindex,kindex
     parameter(zero=0.d0,dt0=0.1d0,h0=0.1d0,eps=1.d-7)
+
+
+   
     interface 
-    subroutine fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj, dfj0)
+    subroutine fokkerplanck1D_iter(alfa2, h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj, dfj0)
         implicit none
         real*8, intent(in)  :: alfa2           
         integer, intent(in) :: n, nt
@@ -31,7 +38,7 @@ subroutine fokkerplanck_new(time, TAU)
         real*8, intent(inout) :: fj0(:)
         real*8, intent(inout) :: out_fj(:)        
         real*8, intent (inout), optional :: dfj0(:)
-    end subroutine fokkerplanck1D      
+    end subroutine fokkerplanck1D_iter      
     
     subroutine init_diffusion(h, n, vj, dj, d1, d2, d3)
         implicit none
@@ -101,6 +108,12 @@ subroutine fokkerplanck_new(time, TAU)
                 d3(:)=0d0
                 !d0=zero             ! common/dddql/ 
                 alfa2=znak*enorm(j) ! common/ef/
+
+                fp_test = FokkerPlanck1D(znak, enorm(j), v_lim, vij(:,j), fij0(:,j,k))
+
+                call fp_test%set_diffusion(dij(:,j,k))
+                call fp_test%solve_time_step(dt, nt)
+  
                 call fokkerplanck1D_iter(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij0(:,j,k), out_fj)
 
                 !d0=1.d0             ! common/dddql/
