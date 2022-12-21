@@ -6,36 +6,65 @@ subroutine teplova_khavin_solver(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
     real*8, intent(in)  :: h, dt
     real*8, intent(in)  :: ybeg, yend
     real*8, intent(in)  :: d1(n+1),d2(n+1),d3(n+1)
-    real*8, intent(inout) :: y(n)
-    integer i, it
+    real*8, intent(inout) :: y(n+2)
+    integer i, it, iz
     real*8 xx(n+1), a(n),b(n),c(n),f(n)
     real*8 y1(n)
-
+    interface
+    subroutine TK_abcoef(alfa2, A,B,C,f,Y,dt,n,ybeg,yend,xx,h,df)
+        implicit none
+        real*8, intent(in)    :: alfa2
+        real*8, intent(inout) :: a(n),b(n),c(n),f(n),y(n+2)
+        integer, intent(in)   :: n
+        real*8, intent(in)    :: dt, ybeg, yend, h
+        real*8, intent(in)    :: xx(n+1)
+        real*8, intent(in)    :: df(n+1)
+    end subroutine
+    subroutine tridag(a,b,c,r,u,n)
+        implicit none
+        integer, intent(in)    :: n
+        real*8,  intent(in)    :: a(n), b(n), c(n), r(n)
+        real*8,  intent(inout) :: u(n)
+    end subroutine
+    end interface
+    !print *, 'TK abc n = ', n
     do i=1,n+1
-          xx(i)=h/2.d0+h*dble(i-1) !+shift
+        xx(i)=h/2.d0+h*dble(i-1) !+shift
     end do
     
     do i=1,n
         y1(i)=y(i+1)
     end do
     
-    do it=1,nt
+    do it=1, nt
            !call ABCcoef(a,b,c,f,y1,dt,n,ybeg,yend,x,xx,h,D1)
         call TK_abcoef(alfa2, a,b,c,f,y1, dt, n, ybeg, yend, xx, h, d1)
         call tridag(a,b,c,f,y1,n)
                   
-          !call tridag(a,b,c,f,y,n)   
+        !do i=1,n
+        !    if (y1(i).lt.0.d0) then
+        !        if (y1(i) > epsilon(y1(i))) then
+        !            y1(i)=0.d0
+        !        else
+        !            write(*,*) n, i, 'y(i)=',y1(i),' lt negative epsilon=',epsilon(y1(i))
+        !            !pause
+        !            !stop
+        !        endif
+        !    endif
+        !enddo
+        iz = n
         do i=1,n
-            if (y1(i).lt.0.d0) then
-                if (y1(i) > epsilon(y1(i))) then
-                    y1(i)=0.d0
-                else
-                    write(*,*) 'y(i)=',y1(i),' lt negative epsilon=',epsilon(y1(i))
-                    pause
-                    stop
-                endif
+            if (y1(i).lt.epsilon(yend)) then
+                iz = i
+                !print *, epsilon(yend)
+                !print *, iz, n, yend, y1(i)
+                exit
             endif
         enddo
+        do i= iz, n
+            y1(i)=yend
+        enddo
+
     end do
 
     do i=1,n
@@ -45,24 +74,21 @@ subroutine teplova_khavin_solver(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
 end subroutine
 
 ! --
-subroutine TK_abcoef(alfa2, A,B,C,f,Y,k,n,ybeg,yend,xx,h,df)
+subroutine TK_abcoef(alfa2, A,B,C,f,Y,dt,n,ybeg,yend,xx,h,df)
     implicit none
     real*8, intent(in)    :: alfa2
-    real*8, intent(inout) :: a(n),b(n),c(n),f(n),y(n)
+    real*8, intent(inout) :: a(n),b(n),c(n),f(n),y(n+2)
     integer, intent(in)   :: n
-    real*8, intent(in)    :: ybeg, yend, h
+    real*8, intent(in)    :: dt, ybeg, yend, h
     real*8, intent(in)    :: xx(n+1)
     real*8, intent(in)    :: df(n+1)
 
     integer i
-    real*8 k
-    real*8 C1, B1, z, w, r, dlt
-    real*8 tmp1,tmp2,tmp3
-    external C1,w,B1,dlt
-    r=k/h
+    real*8 z, r, tmp1,tmp2,tmp3
+
+    r=dt/h
     do i=1,n
-    
-        tmp1=dlt(xx(i),h,df(i)) * B1(xx(i),alfa2)
+        tmp1=dlt(xx(i),h, df(i), alfa2) * B1(xx(i),alfa2)
         A(i)=-r*(C1(xx(i),df(i))/h-tmp1)
 
         tmp2=C1(xx(i+1),df(i+1))/h-dlt(xx(i+1),h,df(i+1), alfa2) * B1(xx(i+1),alfa2)
@@ -76,36 +102,32 @@ subroutine TK_abcoef(alfa2, A,B,C,f,Y,k,n,ybeg,yend,xx,h,df)
     enddo
     f(1)=f(1)-A(1)*ybeg
     f(n)=f(n)-C(n)*yend !yend in either way=0 all the time
+
+    contains
+
+    function B1(xx, alfa2) result(res)
+        implicit none
+        real*8 xx,alfa2,beta, res
+        res = -alfa2+1.d0/(xx*xx)
+    end function
+
+      
+    function C1(xx,dif) result(res)
+        implicit none
+        real*8 xx, dif, res
+        res = dif+1.d0/(xx*xx*xx)
+    end function
+         
+    function dlt(xx,h,dif, alfa2) result(res)
+        implicit none
+        real*8 res
+        real*8 xx, h, dif, alfa2
+        real*8 w
+        w = h*B1(xx, alfa2)/C1(xx,dif)
+        res = 1.d0/w-1.d0/(dexp(w)-1.d0)
+    end function
+
 end
 !cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
-real*8 function B1(xx, alfa2)
-    implicit none
-    real*8 xx,alfa2,beta
-    B1=-alfa2+1.d0/(xx*xx)
-end function
-
-      
-real*8 function C1(xx,dif)
-    implicit none
-    real*8 xx,dif
-    C1=dif+1.d0/(xx*xx*xx)
-end function
-      
-      
-!real*8 function w(xx,h,dif)
-!    implicit none
-!    real*8 xx,h,B1,C1,dif
-!    w=h*B1(xx)/C1(xx,dif)
-!end function
-      
-      
-function dlt(xx,h,dif, alfa2) result(res)
-    implicit none
-    real*8 res
-    real*8 xx, h, dif, alfa2
-    real*8 B1, C1, w
-    w = h*B1(xx, alfa2)/C1(xx,dif)
-    res = 1.d0/w-1.d0/(dexp(w)-1.d0)
-end function
 
