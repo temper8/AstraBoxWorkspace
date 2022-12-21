@@ -74,7 +74,7 @@ subroutine fokkerplanck_new(time, TAU)
         do k=1,2
             kindex=k ! common/dddql/ 
             znak=2.d0*dble(k)-3.d0
-            do j=1,nr
+            do j=1, nr
                 jindex=j  ! common/dddql/ 
                 dtau=dtstep*fst(j)
                 nt=1
@@ -101,12 +101,12 @@ subroutine fokkerplanck_new(time, TAU)
                 d3(:)=0d0
                 !d0=zero             ! common/dddql/ 
                 alfa2=znak*enorm(j) ! common/ef/
-                call fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij0(:,j,k), out_fj)
+                call fokkerplanck1D_iter(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij0(:,j,k), out_fj)
 
                 !d0=1.d0             ! common/dddql/
                 alfa2=znak*enorm(j) ! common/ef/
-                call init_diffusion(h, n, vij(:,j), dij(:,j,k), d1, d2, d3)
-                call fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij(:,j,k),out_fj, dfij(:,j,k))
+                !call init_diffusion(h, n, vij(:,j), dij(:,j,k), d1, d2, d3)
+                call fokkerplanck1D_iter(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij(:,j,k),out_fj, dfij(:,j,k))
             
                 deallocate(d1,d2,d3)
                 if (i > 9 .and. k == 2) then 

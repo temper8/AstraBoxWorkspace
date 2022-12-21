@@ -1,5 +1,5 @@
 
-subroutine fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj, dfj0)
+subroutine fokkerplanck1D_iter(alfa2, h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj, dfj0)
     implicit none
     real*8, intent(in)  :: alfa2     
     integer, intent(in) :: n, nt
