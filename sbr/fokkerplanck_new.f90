@@ -136,7 +136,8 @@ subroutine fokkerplanck_new(time, TAU)
         deallocate(out_fj)
     end do
 
-    write(*,*)'fokkerplanck nr= ',nr,' ntau =',ntau
+    write(*,*)'fokkerplanck nr= ',nr,' ntau =',ntau, 'nt =', nt
+
 
     call write_v_array(vij, fij0(:,1:nr,:), time, 'maxwell')
     call write_v_array(vij,  dij(:,1:nr,:), time, 'diffusion')
