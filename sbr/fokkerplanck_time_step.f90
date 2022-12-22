@@ -27,7 +27,7 @@ subroutine fokkerplanck_time_step(time, TAU)
     common/t01/dijk(101,100,2), vrjnew(101,100,2), iptnew
 
     interface 
-    subroutine fokkerplanck1D(alfa2, h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj, dfj0)
+    subroutine fokkerplanck1D_iter(alfa2, h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj, dfj0)
         implicit none
         real*8, intent(in)  :: alfa2           
         integer, intent(in) :: n, nt
@@ -36,7 +36,7 @@ subroutine fokkerplanck_time_step(time, TAU)
         real*8, intent(inout) :: fj0(:)
         real*8, intent(inout) :: out_fj(:)        
         real*8, intent (inout), optional :: dfj0(:)
-    end subroutine fokkerplanck1D      
+    end subroutine fokkerplanck1D_iter      
     
     subroutine init_diffusion(h, n, vj, dj, d1, d2, d3)
         implicit none

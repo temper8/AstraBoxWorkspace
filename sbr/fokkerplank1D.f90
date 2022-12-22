@@ -94,7 +94,7 @@ subroutine fokkerplanck1D_iter(alfa2, h, n, dt, nt, xend, d1, d2, d3, vj, fj0, o
     end if
 
 
-end subroutine fokkerplanck1D
+end subroutine fokkerplanck1D_iter
 
 subroutine burying_procedure(v, f0, df0)
     ! процедура закапывания
