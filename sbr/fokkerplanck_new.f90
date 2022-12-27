@@ -4,7 +4,7 @@ subroutine fokkerplanck_new(time, TAU)
     use Utils
     implicit none
 
-    type(FokkerPlanck1D) fp_test1
+    type(FokkerPlanck1D) fp_test
 
     real*8, intent(in) :: time, TAU
     real*8 t, dtstep, dtau
@@ -98,7 +98,7 @@ subroutine fokkerplanck_new(time, TAU)
             n=n+1
             h=xend/dble(n+1)
         end if
-                !fp_test = FokkerPlanck1D(znak, enorm(j), v_lim, vij(:,j), fij0(:,j,k))
+ 
 
                 !call fp_test%set_diffusion(dij(:,j,k))
                 !call fp_test%solve_time_step(dt, nt)
@@ -111,8 +111,13 @@ subroutine fokkerplanck_new(time, TAU)
 
 
         do k=1,2
+            
             kindex=k ! common/dddql/ 
             znak=2.d0*dble(k)-3.d0
+
+            fp_test = FokkerPlanck1D(znak, enorm(j), xend, vij(:,j), fij0(:,j,k))
+            call fp_test%print
+            pause
             alfa2=znak*enorm(j) ! common/ef/
             do i=1, ntau
                 call fokkerplanck1D_iter(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij0(:,j,k), out_fj)
