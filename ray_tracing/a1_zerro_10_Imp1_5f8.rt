@@ -1,8 +1,8 @@
 {
-  "name": "a1_super2_8168",
+  "name": "a1_zerro_10_Imp1_5f8",
   "setting": {
     "Comments": {
-      "value": "import from WaveTop\n\n\n\n",
+      "value": "import from WaveTop\n\n\n\n\n",
       "title": "Comments",
       "type": "text"
     },
@@ -311,7 +311,7 @@
     },
     "spectrum": {
       "spectrum_type": "spectrum_1D",
-      "source": "D:/Dev/WaveTOP/data/spectrum/a1_super2_8168/spcpy.dat"
+      "source": "D:/Dev/WaveTOP/data/spectrum/a1_zerro_10_Imp1_5f8f/spcpz.dat"
     }
   }
 }
