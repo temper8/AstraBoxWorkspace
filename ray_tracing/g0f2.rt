@@ -1,15 +1,15 @@
 {
-  "name": "g_0_f5",
+  "name": "g0f2",
   "setting": {
     "Comments": {
-      "value": "g 0\n\n\n\n\n\n\n\n",
+      "value": "Comments about ....\n\n\n\n",
       "title": "Comments",
       "type": "text"
     },
     "Physical parameters": {
       "Freq": {
         "title": "Frequency",
-        "value": 5.0,
+        "value": 2.0,
         "unit": "GHz",
         "type": "float",
         "description": "RF frequency, GHz"
@@ -300,13 +300,6 @@
         "value": 51,
         "type": "int",
         "description": "iN_phi grid number"
-      },
-      "total_power": {
-        "title": "total power",
-        "value": 0.5,
-        "type": "float",
-        "unit": "%",
-        "description": "total power in positive spectrum"
       }
     },
     "spectrum": {

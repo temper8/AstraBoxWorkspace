@@ -1,8 +1,8 @@
 {
-  "name": "Gauss_1",
+  "name": "a1_zerro_10_2D",
   "setting": {
     "Comments": {
-      "value": "Comments about ....\n\n\n",
+      "value": "Comments about ....\n",
       "title": "Comments",
       "type": "text"
     },
@@ -300,24 +300,11 @@
         "value": 51,
         "type": "int",
         "description": "iN_phi grid number"
-      },
-      "total_power": {
-        "title": "total power",
-        "value": 1,
-        "type": "float",
-        "unit": "%",
-        "description": "total power in positive spectrum"
       }
     },
     "spectrum": {
-      "spectrum_type": "gaussian",
-      "options": {
-        "x_min": -40.0,
-        "x_max": 40.0,
-        "step": 0.25,
-        "bias": 10.0,
-        "sigma": 2.5
-      }
+      "spectrum_type": "spectrum_2D",
+      "source": "D:/Dev/WaveTOP/data/spectrum/a1_zerro_10_Imp1_5f8f/spcp2.dat"
     }
   }
 }
