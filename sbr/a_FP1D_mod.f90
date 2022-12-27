@@ -1,8 +1,17 @@
 module FokkerPlanck1D_mod ! the module name defines the namespace
-    type FokkerPlanck1D ! classname is the class prototype name
-        integer        :: direction
-        real*8         :: enorm
-
+    use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64
+    type FokkerPlanck1D 
+        !- solver of FP eq
+        integer          :: direction
+        !- direction
+        real(dp)         :: enorm
+        !- электрическое поле
+        real(dp)         :: v_lim
+        !- верхняя граница скорости электронов
+        real(dp), allocatable         :: v(:)
+        !- сетка скоростей
+        real(dp), allocatable         :: f(:)
+        !- распределение
         !   complex         :: inst_field1
         contains
         procedure :: set   => set_e
@@ -19,18 +28,20 @@ module FokkerPlanck1D_mod ! the module name defines the namespace
       !this%inst_field1 = cmplx(0.,0.) 
     end subroutine classname_ctor0
     ! implement instance constructor with one argument
-    function constructor( dir, e) result(this)
+    function constructor( dir, e, v_lim, v, f) result(this)
       type(FokkerPlanck1D) :: this
-      real,value :: dir, e
+      real, value :: dir, e, v_lim, v(:), f(:)
       !this%inst_field1 = cmplx(0.,0.) 
       this%direction = dir
       this%enorm     = e
+      this%v_lim = v_lim
+      this%v = v
+      this%f = f
       print *, 'exe constructor FokkerPlanck1D'
     end function constructor
     subroutine set_e(this, value)
         class(FokkerPlanck1D), intent(in out) :: this
         integer, intent(in)          :: value
-
         this%enorm = value
     end subroutine set_e
 
@@ -40,10 +51,5 @@ module FokkerPlanck1D_mod ! the module name defines the namespace
         print *, 'direction = ', this%direction, 'e = ', this%enorm
     end subroutine e_print
 
-    ! implement instance constructor with two arguments
-    subroutine classname_ctor2(this,Value1,Value2)
-      type(FokkerPlanck1D) :: this
-      real,value :: Value1,Value2
-      !this%inst_field1 = cmplx(Value1,Value2)
-    end subroutine classname_ctor2
+
  end module FokkerPlanck1D_mod
