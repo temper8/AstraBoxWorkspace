@@ -17,8 +17,6 @@ subroutine fokkerplanck_new(time, TAU)
     common/lh/vij(i0,100),fij0(i0,100,2),fij(i0,100,2),dfij(i0,100,2), dij(i0,100,2),enorm(100),fst(100)
     integer n,i,j,it,nt,k
     real*8 xend,h,dt
-    real*8, allocatable :: d1(:),d2(:),d3(:)
-    real*8, allocatable :: out_fj(:)
     real*8 znak,alfa2,zero,dt0,h0,eps,r,fvt
     !common/ef/ alfa2
     
@@ -79,9 +77,7 @@ subroutine fokkerplanck_new(time, TAU)
 
     time1 = sys_time()
 
-
     do j=1, nr
-
         jindex=j  ! common/dddql/ 
         dtau=dtstep*fst(j)
         nt=1
@@ -91,21 +87,8 @@ subroutine fokkerplanck_new(time, TAU)
         dt=dtau/nt
         r=dble(j)/dble(nr+1)
         xend=3.d10/fvt(r)
-!!        xend=vij(i0,j)
-        n=xend/h0-1
-        h=xend/dble(n+1)
-        if(h.gt.h0) then
-            n=n+1
-            h=xend/dble(n+1)
-        end if
-        allocate(out_fj(n+2))
-
         do k=1,2
-            
-            kindex=k ! common/dddql/ 
             znak=2.d0*dble(k)-3.d0
-            alfa2=znak*enorm(j) ! common/ef/
-
             fp_test = FokkerPlanck1D(znak*enorm(j), xend, vij(:,j), fij0(:,j,k))
             call fp_test%init_zero_diffusion
             do i=1, ntau
@@ -113,14 +96,7 @@ subroutine fokkerplanck_new(time, TAU)
                 !call fokkerplanck1D_iter(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij0(:,j,k), out_fj)
             end do
             fij0(:,j,k) = fp_test%f
-        end do
 
-        allocate(d1(n+1),d2(n+1),d3(n+1))
-        do k=1,2
-            kindex=k ! common/dddql/ 
-            znak=2.d0*dble(k)-3.d0
-            !alfa2=znak*enorm(j) ! common/ef/
-            !call init_diffusion(h, n, vij(:,j), dij(:,j,k), d1, d2, d3)
             fp_test = FokkerPlanck1D(znak*enorm(j), xend, vij(:,j), fij(:,j,k))
             call fp_test%init_diffusion(dij(:,j,k))
             do i=1, ntau
@@ -129,11 +105,9 @@ subroutine fokkerplanck_new(time, TAU)
             end do
             fij(:,j,k) = fp_test%f
         end do
-        deallocate(d1,d2,d3)
+   
         call write_distribution(fij0(:,j,k), i0, time)
         !call write_distribution(out_fj, n, time)
-
-        deallocate(out_fj)
     end do
 
     write(*,*)'fokkerplanck nr= ',nr,' ntau =',ntau, 'nt =', nt
