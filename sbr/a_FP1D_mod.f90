@@ -27,7 +27,9 @@ module FokkerPlanck1D_mod ! the module name defines the namespace
         procedure :: print => FokkerPlanck1D_print
         procedure :: solve_time_step => FokkerPlanck1D_solve_time_step
         procedure :: init_zero_diffusion => FokkerPlanck1D_init_zero_diffusion
+        procedure :: init_diffusion => FokkerPlanck1D_init_diffusion
     end type FokkerPlanck1D   
+
     interface FokkerPlanck1D
         module procedure :: FokkerPlanck1D_constructor
     end interface FokkerPlanck1D
@@ -75,6 +77,62 @@ module FokkerPlanck1D_mod ! the module name defines the namespace
       this%d2(:)=0d0
       this%d3(:)=0d0
     end subroutine FokkerPlanck1D_init_zero_diffusion
+
+
+    subroutine FokkerPlanck1D_init_diffusion(this, dif)
+        !- инициализация диффузии для схемы савельева
+        implicit none
+        class(FokkerPlanck1D), intent(inout) :: this
+        integer :: n
+        real(dp), dimension(:), intent(in) ::  dif
+        real(dp), dimension(:), allocatable :: xx
+        real(dp) h
+        integer :: i0
+        integer i, klo, khi, ierr, klo1, khi1
+        integer klo2, klo3, khi2, khi3, ierr1, ierr2, ierr3
+        n = this%n
+        h = this%h
+        allocate(this%d1(n+1),this%d2(n+1),this%d3(n+1))    
+        i0 = this%i0
+    
+        allocate(xx(n+1))
+        do i=1,n+1
+            xx(i)=h/2.d0+h*dble(i-1) !+shift
+        end do
+    
+        do i=1,n+1
+            call lock(this%v, i0, xx(i), klo1, khi1, ierr1)
+            call lock(this%v, i0, xx(i)-h/2d0, klo2, khi2, ierr2)
+            call lock(this%v, i0, xx(i)+h/2d0, klo3, khi3, ierr3)
+            if(ierr1.eq.1) then
+                write(*,*)'lock error in finction d2(x)'
+                write(*,*)'j=', 123,' v=', xx(i)
+                write(*,*)'klo1=', klo1, 'khi1=', khi1, 'i=', i
+                write(*,*)'vj(1)=', this%v(1),' vj(i0)=', this%v(i0)
+                pause
+                stop
+            end if
+            if(ierr2.eq.1) then
+                write(*,*)'lock error in finction d2(x)'
+                write(*,*)'j=', 123, ' v=', xx(i)
+                write(*,*)'klo2=', klo2, 'khi2=', khi2, 'i=',i
+                write(*,*)'vj(1)=', this%v(1), ' vj(i0)=', this%v(i0)
+                pause
+                stop
+            end if
+            if(ierr3.eq.1) then
+                write(*,*)'lock error in finction d2(x)'
+                write(*,*)'j=', 123, ' v=', xx(i)
+                write(*,*)'klo3=', klo3, 'khi3=', khi3, 'i=',i
+                write(*,*)'vj(1)=', this%v(1), ' vj(i0)=', this%v(i0)
+                pause
+                stop
+            end if
+            this%d1(i) = dif(klo1)
+            this%d2(i) = dif(klo2)
+            this%d3(i) = dif(klo3)	
+        end do
+      end subroutine FokkerPlanck1D_init_diffusion
 
     subroutine FokkerPlanck1D_solve_time_step(this, dt, nt)
         implicit none
@@ -135,8 +193,8 @@ module FokkerPlanck1D_mod ! the module name defines the namespace
         yend = this%f(this%i0) !zero
         !print *, ' yend =', yend 
         !!!!!!!!!!!!   solve problem   !!!!!!!!!!!!!!!!!!!!!!!!!!
-        !call savelyev_solver(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
-        call teplova_khavin_solver(this%alfa2, nt, this%h, dt, this%n, ybeg, yend, this%d1,this%d2,this%d3, y)
+        call savelyev_solver(this%alfa2, nt, this%h, dt, this%n, ybeg, yend, this%d1, this%d2, this%d3, y)
+        !call teplova_khavin_solver(this%alfa2, nt, this%h, dt, this%n, ybeg, yend, this%d1,this%d2,this%d3, y)
         allocate(fj(this%n+2))
         fj(1)=ybeg
         fj(this%n+2)=yend

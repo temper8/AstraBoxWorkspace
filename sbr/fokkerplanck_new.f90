@@ -112,17 +112,22 @@ subroutine fokkerplanck_new(time, TAU)
                 call fp_test%solve_time_step(dt, nt)
                 !call fokkerplanck1D_iter(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij0(:,j,k), out_fj)
             end do
+            fij0(:,j,k) = fp_test%f
         end do
 
         allocate(d1(n+1),d2(n+1),d3(n+1))
         do k=1,2
             kindex=k ! common/dddql/ 
             znak=2.d0*dble(k)-3.d0
-            alfa2=znak*enorm(j) ! common/ef/
-            call init_diffusion(h, n, vij(:,j), dij(:,j,k), d1, d2, d3)
+            !alfa2=znak*enorm(j) ! common/ef/
+            !call init_diffusion(h, n, vij(:,j), dij(:,j,k), d1, d2, d3)
+            fp_test = FokkerPlanck1D(znak*enorm(j), xend, vij(:,j), fij(:,j,k))
+            call fp_test%init_diffusion(dij(:,j,k))
             do i=1, ntau
-                call fokkerplanck1D_iter(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij(:,j,k),out_fj, dfij(:,j,k))
+                call fp_test%solve_time_step(dt, nt)
+                !call fokkerplanck1D_iter(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij(:,j,k),out_fj, dfij(:,j,k))
             end do
+            fij(:,j,k) = fp_test%f
         end do
         deallocate(d1,d2,d3)
         call write_distribution(fij0(:,j,k), i0, time)
