@@ -1,54 +1,54 @@
 module FokkerPlanck1D_mod ! the module name defines the namespace
     use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64
+    implicit none
     type FokkerPlanck1D 
         !- solver of FP eq
-        integer          :: direction
+        !integer          :: direction = 0
         !- direction
-        real(dp)         :: enorm
+        real(dp)         :: enorm = 0
         !- электрическое поле
-        real(dp)         :: v_lim
+        real(dp)         :: v_lim = 0
         !- верхняя граница скорости электронов
         real(dp), allocatable         :: v(:)
         !- сетка скоростей
         real(dp), allocatable         :: f(:)
         !- распределение
-        integer         :: i0
+        integer         :: i0 = 0 
         !- size of distribution grid
-        real(dp)        :: alfa2  
+        real(dp)        :: alfa2  = 0 
         !- поле со знаком
-        integer         :: n
+        integer         :: n = 0 
         !- size of local grid        
-        real(dp)        :: h  
+        real(dp)        :: h  = 0 
         !- step of local grid 
         real(dp), allocatable ::  d1(:), d2(:), d3(:)
         !- диффузия
-        contains
+    contains
         procedure :: print => FokkerPlanck1D_print
         procedure :: solve_time_step => FokkerPlanck1D_solve_time_step
         procedure :: init_zero_diffusion => FokkerPlanck1D_init_zero_diffusion
-
     end type FokkerPlanck1D   
     interface FokkerPlanck1D
-        procedure :: FokkerPlanck1D_constructor
+        module procedure :: FokkerPlanck1D_constructor
     end interface FokkerPlanck1D
 
     contains
-    function FokkerPlanck1D_constructor(dir, e, v_lim, v, f) result(this)
+
+    function FokkerPlanck1D_constructor(e, v_lim, v, f) result(this)
         !- конструктор для FokkerPlanck1D
+        implicit none
         type(FokkerPlanck1D) :: this
-        integer, value :: dir
         real(dp), value :: e, v_lim, v(:), f(:)
         integer  :: n
         real(dp) :: h
         real(dp), parameter :: h0 = 0.1d0
         !this%inst_field1 = cmplx(0.,0.) 
-        this%direction = dir
-        this%enorm     = e
+        this%enorm     = abs(e)
         this%v_lim = v_lim
         this%v = v
         this%f = f
         this%i0 = size(v)
-        this%alfa2=this%direction*this%enorm
+        this%alfa2 = e
         n = v_lim/h0-1
         h = v_lim/dble(n+1)
         if (h.gt.h0) then
@@ -57,13 +57,12 @@ module FokkerPlanck1D_mod ! the module name defines the namespace
         end if
         this%n = n
         this%h = h
-        print *, 'exe constructor FokkerPlanck1D'
     end function FokkerPlanck1D_constructor
 
     subroutine FokkerPlanck1D_print(this)
         class(FokkerPlanck1D), intent(in) :: this
 
-        print *, 'direction = ', this%direction, 'e = ', this%enorm, 'i0 =', this%i0
+        print *, 'e = ', this%enorm, 'i0 =', this%i0
     end subroutine FokkerPlanck1D_print
 
     subroutine FokkerPlanck1D_init_zero_diffusion(this)
@@ -82,7 +81,7 @@ module FokkerPlanck1D_mod ! the module name defines the namespace
         class(FokkerPlanck1D), intent(inout) :: this
         
         integer, intent(in) :: nt
-        real*8, intent(in)  :: dt
+        real(dp), intent(in)  :: dt
 
 
         !real*8, intent (inout), optional :: dfj0(:)

@@ -98,33 +98,23 @@ subroutine fokkerplanck_new(time, TAU)
             n=n+1
             h=xend/dble(n+1)
         end if
- 
-
-                !call fp_test%set_diffusion(dij(:,j,k))
-                !call fp_test%solve_time_step(dt, nt)
-        !print *, k, j, n, h
         allocate(out_fj(n+2))
-        allocate(d1(n+1),d2(n+1),d3(n+1))
-        d1(:)=0d0
-        d2(:)=0d0
-        d3(:)=0d0
-
 
         do k=1,2
             
             kindex=k ! common/dddql/ 
             znak=2.d0*dble(k)-3.d0
-
-            fp_test = FokkerPlanck1D(znak, enorm(j), xend, vij(:,j), fij0(:,j,k))
-            call fp_test%print
-            pause
             alfa2=znak*enorm(j) ! common/ef/
+
+            fp_test = FokkerPlanck1D(znak*enorm(j), xend, vij(:,j), fij0(:,j,k))
+            call fp_test%init_zero_diffusion
             do i=1, ntau
-                call fokkerplanck1D_iter(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij0(:,j,k), out_fj)
+                call fp_test%solve_time_step(dt, nt)
+                !call fokkerplanck1D_iter(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij0(:,j,k), out_fj)
             end do
         end do
 
-
+        allocate(d1(n+1),d2(n+1),d3(n+1))
         do k=1,2
             kindex=k ! common/dddql/ 
             znak=2.d0*dble(k)-3.d0
