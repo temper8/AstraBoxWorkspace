@@ -14,6 +14,7 @@
 ! RTOR    major radius
 ! ROC     effective minor radius
 ! UPL(*)  toroidal loop voltage
+! NRD     501 - Maximum size of the radial grid
 ! NA1     Edge grid point number: ROC=RHO(NA1)
 ! GP2     2*Pi
           call drivencurrent95(outj, sigmaj, UPL, NRD, NA1, TIME, TAU, 
