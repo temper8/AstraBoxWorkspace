@@ -8,15 +8,18 @@
 ! ******************************************************************
       implicit none
  ! variables imported from ASTRA
-      integer NRD, NA1
+      integer NRD
+      ! NRD     501 - Maximum size of the radial grid
+      integer NA1
+      ! NA1     Edge grid point number: ROC=RHO(NA1)      
       double precision TIME, TAU, RTOR, ROC, GP2
       double precision UPL(NRD)
 !
       real*8 outj(NRD),sigmaj(NRD),afld(NRD),dtau
       integer i,inpt,ispectr
       real*8,dimension(:),allocatable:: outjp,outjm,ohjp,ohjm
-      real*8 dt,zero,eps,cup,cup0,cum,cum0,cp,cm,cp0,cm0,aiint
-      parameter(zero=0.d0,eps=1.d-2)
+      real*8 dt, cup,cup0,cum,cum0,cp,cm,cp0,cm0,aiint
+      real*8, parameter :: zero=0.d0, eps=1.d-2 
 !
       inpt=NA1
       allocate(outjp(inpt),outjm(inpt),ohjp(inpt),ohjm(inpt))
