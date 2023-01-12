@@ -111,7 +111,7 @@ module rt_parameters
       print*, "zi2 = ",  zi2     
       print*, "dni2 = ", dni2     
 
-      print*, "-----------------"
+      print*, "---------- grill parameters and input LH spectrum "
       print*, "zplus = ",  zplus     
       print*, "zminus = ", zminus     
       print*, "ntet = ",  ntet     
