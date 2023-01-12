@@ -199,7 +199,7 @@ cccc   "poloidal magnetic field":
       common /bcef/ ynz,ynpopq
       common /a0ef2/ btor,ww
       common /a0ef3/ xmi,c0,c1,cnye,cnyi,xsz,vt0
-      !common /a0gh/ pabs
+      common /a0gh/ pabs
       common /a0ghp/ vlf,vrt,dflf,dfrt
       common/plosh/ zv1(100,2),zv2(100,2),sk(100)
       common /a0i2/ vk(100),pme !,pchm
@@ -817,7 +817,7 @@ c------------------------------------
       iterat=0
       nvmin=1 !minimum counted events at a given radius rho
 80    continue
-      call manager(iterat,iw0) !,nnz ,ntet)
+      call manager(iterat,iw0,nnz,ntet)
 c-----------------------------------------------
 c  find achieved radial points jbeg-jend
 c----------------------------------------------
@@ -1063,7 +1063,7 @@ c------------------------------------------
        zv1(j,k)=vrj(ipt1)
        zv2(j,k)=vrj(ni1+ni2+ipt1)
       end do
-        call view(tcur,1) ! ,nnz !,ntet)  !writing trajectories into a file
+        call view(tcur,1,nnz,ntet)  !writing trajectories into a file
 !!!!!!!!!!!!!!!!!!!!!!!!!!
       if(ismthout.ne.0) then
        do i=1,nrr
@@ -1091,8 +1091,8 @@ c------------------------------------------
       deallocate(vvj,vdfj)
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine manager(iterat,iw0) !,nnz ,ntet)
-      use rt_parameters            
+      subroutine manager(iterat,iw0,nnz ,ntet)
+      use rt_parameters, only : nr, ipri, iw, nmaxm            
       implicit real*8 (a-h,o-z)
       parameter(length=5000000, mpnt=10000)
       dimension dland(length),dcoll(length),perpn(length),dalf(length)
@@ -1116,7 +1116,7 @@ c------------------------------------------
       common /abefo/ yn3
       common /a0befr/ pi,pi2
       common /acg/ pow
-      !common /a0gh/ pabs
+      common /a0gh/ pabs
       common /aef2/ icall1,icall2
       common /ag/ inak,lenstor,lfree
       common/refl/nrefj(mpnt)
@@ -1921,7 +1921,7 @@ c--------------------------------------
 c find solution at x=x+hdid
 c---------------------------------------
        ynz0=ynz
-       call difeq(y,dydx,nvar,x,h,yscal,hdid,hnext,extd2)
+       call difeq(y,dydx,nvar,x,h,eps,yscal,hdid,hnext,extd2)
 20     continue
        if(ind.ne.0) then !exit
         xsav=xsav+hsav
@@ -2827,12 +2827,12 @@ cc      pause
 
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine difeq(y,dydx,nv,x,htry,yscal,hdid,hnext,derivs)
-      use rt_parameters
+      subroutine difeq(y,dydx,nv,x,htry,eps,yscal,hdid,hnext,derivs)
+      use rt_parameters, only : hmin1
       implicit none
       external derivs
       integer nv,nmax,kmaxx,imax
-      double precision hdid,hnext,htry,x,dydx(nv),y(nv),yscal(nv)
+      double precision eps,hdid,hnext,htry,x,dydx(nv),y(nv),yscal(nv)
      *,safe1,safe2,redmax,redmin,tiny,scalmx
      &,dysav(nv) !sav#
       parameter(nmax=50,kmaxx=8,imax=kmaxx+1,safe1=.25d0,safe2=.7d0
@@ -4321,8 +4321,8 @@ cu    uses derivs
       end do
       end
  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine view(tview,iview) !,nnz,ntet) !sav2008
-      use rt_parameters            
+      subroutine view(tview,iview,nnz,ntet) !sav2008
+      use rt_parameters, only :  nr, itend0, kv, nmaxm           
       implicit real*8 (a-h,o-z)
       integer iview  !sav#
       parameter(length=5000000, mpnt=10000)
