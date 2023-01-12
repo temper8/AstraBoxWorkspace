@@ -167,7 +167,9 @@ cccc   "poloidal magnetic field":
       subroutine ourlhcd2017(ispec,p_in,ngrid,ncoe,arm,ar0,az0,btt
      & ,ate,xne,ati,azef,rhj,rh1,acdl,acly,acgm,acmy,  ! input data
      & outpe,pe_out) ! output data
+      use rt_parameters
       implicit real*8 (a-h,o-z)
+
       real*8 outpe,pe_out !,outpec,outpef,outpa,outda
       dimension outpe(*),rhj(*),ate(*),xne(*),azef(*),ati(*)
       dimension acdl(ncoe),acly(ncoe),acgm(ncoe),acmy(ncoe)
@@ -182,29 +184,29 @@ cccc   "poloidal magnetic field":
       dimension vmid(100),vz1(100),vz2(100),ibeg(100),iend(100)
       parameter(mpnt=10000)
       common/refl/nrefj(mpnt)
-      common /a0a1/ ynzm(1001),pm(1001),nmaxm(4)
+      common /a0a1/ ynzm(1001),pm(1001) !,nmaxm(4)
       common /a0a2/ tet1,tet2
       common /a0a4/ plost,pnab
-      common /a0ab/ nr
-      common /a0abcd/ ipri
-      common /a0bcd/ eps
+      !common /a0ab/ nr
+      !common /a0abcd/ ipri
+      !common /a0bcd/ eps
       common /a0bcp/ tin
-      common /a0bd/ rrange,hdrob
+      !common /a0bd/ rrange,hdrob
       common /a0befr/ pi,pi2
-      common /a0cd/ rbord,maxstep2,maxstep4
-      common /a0cdm/ hmin1
+      !common /a0cd/ rbord,maxstep2,maxstep4
+      !common /a0cdm/ hmin1
       common /a0ef1/ r0,z0,rm,cltn
       common /bcef/ ynz,ynpopq
       common /a0ef2/ btor,ww
       common /a0ef3/ xmi,c0,c1,cnye,cnyi,xsz,vt0
-      common /a0gh/ pabs
+      !common /a0gh/ pabs
       common /a0ghp/ vlf,vrt,dflf,dfrt
       common/plosh/ zv1(100,2),zv2(100,2),sk(100)
-      common /a0i2/ vk(100),pchm,pme
+      common /a0i2/ vk(100),pme !,pchm
       common /a0i3/ dql(101,100),pdl(100),vzmin(100),vzmax(100)
       common /a0i4/ fcoll(100),dens(100),eta(100)
       common /asou/ rsou(102),sou(102),npta
-      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa,kv
+      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
       common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       common /a0l3/ rh(501),y2dn(501),y2tm(501),y2tmi(501)
       common /a0l4/ con(501),tem(501),temi(501),nspl
@@ -216,11 +218,11 @@ cccc   "poloidal magnetic field":
       common /vvv3/ pdfast(100)
       common /arr/ dgdu(50,100),kzero(100)
       common /alph/ dqi0(50,100)
-      common/a00/ xlog,zalfa,xmalfa,dn1,dn2,factor
+      common/a00/ xlog,zalfa,xmalfa,dn1,dn2 !,factor
       common /ag/ inak,lenstor,lfree
-      common/b0/ itend0
+      !common/b0/ itend0
       common /maxrho/ rmx_n,rmx_t,rmx_z,rmx_ti
-      common /cnew/ inew !est !sav2008
+      !common /cnew/ inew !est !sav2008
       common/ne_cheb/chebne(50),chebdne(50),chebddne(50),ncheb
       parameter(zero=0.d0, one=1.d0)
       parameter(cnst1=0.2965924106d-6)  ! cnst1=(m_e/m_p)**2, CGS
@@ -354,6 +356,7 @@ cccc   "poloidal magnetic field":
        read(iunit,*) nnz
        read(iunit,*)
 !
+       call show_parameters
        if(ispectr.eq.1) then !read positive spectrum
         do i=1,10000
          read (iunit,*) anz,apz
@@ -814,7 +817,7 @@ c------------------------------------
       iterat=0
       nvmin=1 !minimum counted events at a given radius rho
 80    continue
-      call manager(iterat,iw0,nnz,ntet)
+      call manager(iterat,iw0) !,nnz ,ntet)
 c-----------------------------------------------
 c  find achieved radial points jbeg-jend
 c----------------------------------------------
@@ -1060,7 +1063,7 @@ c------------------------------------------
        zv1(j,k)=vrj(ipt1)
        zv2(j,k)=vrj(ni1+ni2+ipt1)
       end do
-        call view(tcur,1,nnz,ntet)  !writing trajectories into a file
+        call view(tcur,1) ! ,nnz !,ntet)  !writing trajectories into a file
 !!!!!!!!!!!!!!!!!!!!!!!!!!
       if(ismthout.ne.0) then
        do i=1,nrr
@@ -1088,7 +1091,8 @@ c------------------------------------------
       deallocate(vvj,vdfj)
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine manager(iterat,iw0,nnz,ntet)
+      subroutine manager(iterat,iw0) !,nnz ,ntet)
+      use rt_parameters            
       implicit real*8 (a-h,o-z)
       parameter(length=5000000, mpnt=10000)
       dimension dland(length),dcoll(length),perpn(length),dalf(length)
@@ -1100,19 +1104,19 @@ c------------------------------------------
       common/viewdat/mbeg,mend,mbad,rbeg,tetbeg,xnrbeg,xmbeg,yn3beg
       dimension iznzap(mpnt),iwzap(mpnt),irszap(mpnt)
       dimension rzap(mpnt),tetzap(mpnt),xmzap(mpnt),yn3zap(mpnt)
-      common /a0a1/ ynzm(1001),pm(1001),nmaxm(4)
+      common /a0a1/ ynzm(1001),pm(1001) !,nmaxm(4)
       common /a0a2/ tet1,tet2
       common /a0a4/ plost,pnab
-      common /a0ab/ nr
-      common /a0abcd/ ipri
+      !common /a0ab/ nr
+      !common /a0abcd/ ipri
       common /abc/ rzz,tetzz,xmzz,iznzz,iwzz,irszz
       common /abcd/ irs
-      common /abcde/ izn,iw
+      common /abcde/ izn!,iw
       common /abcdg/ iabsorp
       common /abefo/ yn3
       common /a0befr/ pi,pi2
       common /acg/ pow
-      common /a0gh/ pabs
+      !common /a0gh/ pabs
       common /aef2/ icall1,icall2
       common /ag/ inak,lenstor,lfree
       common/refl/nrefj(mpnt)
@@ -1309,6 +1313,7 @@ c---------------------------------------
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine dql1 !sav2008
+      use rt_parameters
       implicit real*8 (a-h,o-z)
       parameter(length=5000000)
       real*8 radth,fvt
@@ -1327,13 +1332,13 @@ c---------------------------------------
       common /bcg/ hrad
       common /bg/ im4
       common /ceg/ ipow,jfoundr
-      common /a0ab/ nr
+      !common /a0ab/ nr
       common /eg1/ vfound,ifound
       common /eg2/ pdec1,pdec2,pdec3,pdecv,pdecal,dfdv,icf1,icf2
       common /eg3/ cf1,cf2,cf3,cf4,cf5,cf6
       common /dg/ pintld4,pintcl4,pintal4
-      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa,kv
-      common/b0/ itend0
+      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
+      !common/b0/ itend0
       parameter(clt=3.d10,zero=0.d0)
       powpr=pow
       iabsorp=0
@@ -1422,6 +1427,7 @@ c----------------------------------
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine dqliter(dltpow,ib,ie,h,powexit,iout) !sav2008
+      use rt_parameters
       implicit real*8 (a-h,o-z)
       parameter(length=5000000)
       dimension dland(length),dcoll(length),perpn(length),dalf(length)
@@ -1431,9 +1437,9 @@ c----------------------------------
       dimension an1(length),an2(length)
       common /xn1xn2/ an1,an2
       common /a0ghp/ vlf,vrt,dflf,dfrt
-      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa,kv
+      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
       common /vvv2/ psum4
-      common/b0/ itend0
+      !common/b0/ itend0
       parameter(clt=3.d10,zero=0.d0)
       pow=powexit
       pdec1=zero
@@ -1524,15 +1530,16 @@ c---------------------------------------------
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine dfind(j,i,v,powpr,pil,pic,pia,df,decv
      &                             ,refr,vlf,vrt,ifast)
+      use rt_parameters
       implicit real*8 (a-h,o-z)
-      common /a0i2/ vk(100),pchm,pme
+      common /a0i2/ vk(100),pme !pchm
       common /a0i3/ dql(101,100),pdl(100),vzmin(100),vzmax(100)
       common /a0i4/ fcoll(100),dens(100),eta(100)
-      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa,kv
+      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
       common/vvv1/dq1(101,100),dq2(101,100),pdc(100),pda(100),ppv1,ppv2
       common /vvv3/ pdfast(100)
       common /alph/ dqi0(50,100)
-      common/b0/ itend0
+      !common/b0/ itend0
       common /a0ef1/ r0,z0,rm,cltn
       common /a0befr/ pi,pi2
       common/findsigma/dncount(101,100)
@@ -1605,20 +1612,21 @@ c---------------------------------------------
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine traj(xm0,tet0,xbeg,nmax,nb1,nb2,nomth,nomnz) !sav2009
+      use rt_parameters
       implicit real*8 (a-h,o-z)
       external extd4
       dimension ystart(2),yy(4)
-      common /a0ab/ nr
-      common /a0abcd/ ipri
-      common /a0bcd/ eps
+      !common /a0ab/ nr
+      !common /a0abcd/ ipri
+      !common /a0bcd/ eps
       common /a0bcp/ tin
-      common /a0bd/ rrange,hdrob
+      !common /a0bd/ rrange,hdrob
       common /a0befr/ pi,pi2
       common /a0ef1/ r0,z0,rm,cltn
  !!     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       common /abc/ rzz,tetzz,xmzz,iznzz,iwzz,irszz
       common /abcd/ irs
-      common /abcde/ izn,iw
+      common /abcde/ izn!,iw
       common /abcdg/ iabsorp
       common /bcg/ hrad
       common /bcef/ ynz,ynpopq
@@ -1793,19 +1801,20 @@ c-------------------------------------
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine driver2(ystart,x1,x2,xsav,hmin,h1) !sav2008
+      use rt_parameters
       implicit real*8 (a-h,o-z)
       external extd2
-      common /a0abcd/ ipri
-      common /a0ab/ nr
-      common /a0bcd/ eps
+      !common /a0abcd/ ipri
+      !common /a0ab/ nr
+      !common /a0bcd/ eps
       common /a0bcp/ tin
       common /a0befr/ pi,pi2
-      common /a0cd/ rbord,maxstep2,maxstep4
-      common /a0cdm/ hmin1
+      !common /a0cd/ rbord,maxstep2,maxstep4
+      !common /a0cdm/ hmin1
       common /a0ef1/ r0,z0,rm,cltn
       common /abc/ rzz,tetzz,xmzz,iznzz,iwzz,irszz
       common /abcd/ irs
-      common /abcde/ izn,iw
+      common /abcde/ izn!,iw
       common /abcdg/ iabsorp
       common /bcef/ ynz,ynpopq
       common /bcg/ hrad
@@ -1912,7 +1921,7 @@ c--------------------------------------
 c find solution at x=x+hdid
 c---------------------------------------
        ynz0=ynz
-       call difeq(y,dydx,nvar,x,h,eps,yscal,hdid,hnext,extd2)
+       call difeq(y,dydx,nvar,x,h,yscal,hdid,hnext,extd2)
 20     continue
        if(ind.ne.0) then !exit
         xsav=xsav+hsav
@@ -1938,16 +1947,17 @@ c---------------------------------------
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine driver4(ystart,x1,x2,rexi,hmin,derivs)
+      use rt_parameters
       implicit real*8 (a-h,o-z)
       external derivs
       common /a0befr/ pi,pi2
-      common /a0abcd/ ipri
-      common /a0bcd/ eps
-      common /a0cdm/ hmin1
-      common /a0bd/ rrange,hdrob
-      common /a0cd/ rbord,maxstep2,maxstep4
+      !common /a0abcd/ ipri
+      !common /a0bcd/ eps
+      !common /a0cdm/ hmin1
+      !common /a0bd/ rrange,hdrob
+      !common /a0cd/ rbord,maxstep2,maxstep4
       common /abcd/ irs
-      common /abcde/ izn,iw
+      common /abcde/ izn!,iw
       common /abcdg/ iabsorp
       common /bdeo/ ivar
       common /a0ef1/ r0,z0,rm,cltn
@@ -2089,12 +2099,13 @@ c---------------------------------------
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine disp2(pa,yn2,ptet,xnro,prt,prm)
+      use rt_parameters
       implicit real*8 (a-h,o-z)
       common /a0befr/ pi,pi2
       common /a0ef1/ r0,z0,rm,cltn
       common /a0ef2/ btor,ww
       common /a0ef3/ xmi,c0,c1,cnye,cnyi,xsz,vt0
-      common /abcde/ izn,iw
+      common /abcde/ izn!,iw
       common /bcef/ ynz,ynpopq
       common /abefo/ yn3
       common /aef2/ icall1,icall2
@@ -2107,11 +2118,11 @@ c---------------------------------------
       common /eg1/ vfound,ifound
       common /eg2/ pdec1,pdec2,pdec3,pdecv,pdecal,dfdv,icf1,icf2
       common /eg3/ cf1,cf2,cf3,cf4,cf5,cf6
-      common/a00/ xlog,zalfa,xmalfa,dn1,dn2,factor
-      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa,kv
-      common/b0/ itend0
+      common/a00/ xlog,zalfa,xmalfa,dn1,dn2 !,factor
+      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
+      !common/b0/ itend0
       common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
-      common /cnew/ inew !est !sav2008
+      !common /cnew/ inew !est !sav2008
       common/fj/dhdm,dhdnr,dhdtet,dhdr,ddn,dhdn3,dhdv2v,dhdu2u
       common/direct/znakstart
       common/metrika/g11,g12,g22,g33,gg,g,si,co
@@ -2457,6 +2468,7 @@ c    reflection
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine disp4(pa,ptet,xnr,yn2)
+      use rt_parameters            
       implicit real*8 (a-h,o-z)
       common /a0befr/ pi,pi2
       common /a0ef1/ r0,z0,rm,cltn
@@ -2467,11 +2479,11 @@ c    reflection
       common /aef2/ icall1,icall2
       common /cefn/ iconv,irefl
       common /df/ pdec14,pdec24,pdec34,idec
-      common/a00/ xlog,zalfa,xmalfa,dn1,dn2,factor
-      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa,kv
-      common/b0/ itend0
+      common/a00/ xlog,zalfa,xmalfa,dn1,dn2!,factor
+      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
+      !common/b0/ itend0
       common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
-      common /cnew/ inew !est !sav2008
+      !common /cnew/ inew !est !sav2008
       common/plasma/v,u,e1,e2,e3,dvdr,dudr,dudt
       common/metrika/g11,g12,g22,g33,gg,g,si,co
       common/fj/dhdm,dhdnr,dhdtet,dhdr,ddn,dhdn3,dhdv2v,dhdu2u
@@ -2815,11 +2827,12 @@ cc      pause
 
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine difeq(y,dydx,nv,x,htry,eps,yscal,hdid,hnext,derivs)
+      subroutine difeq(y,dydx,nv,x,htry,yscal,hdid,hnext,derivs)
+      use rt_parameters
       implicit none
       external derivs
       integer nv,nmax,kmaxx,imax
-      double precision eps,hdid,hnext,htry,x,dydx(nv),y(nv),yscal(nv)
+      double precision hdid,hnext,htry,x,dydx(nv),y(nv),yscal(nv)
      *,safe1,safe2,redmax,redmin,tiny,scalmx
      &,dysav(nv) !sav#
       parameter(nmax=50,kmaxx=8,imax=kmaxx+1,safe1=.25d0,safe2=.7d0
@@ -2831,9 +2844,9 @@ cu    uses derivs,mmid,pzextr
      *,yerr(nmax),ysav(nmax),yseq(nmax)
       logical first,reduct
       save a,alf,epsold,first,kmax,kopt,nseq,xnew
-      double precision hmin1,dyd
+      double precision dyd
       integer ii,ind
-      common /a0cdm/ hmin1
+      !common /a0cdm/ hmin1
       common /cmn/ ind
       data first/.true./,epsold/-1.d0/
       data nseq /2,4,6,8,10,12,14,16,18/
@@ -2869,7 +2882,10 @@ cu    uses derivs,mmid,pzextr
       reduct=.false.
 2     do 17 k=1,kmax
         xnew=x+h
-        if(xnew.eq.x) write(*,*) 'step size underflow in difeq'
+        if(xnew.eq.x) then
+            write(*,*) 'step size underflow in difeq'
+            pause
+        end if
         call mmid(ysav,dydx,nv,x,h,nseq(k),yseq,derivs)
  !sav#
       if(ind.eq.1) then
@@ -3081,13 +3097,14 @@ cu    uses derivs,mmid,pzextr
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
       real*8 function rini(xm,tet,xnr,yn,hr,ifail) !sav2009
+      use rt_parameters
       implicit real*8 (a-h,o-z)
       dimension vgrp(3),vph(3)
       common /bcef/ ynz,ynpopq
       common /abefo/ yn3
       common /beo/ iroot
       common /bdeo/ ivar
-      common /cnew/ inew !est !sav2008
+      !common /cnew/ inew !est !sav2008
       common/metrika/g11,g12,g22,g33,gg,g,si,co !sav2009
       parameter(zero=0.d0,rhostart=1.d0,ntry_max=5)
 
@@ -4304,7 +4321,8 @@ cu    uses derivs
       end do
       end
  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine view(tview,iview,nnz,ntet) !sav2008
+      subroutine view(tview,iview) !,nnz,ntet) !sav2008
+      use rt_parameters            
       implicit real*8 (a-h,o-z)
       integer iview  !sav#
       parameter(length=5000000, mpnt=10000)
@@ -4318,15 +4336,15 @@ cc      common /xn1xn2/ an1,an2
       dimension tetbeg(mpnt),xnrbeg(mpnt),xmbeg(mpnt),yn3beg(mpnt)
       common/viewdat/mbeg,mend,mbad,rbeg,tetbeg,xnrbeg,xmbeg,yn3beg
       common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
-      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa,kv
+      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
       common /a0ef1/ r0,z0,rm,cltn
       common /bcef/ ynz,ynpopq
       common /a0befr/ pi,pi2
-      common /a0a1/ ynzm(1001),pm(1001),nmaxm(4)
+      common /a0a1/ ynzm(1001),pm(1001) !,nmaxm(4)
       common /a0a2/ tet1,tet2
-      common /a0ab/ nr
+      !common /a0ab/ nr
       common /vth/ vthc(length),poloidn(length)
-      common/b0/ itend0
+      !common/b0/ itend0
       real*8 vthcg,npoli
       common /a0ghp/ vlf,vrt,dflf,dfrt
       integer unit_bias
