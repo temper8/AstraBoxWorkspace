@@ -168,6 +168,7 @@ cccc   "poloidal magnetic field":
      & ,ate,xne,ati,azef,rhj,rh1,acdl,acly,acgm,acmy,  ! input data
      & outpe,pe_out) ! output data
       use rt_parameters
+      use spectrum1D
       implicit real*8 (a-h,o-z)
 
       real*8 outpe,pe_out !,outpec,outpef,outpa,outda
@@ -180,7 +181,7 @@ cccc   "poloidal magnetic field":
      &,pd2(100),pd2a(100),pd2b(100),pdprev1(100),pdprev2(100)
      &,source(100),sour(100)
      &,rxx(102),pwe(102),wrk(102)
-     &,ynzm0(1001),pm0(1001),yn2z(1001),powinp(1001)
+     &,yn2z(1001),powinp(1001)
       dimension vmid(100),vz1(100),vz2(100),ibeg(100),iend(100)
       parameter(mpnt=10000)
       common/refl/nrefj(mpnt)
@@ -285,7 +286,7 @@ cccc   "poloidal magnetic field":
  !!!      open(iunit,file='lhcd/lhdataFT2_05m.dat')
  !!!      open(iunit,file='lhcd/gaus25.dat')
        call read_parameters('lhcd/ray_tracing.dat')
-       
+
        znak_tor=dsign(1.d0,dble(itor))
        btor=znak_tor*dabs(btor)
        fpol=fdf(1.d0,cmy,ncoef,dfmy)
@@ -294,45 +295,25 @@ cccc   "poloidal magnetic field":
         cmy(i)=znak_pol*cmy(i)
        end do
 
-       if(ispectr.eq.1) then !read positive spectrum
-        do i=1,10000
-         read (iunit,*) anz,apz
-         if(apz.eq.-88888.d0) then
-          plaun=p_in*anz !input power in positive spectrum
-          if(plaun.eq.zero) then
-           dij(:,:,1)=zero
-           close(iunit)
-           return
-          end if
-          go to 10
-         end if
-         ynzm0(i)=anz
-         pm0(i)=apz
-         i1=i
-        end do
-       else if(ispectr.eq.-1) then !read negative spectrum
-        apz=zero
-        do while(apz.ne.-88888.d0)
-         read (iunit,*) anz,apz
-        end do
-        read(iunit,*)
-        plaun=p_in*(1.d0-anz) !input power in negative spectrum
-        if(plaun.eq.zero) then
-         dij(:,:,2)=zero
-         close(iunit)
-         return
-        end if
-        do i=1,10000
-         read (iunit,*,end=10) ynzm0(i),pm0(i)
-         i1=i
-        end do
-       else
-        write(*,*)'wrong ispectr=',ispectr
-        pause
-        stop
-       end if
-10     ispl=i1
-      close(iunit)
+       select case (ispectr)
+       case (1) !read positive spectrum
+            call read_positive_spectrum('lhcd/ray_tracing.dat', p_in)
+            if(plaun.eq.zero) then
+                  dij(:,:,1)=zero
+                  return
+            end if
+       case (-1) !read negative spectrum
+            call read_negative_spectrum('lhcd/ray_tracing.dat', p_in)
+            if(plaun.eq.zero) then
+                  dij(:,:,2)=zero
+            return
+            end if
+       case DEFAULT
+            write(*,*)'wrong ispectr=',ispectr
+            pause
+            stop
+       end select 
+
       if(ispl.gt.4001) stop 'too many points in spectrum'
 
 !!!!!!!!!!!!! test !!!!!
