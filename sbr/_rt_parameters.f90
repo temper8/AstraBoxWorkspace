@@ -116,6 +116,78 @@ module rt_parameters
       print*, "zminus = ", zminus     
       print*, "ntet = ",  ntet     
       print*, "nnz = ", nnz           
+    end subroutine show_parameters
+    
+    subroutine read_parameters(file_name)
+        implicit none
+        integer, parameter :: iunit = 20
+        character(*) file_name
+        print *, file_name
 
-    end subroutine show_parameters 
+        open(iunit, file= file_name)
+        !!!!!!!!!!!!!  read  physical parameters !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+               read(iunit,*)
+               read(iunit,*) freq
+               read(iunit,*) xmi1
+               read(iunit,*) zi1
+               read(iunit,*) xmi2
+               read(iunit,*) zi2
+               read(iunit,*) dni2
+               read(iunit,*) xmi3
+               read(iunit,*) zi3
+               read(iunit,*) dni3
+        !!!!!!!!!!!!!  read parameters for alphas calculation !!!!!!!!!!!!!!!!!!!
+               read(iunit,*)
+               read(iunit,*) itend0
+               read(iunit,*) energy
+               read(iunit,*) factor
+               read(iunit,*) dra
+               read(iunit,*) kv
+        
+        !!!!!!!!!!!!!  read  numerical parameters !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+               read(iunit,*)
+               read(iunit,*) nr
+               read(iunit,*) hmin1
+               read(iunit,*) rrange
+               read(iunit,*) eps
+               read(iunit,*) hdrob
+               read(iunit,*) cleft
+               read(iunit,*) cright
+               read(iunit,*) cdel
+               read(iunit,*) rbord
+               read(iunit,*) pchm
+               read(iunit,*) pabs0
+               read(iunit,*) pgiter
+               read(iunit,*) ni1
+               read(iunit,*) ni2
+               read(iunit,*) niterat
+               read(iunit,*) nmaxm(1)
+               read(iunit,*) nmaxm(2)
+               read(iunit,*) nmaxm(3)
+               read(iunit,*) nmaxm(4)
+               read(iunit,*) maxstep2
+               read(iunit,*) maxstep4
+        
+        !!!!!!!!!!!!!  read  options !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+               read(iunit,*)
+               read(iunit,*) ipri
+               read(iunit,*) iw
+               read(iunit,*) ismth
+               read(iunit,*) ismthalf
+               read(iunit,*) ismthout
+               read(iunit,*) inew
+        
+               read(iunit,*) itor     !Btor direction in right-hand {drho,dteta,dfi}
+               read(iunit,*) ipol     !Bpol direction in right-hand {drho,dteta,dfi}
+        
+        !!!!!!!!!!!!!  read grill parameters and input LH spectrum !!!!!!!!!!!!
+               read(iunit,*)
+               read(iunit,*) zplus
+               read(iunit,*) zminus
+               read(iunit,*) ntet
+               read(iunit,*) nnz
+               read(iunit,*)
+        close(iunit)        
+        call show_parameters
+    end subroutine read_parameters
 end module rt_parameters

@@ -284,62 +284,8 @@ cccc   "poloidal magnetic field":
        end if
  !!!      open(iunit,file='lhcd/lhdataFT2_05m.dat')
  !!!      open(iunit,file='lhcd/gaus25.dat')
-       open(iunit,file='lhcd/ray_tracing.dat')
-!!!!!!!!!!!!!  read  physical parameters !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-       read(iunit,*)
-       read(iunit,*) freq
-       read(iunit,*) xmi1
-       read(iunit,*) zi1
-       read(iunit,*) xmi2
-       read(iunit,*) zi2
-       read(iunit,*) dni2
-       read(iunit,*) xmi3
-       read(iunit,*) zi3
-       read(iunit,*) dni3
-!!!!!!!!!!!!!  read parameters for alphas calculation !!!!!!!!!!!!!!!!!!!
-       read(iunit,*)
-       read(iunit,*) itend0
-       read(iunit,*) energy
-       read(iunit,*) factor
-       read(iunit,*) dra
-       read(iunit,*) kv
-
-!!!!!!!!!!!!!  read  numerical parameters !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-       read(iunit,*)
-       read(iunit,*) nr
-       read(iunit,*) hmin1
-       read(iunit,*) rrange
-       read(iunit,*) eps
-       read(iunit,*) hdrob
-       read(iunit,*) cleft
-       read(iunit,*) cright
-       read(iunit,*) cdel
-       read(iunit,*) rbord
-       read(iunit,*) pchm
-       read(iunit,*) pabs0
-       read(iunit,*) pgiter
-       read(iunit,*) ni1
-       read(iunit,*) ni2
-       read(iunit,*) niterat
-       read(iunit,*) nmaxm(1)
-       read(iunit,*) nmaxm(2)
-       read(iunit,*) nmaxm(3)
-       read(iunit,*) nmaxm(4)
-       read(iunit,*) maxstep2
-       read(iunit,*) maxstep4
-
-!!!!!!!!!!!!!  read  options !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-       read(iunit,*)
-       read(iunit,*) ipri
-       read(iunit,*) iw
-       read(iunit,*) ismth
-       read(iunit,*) ismthalf
-       read(iunit,*) ismthout
-       read(iunit,*) inew
-
-       read(iunit,*) itor     !Btor direction in right-hand {drho,dteta,dfi}
-       read(iunit,*) ipol     !Bpol direction in right-hand {drho,dteta,dfi}
-
+       call read_parameters('lhcd/ray_tracing.dat')
+       
        znak_tor=dsign(1.d0,dble(itor))
        btor=znak_tor*dabs(btor)
        fpol=fdf(1.d0,cmy,ncoef,dfmy)
@@ -348,15 +294,6 @@ cccc   "poloidal magnetic field":
         cmy(i)=znak_pol*cmy(i)
        end do
 
-!!!!!!!!!!!!!  read grill parameters and input LH spectrum !!!!!!!!!!!!
-       read(iunit,*)
-       read(iunit,*) zplus
-       read(iunit,*) zminus
-       read(iunit,*) ntet
-       read(iunit,*) nnz
-       read(iunit,*)
-!
-       call show_parameters
        if(ispectr.eq.1) then !read positive spectrum
         do i=1,10000
          read (iunit,*) anz,apz
