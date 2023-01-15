@@ -21,6 +21,11 @@ module constants
     real(dp), parameter :: c1=pqe/pme/clt
     real(dp), parameter :: xsgs=1d+13
     real(dp), parameter :: xwtt=1d-7    
+
+    real(dp), parameter :: cnst1=0.2965924106d-6
+    !+ cnst1=(m_e/m_p)**2, CGS
+    real(dp), parameter :: cnst2=0.359680922d-35
+    !+ cnst2=(m_e/e)**2,  CGS
 contains
     
 end module constants 

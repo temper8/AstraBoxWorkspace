@@ -227,8 +227,7 @@ cccc   "poloidal magnetic field":
       !common /cnew/ inew !est !sav2008
       common/ne_cheb/chebne(50),chebdne(50),chebddne(50),ncheb
       parameter(zero=0.d0, one=1.d0)
-      parameter(cnst1=0.2965924106d-6)  ! cnst1=(m_e/m_p)**2, CGS
-      parameter(cnst2=0.359680922d-35)  ! cnst2=(m_e/e)**2,  CGS
+
       integer i0,ispectr
       parameter(i0=1002)
       real*8 vij,fij0,fij,dfij,dij,enorm,fst,kofpar,timecof
