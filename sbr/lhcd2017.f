@@ -167,6 +167,7 @@ cccc   "poloidal magnetic field":
       subroutine ourlhcd2017(ispec,p_in,ngrid,ncoe,arm,ar0,az0,btt
      & ,ate,xne,ati,azef,rhj,rh1,acdl,acly,acgm,acmy,  ! input data
      & outpe,pe_out) ! output data
+      use constants
       use rt_parameters
       use spectrum1D
       implicit real*8 (a-h,o-z)
@@ -191,19 +192,19 @@ cccc   "poloidal magnetic field":
       !common /a0ab/ nr
       !common /a0abcd/ ipri
       !common /a0bcd/ eps
-      common /a0bcp/ tin
+      !common /a0bcp/ tin
       !common /a0bd/ rrange,hdrob
-      common /a0befr/ pi,pi2
+      !common /a0befr/ pi,pi2
       !common /a0cd/ rbord,maxstep2,maxstep4
       !common /a0cdm/ hmin1
       common /a0ef1/ r0,z0,rm,cltn
       common /bcef/ ynz,ynpopq
       common /a0ef2/ btor,ww
-      common /a0ef3/ xmi,c0,c1,cnye,cnyi,xsz,vt0
+      common /a0ef3/ xmi,cnye,cnyi,xsz,vt0 !c0,c1,
       common /a0gh/ pabs
       common /a0ghp/ vlf,vrt,dflf,dfrt
       common/plosh/ zv1(100,2),zv2(100,2),sk(100)
-      common /a0i2/ vk(100),pme !,pchm
+      common /a0i2/ vk(100)!,pme ,pchm
       common /a0i3/ dql(101,100),pdl(100),vzmin(100),vzmax(100)
       common /a0i4/ fcoll(100),dens(100),eta(100)
       common /asou/ rsou(102),sou(102),npta
@@ -219,7 +220,7 @@ cccc   "poloidal magnetic field":
       common /vvv3/ pdfast(100)
       common /arr/ dgdu(50,100),kzero(100)
       common /alph/ dqi0(50,100)
-      common/a00/ xlog,zalfa,xmalfa,dn1,dn2 !,factor
+      !common/a00/ xlog,zalfa,xmalfa,dn1,dn2 !,factor
       common /ag/ inak,lenstor,lfree
       !common/b0/ itend0
       common /maxrho/ rmx_n,rmx_t,rmx_z,rmx_ti
@@ -258,10 +259,7 @@ cccc   "poloidal magnetic field":
       end if
       ispectr=ispec
 !
-      pi=4.d0*datan(1.d0)
-      pi2=2.d0*pi
-      pi4=4.d0*pi
-      piq=dsqrt(pi)
+
 
       lfree=1
       ncoef=ncoe
@@ -405,18 +403,18 @@ cccc   "poloidal magnetic field":
 c---------------------------------------------------
 c initial constants
 c---------------------------------------------------
-      talfa=3.5d0    ! alpha particles' birth energy, MeV
-      zalfa=2.d0     ! alpha particles' electrical charge
-      xmalfa=4.d0    ! alpha particles' atomic mass
-      tin=1d-7
-      clt=3.0d+10
-      pme=9.11e-28
-      pqe=4.803e-10
-      xlog=16.d0+dlog(16.d0)
-      c0=dsqrt(pi4*pqe**2/pme)
-      c1=pqe/pme/clt
-      xsgs=1d+13
-      xwtt=1d-7
+      !talfa=3.5d0    ! alpha particles' birth energy, MeV
+      !zalfa=2.d0     ! alpha particles' electrical charge
+      !xmalfa=4.d0    ! alpha particles' atomic mass
+      !tin=1d-7
+      !clt=3.0d+10
+      !pme=9.11e-28
+      !pqe=4.803e-10
+      !xlog=16.d0+dlog(16.d0)
+      !c0=dsqrt(pi4*pqe**2/pme)
+      !c1=pqe/pme/clt
+      !xsgs=1d+13
+      !xwtt=1d-7
 c------------------------------------------------------------
 c calculate constants
 c---------------------------------------
@@ -1010,6 +1008,7 @@ c------------------------------------------
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine manager(iterat,iw0,nnz ,ntet)
+      use constants            
       use rt_parameters, only : nr, ipri, iw, nmaxm            
       implicit real*8 (a-h,o-z)
       parameter(length=5000000, mpnt=10000)
@@ -1032,7 +1031,7 @@ c------------------------------------------
       common /abcde/ izn!,iw
       common /abcdg/ iabsorp
       common /abefo/ yn3
-      common /a0befr/ pi,pi2
+      !common /a0befr/ pi,pi2
       common /acg/ pow
       common /a0gh/ pabs
       common /aef2/ icall1,icall2
@@ -1448,9 +1447,10 @@ c---------------------------------------------
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine dfind(j,i,v,powpr,pil,pic,pia,df,decv
      &                             ,refr,vlf,vrt,ifast)
+      use constants
       use rt_parameters
       implicit real*8 (a-h,o-z)
-      common /a0i2/ vk(100),pme !pchm
+      common /a0i2/ vk(100) !,pme !pchm
       common /a0i3/ dql(101,100),pdl(100),vzmin(100),vzmax(100)
       common /a0i4/ fcoll(100),dens(100),eta(100)
       common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
@@ -1459,9 +1459,9 @@ c---------------------------------------------
       common /alph/ dqi0(50,100)
       !common/b0/ itend0
       common /a0ef1/ r0,z0,rm,cltn
-      common /a0befr/ pi,pi2
+      !common /a0befr/ pi,pi2
       common/findsigma/dncount(101,100)
-      parameter(zero=0.d0,clt=3.0d10,tiny=1.d-100)
+      parameter(zero=0.d0, tiny=1.d-100)
 
       if(v.gt.cltn) return
       if(pil.gt.zero) then
@@ -1530,6 +1530,7 @@ c---------------------------------------------
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine traj(xm0,tet0,xbeg,nmax,nb1,nb2,nomth,nomnz) !sav2009
+      use constants
       use rt_parameters
       implicit real*8 (a-h,o-z)
       external extd4
@@ -1537,9 +1538,9 @@ c---------------------------------------------
       !common /a0ab/ nr
       !common /a0abcd/ ipri
       !common /a0bcd/ eps
-      common /a0bcp/ tin
+      !common /a0bcp/ tin
       !common /a0bd/ rrange,hdrob
-      common /a0befr/ pi,pi2
+      !common /a0befr/ pi,pi2
       common /a0ef1/ r0,z0,rm,cltn
  !!     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       common /abc/ rzz,tetzz,xmzz,iznzz,iwzz,irszz
@@ -1719,14 +1720,15 @@ c-------------------------------------
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine driver2(ystart,x1,x2,xsav,hmin,h1) !sav2008
+      use constants
       use rt_parameters
       implicit real*8 (a-h,o-z)
       external extd2
       !common /a0abcd/ ipri
       !common /a0ab/ nr
       !common /a0bcd/ eps
-      common /a0bcp/ tin
-      common /a0befr/ pi,pi2
+      !common /a0bcp/ tin
+      !common /a0befr/ pi,pi2
       !common /a0cd/ rbord,maxstep2,maxstep4
       !common /a0cdm/ hmin1
       common /a0ef1/ r0,z0,rm,cltn
@@ -1865,10 +1867,11 @@ c---------------------------------------
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine driver4(ystart,x1,x2,rexi,hmin,derivs)
+      use constants
       use rt_parameters
       implicit real*8 (a-h,o-z)
       external derivs
-      common /a0befr/ pi,pi2
+      !common /a0befr/ pi,pi2
       !common /a0abcd/ ipri
       !common /a0bcd/ eps
       !common /a0cdm/ hmin1
@@ -2017,12 +2020,13 @@ c---------------------------------------
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine disp2(pa,yn2,ptet,xnro,prt,prm)
+      use constants
       use rt_parameters
       implicit real*8 (a-h,o-z)
-      common /a0befr/ pi,pi2
+      !common /a0befr/ pi,pi2
       common /a0ef1/ r0,z0,rm,cltn
       common /a0ef2/ btor,ww
-      common /a0ef3/ xmi,c0,c1,cnye,cnyi,xsz,vt0
+      common /a0ef3/ xmi,cnye,cnyi,xsz,vt0
       common /abcde/ izn!,iw
       common /bcef/ ynz,ynpopq
       common /abefo/ yn3
@@ -2036,7 +2040,7 @@ c---------------------------------------
       common /eg1/ vfound,ifound
       common /eg2/ pdec1,pdec2,pdec3,pdecv,pdecal,dfdv,icf1,icf2
       common /eg3/ cf1,cf2,cf3,cf4,cf5,cf6
-      common/a00/ xlog,zalfa,xmalfa,dn1,dn2 !,factor
+      !common/a00/ xlog,zalfa,xmalfa,dn1,dn2 !,factor
       common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
       !common/b0/ itend0
       common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
@@ -2046,7 +2050,7 @@ c---------------------------------------
       common/metrika/g11,g12,g22,g33,gg,g,si,co
       common/fjham/ham
       parameter(zero=0.d0,one=1.d0,two=2.d0)
-      parameter(clt=3.d10)
+      !parameter(clt=3.d10)
       iconv=0
       irefl=0
       if(pa.ge.one.or.pa.le.zero) goto70
@@ -2386,18 +2390,19 @@ c    reflection
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine disp4(pa,ptet,xnr,yn2)
+      use constants
       use rt_parameters            
       implicit real*8 (a-h,o-z)
-      common /a0befr/ pi,pi2
+      !common /a0befr/ pi,pi2
       common /a0ef1/ r0,z0,rm,cltn
       common /a0ef2/ btor,ww
-      common /a0ef3/ xmi,c0,c1,cnye,cnyi,xsz,vt0
+      common /a0ef3/ xmi,cnye,cnyi,xsz,vt0
       common /bcef/ ynz,ynpopq
       common /abefo/ yn3
       common /aef2/ icall1,icall2
       common /cefn/ iconv,irefl
       common /df/ pdec14,pdec24,pdec34,idec
-      common/a00/ xlog,zalfa,xmalfa,dn1,dn2!,factor
+      !common/a00/ xlog,zalfa,xmalfa,dn1,dn2!,factor
       common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
       !common/b0/ itend0
       common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
@@ -3097,8 +3102,9 @@ cu    uses derivs,mmid,pzextr
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
       double precision  function obeom(ptet,pa)
+      use constants
       implicit real*8 (a-h,o-z)
-      common /a0befr/ pi,pi2
+      !common /a0befr/ pi,pi2
       common /a0ef1/ r0,z0,rm,cltn
       common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       parameter(two=2.d0, pa0=0.d0)
@@ -3131,8 +3137,9 @@ c--------------------------------------
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       double precision  function ploshad(ptet,pa)
+      use constants
       implicit real*8 (a-h,o-z)
-      common /a0befr/ pi,pi2
+      !common /a0befr/ pi,pi2
       common /a0ef1/ r0,z0,rm,cltn
       common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       parameter(two=2.d0, pa0=0.d0)
@@ -3457,10 +3464,11 @@ c----------------------------------------------------------------
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       double precision function zatukh(psy,j,u,n)
+      use constants
       implicit real*8 (a-h,o-z)
       dimension u(50,100)
       dimension x(50),y(50),a(50),b(50)
-      common /a0befr/ pi,pi2
+      !common /a0befr/ pi,pi2
       common /arr/ dgdu(50,100),kzero(100)
       parameter(zero=0.d0,one=1.d0)
       km=kzero(j)
@@ -4240,6 +4248,7 @@ cu    uses derivs
       end
  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine view(tview,iview,nnz,ntet) !sav2008
+      use constants
       use rt_parameters, only :  nr, itend0, kv, nmaxm           
       implicit real*8 (a-h,o-z)
       integer iview  !sav#
@@ -4257,7 +4266,7 @@ cc      common /xn1xn2/ an1,an2
       common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
       common /a0ef1/ r0,z0,rm,cltn
       common /bcef/ ynz,ynpopq
-      common /a0befr/ pi,pi2
+      !common /a0befr/ pi,pi2
       common /a0a1/ ynzm(1001),pm(1001) !,nmaxm(4)
       common /a0a2/ tet1,tet2
       !common /a0ab/ nr
@@ -4276,7 +4285,7 @@ cc      common /xn1xn2/ an1,an2
       data name/'lhcd/out/1.dat','lhcd/out/2.dat','lhcd/out/3.dat'
      &,'lhcd/out/4.dat','lhcd/out/5.dat'
      &,'lhcd/out/rest.dat','lhcd/out/traj.dat'/
-      parameter(zero=0.d0, clt=3.d10)
+      parameter(zero=0.d0)
       if(iview.eq.0) return
       print *, 'view_time=',tview
       print *, name(m)
