@@ -9,10 +9,11 @@ cc   djdt(i)  = dJr2/dt, time drivative of runaway current Jr2, MA/m^2/sec
 cc   outpa(i)  = LH power density deposited into alphas, MW/m^3
 cc   outda(i)  = (Na/Ne) relative density of alpha-particles
 cc******************************************************************
+      use plasma
       implicit none
-      integer i,k,iview,ipsy,ipsy1,inpt,iunit
+      integer i,k,iview, ipsy1,iunit
       integer klo,khi,ierr,inpt2,ispectr
-      real*8 abtor,rm,x0,z0,rh1,zero,p_in,pe_p,pe_m,c_p,c_m
+      real*8 zero,p_in,pe_p,pe_m,c_p,c_m
       real*8 polin,polin1,vint,tcur
       common/testf/ tcur
       external polin,polin1
@@ -21,10 +22,11 @@ cc******************************************************************
       include 'for/status.inc'
       real*8 outpe(NRD)
       real*8,dimension(:),allocatable:: outpep,outpem
-      real*8,dimension(:),allocatable:: con,tem,temi,azef,afld
-      real*8,dimension(:),allocatable:: rh,rha,drhodr,delta,ell,gamm,amy
+!     real*8,dimension(:),allocatable:: con,tem,temi,azef,afld
+!     real*8,dimension(:),allocatable:: rh,rha,drhodr,delta,ell,gamm,amy
       real*8,dimension(:),allocatable:: cdl,cly,cgm,cmy,coeffs
-      parameter(zero=0.d0,ipsy=5)
+      parameter(zero=0.d0)
+      integer, parameter :: ipsy = 5
 !
 cc*********************************************************************
 cc   ipsy = number of polinomial decomposition coefficients
@@ -42,65 +44,44 @@ cc    r(rho_ASTRA),delta(r),gamma(r),ell(r) - dimensionless functions
 cc    rho_ASTRA=sqrt(Phi_tor/GP/BTOR)
 cc    Interval for r:  0.<= r <=1.
 cc*********************************************************************
-
+      print *, 'start start'
       tcur=time
-      inpt=NA1          ! ASTRA radial grid number
+      !inpt=NA1          ! ASTRA radial grid number
       outpe=zero
       p_in=dble(QLH)    ! input LH power, MW
 !!!      if(p_in.le.zero) return
 
-      allocate(rh(inpt),rha(inpt),drhodr(inpt),con(inpt),tem(inpt))
-      allocate(temi(inpt),azef(inpt))
-      allocate(delta(inpt),ell(inpt),gamm(inpt),amy(inpt))
+!     allocate(rh(inpt),rha(inpt),drhodr(inpt),con(inpt),tem(inpt))
+!      allocate(temi(inpt),azef(inpt))
+!      allocate(delta(inpt),ell(inpt),gamm(inpt),amy(inpt))
       allocate(cdl(ipsy),cly(ipsy),cgm(ipsy),cmy(ipsy),coeffs(ipsy))
 
-      do i=1,inpt
-       rh(i)=AMETR(i)/ABC
-       rha(i)=RHO(i)/ABC  !/ABC instead of /ROC is not a mistake!
-       delta(i)=(SHIF(1)-SHIF(i))/ABC  !FRTC Shafr. shift. defin.
-       ell(i)=ELON(i)
-       gamm(i)=rh(i)*TRIA(i)
-       con(i)=dble(NE(i))
-       tem(i)=dble(TE(i))
-       temi(i)=dble(TI(i))
-       azef(i)=dble(ZEF(i))
-!!!variant       afld(i)=ULON(i)/RTOR/GP2
-!!!       afld(i)=UPL(i)/RTOR/GP2 !!variant
-      end do
+      call init_plasma(NA1,ABC,BTOR,RTOR,UPDWN,GP2,
+     & AMETR,RHO,SHIF,ELON,TRIA, NE,TE,TI,ZEF,UPL)
 
-      rh1=rh(1)          !saving the first ASTRA radial grid element
-      rh(1)=zero         !shifting the first element to zero
-      rha(1)=zero        !shifting the first element to zero
-      delta(1)=zero      !putting delta(rh=0.)=0.
-      gamm(1)=zero       !putting gamm(rh=0.)=0.
-
-      abtor=1.d4*BTOR*RTOR/(RTOR+SHIF(1)) !B_tor_(magnetic axis), Gauss
-      rm=1.d2*ABC                       !minor radius in mid-plane, cm
-      x0=1.d2*(RTOR+SHIF(1))     !x-coordinate of the magnetic axis, cm
-      z0=1.d2*UPDWN              !z-coordinate of the magnetic axis, cm
-
+      print *, 'init plasma'
       ipsy1=ipsy-1
 
 cccc   shift as a function of "minor radius":
-       call approx(rh,delta,inpt,polin1,ipsy1,coeffs)
+       call approx(rh,delta,ngrid,polin1,ipsy1,coeffs)
        cdl(1)=zero
        do k=2,ipsy
         cdl(k)=coeffs(k-1)
        end do
 
 cccc   triangularity as a function of "minor radius":
-       call approx(rh,gamm,inpt,polin1,ipsy1,coeffs)
+       call approx(rh,gamm,ngrid,polin1,ipsy1,coeffs)
        cgm(1)=zero
        do k=2,ipsy
         cgm(k)=coeffs(k-1)
        end do
 
 cccc   ellipticity as a function of "minor radius":
-       call approx(rh,ell,inpt,polin,ipsy,cly)
+       call approx(rh,ell,ngrid,polin,ipsy,cly)
 
 cccc   "poloidal magnetic field":
-       call diff(rh,rha,inpt,drhodr)
-       do i=2,inpt
+       call diff(rh,rha,ngrid,drhodr)
+       do i=2,ngrid
         amy(i)=1.d4*BTOR*MU(i)*rha(i)*drhodr(i)
        end do
        amy(1)=zero
@@ -110,7 +91,7 @@ cccc   "poloidal magnetic field":
 !! the tensor, normalized on ABC^4 and ABC^2, correspondingly.
 !!
 !!  Polinomial approximation of the amy(r):
-       inpt2=inpt-3
+       inpt2=ngrid-3
        call approx(rh,amy,inpt2,polin1,ipsy1,coeffs)
        cmy(1)=zero
        do k=2,ipsy
@@ -118,62 +99,62 @@ cccc   "poloidal magnetic field":
        end do
 
 !!!!!!!!!!!!! starting ray-tracing !!!!!!!!!!!!!!!!!!!!!
-      allocate(outpep(inpt),outpem(inpt))
+      allocate(outpep(ngrid),outpem(ngrid))
 
 !!positive spectrum:
+      print *, 'positive spectrum'
       ispectr=1
       pe_p=zero
       outpep=zero
-      call ourlhcd2017(ispectr,p_in,inpt,ipsy,rm,x0,z0,abtor,
-     &  tem,con,temi,azef,rh,rh1,cdl,cly,cgm,cmy, !input
+      call ourlhcd2017(ispectr,p_in,ipsy, cdl,cly,cgm,cmy, !input
      &  outpep,pe_p)     !output
        if(pe_p.ne.zero) then
         c_p=vint(outpep,roc)
         if(c_p.ne.zero) then
-         do i=1,inpt
+         do i=1,ngrid
           outpep(i)=pe_p*outpep(i)/c_p
          end do
         end if
        end if
 
 !!negative spectrum:
+       print *, 'negative spectrum'
       ispectr=-1
       pe_m=zero
       outpem=zero
-      call ourlhcd2017(ispectr,p_in,inpt,ipsy,rm,x0,z0,abtor,
-     &  tem,con,temi,azef,rh,rh1,cdl,cly,cgm,cmy, !input
+      call ourlhcd2017(ispectr,p_in,ipsy, cdl,cly,cgm,cmy, !input
      &  outpem,pe_m)     !output
        if(pe_m.ne.zero) then
         c_m=vint(outpem,roc)
         if(c_m.ne.zero) then
-         do i=1,inpt
+         do i=1,ngrid
           outpem(i)=pe_m*outpem(i)/c_m
          end do
         end if
        end if
 !
-      do i=1,inpt
+      do i=1,ngrid
        outpe(i)=outpep(i)+outpem(i)
       end do
 !
       deallocate(outpep,outpem)
-      deallocate(rh,rha,drhodr,con,tem,temi,azef)
-      deallocate(delta,ell,gamm,amy,cdl,cly,cgm,cmy,coeffs)
- !!     pause
+      !deallocate(rh,rha,drhodr,con,tem,temi,zeff)
+      !deallocate(delta,ell,gamm,amy)
+      deallocate(cdl,cly,cgm,cmy,coeffs)
+      !pause
 
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-      subroutine ourlhcd2017(ispec,p_in,ngrid,ncoe,arm,ar0,az0,btt
-     & ,ate,xne,ati,azef,rhj,rh1,acdl,acly,acgm,acmy,  ! input data
-     & outpe,pe_out) ! output data
+      subroutine ourlhcd2017(ispec,p_in,ncoe,acdl,acly,acgm,acmy, 
+     & outpe,pe_out) ! output data      
       use constants
+      use plasma
       use rt_parameters
       use spectrum1D
       implicit real*8 (a-h,o-z)
-
+      integer ncoe
       real*8 outpe,pe_out !,outpec,outpef,outpa,outda
-      dimension outpe(*),rhj(*),ate(*),xne(*),azef(*),ati(*)
+      dimension outpe(*)
       dimension acdl(ncoe),acly(ncoe),acgm(ncoe),acmy(ncoe)
 !!!!    maximum grid sizes:
 !!!!    rho=100, v_par_electrons=100, v_perp_ions=50
@@ -197,9 +178,9 @@ cccc   "poloidal magnetic field":
       !common /a0befr/ pi,pi2
       !common /a0cd/ rbord,maxstep2,maxstep4
       !common /a0cdm/ hmin1
-      common /a0ef1/ r0,z0,rm,cltn
+      common /a0ef1/ cltn
       common /bcef/ ynz,ynpopq
-      common /a0ef2/ btor,ww
+      common /a0ef2/ ww
       common /a0ef3/ xmi,cnye,cnyi,xsz,vt0 !c0,c1,
       common /a0gh/ pabs
       common /a0ghp/ vlf,vrt,dflf,dfrt
@@ -210,9 +191,9 @@ cccc   "poloidal magnetic field":
       common /asou/ rsou(102),sou(102),npta
       common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
       common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
-      common /a0l3/ rh(501),y2dn(501),y2tm(501),y2tmi(501)
-      common /a0l4/ con(501),tem(501),temi(501),nspl
-      common /a0l5/ zeff(501),y2zeff(501)
+      common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
+      !common /a0l4/ con(501),tem(501),temi(501),nspl
+      common /a0l5/ y2zeff(501)
       common/gridv/vgrid(101,100),dfundv(101,100),nvpt
       common/vvv1/dq1(101,100),dq2(101,100),pdc(100),pda(100),ppv1,ppv2
       common/findsigma/dncount(101,100)
@@ -259,14 +240,13 @@ cccc   "poloidal magnetic field":
       ispectr=ispec
 !
 
-
       lfree=1
       ncoef=ncoe
-      nspl=ngrid
-      rm=arm
-      r0=ar0
-      z0=az0
-      btor=btt
+      !nspl=ngrid
+      !rm=arm
+      !r0=ar0
+      !z0=az0
+      !btor=btt
       do i=1,ncoef
        cdl(i)=acdl(i)
        cly(i)=acly(i)
@@ -285,7 +265,7 @@ cccc   "poloidal magnetic field":
        call read_parameters('lhcd/ray_tracing.dat')
 
        znak_tor=dsign(1.d0,dble(itor))
-       btor=znak_tor*dabs(btor)
+       b_tor=znak_tor*dabs(b_tor0)
        fpol=fdf(1.d0,cmy,ncoef,dfmy)
        znak_pol=dsign(1.d0,dble(ipol))*dsign(1.d0,fpol)
        do i=1,ncoef
@@ -343,7 +323,7 @@ cccc   "poloidal magnetic field":
       end if
 88    format(1x,10(e14.7,1x))
 
-
+      print *, 'checking initial parameters'
 !!!!!!!!!!!!! checking initial parameters !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       if(kv.gt.50) kv=50
       if(nr.gt.100) nr=100
@@ -359,17 +339,17 @@ cccc   "poloidal magnetic field":
        pause 'nnz and ntet changed, because nnz*ntet>10000'
       end if
 !!!!!!!!!!!!!!! spline approximation of plasma profiles !!!!!!!!!!!!!!!!
-      rhj(nspl)=1.d0
-      do j=1,nspl
-       rh(j)=rhj(j)
-       con(j)=xne(j)
-       tem(j)=ate(j)
-       zeff(j)=azef(j)
-       if(itend0.gt.0) then
-        temi(j)=ati(j)
-       end if
-      end do
-
+      !rh(nspl)=1.d0
+      !do j=1,nspl
+      ! rh(j)=rhj(j)
+      ! con(j)=xne(j)
+      ! tem(j)=ate(j)
+      ! zeff(j)=azef(j)
+      ! if(itend0.gt.0) then
+      !  temi(j)=ati(j)
+      ! end if
+      !end do
+      print *, 'spline approximation of plasma profiles'
       call splne(rh,con,nspl,y2dn)
       call splne(rh,tem,nspl,y2tm)
       call splne(rh,zeff,nspl,y2zeff)
@@ -383,7 +363,6 @@ cccc   "poloidal magnetic field":
        call chder(zero,1.d0,chebne,chebdne,ncheb)
        call chder(zero,1.d0,chebdne,chebddne,ncheb)
       end if
-
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       hr=1.d0/dble(nr+1)
       xly=fdf(one,cly,ncoef,xlyp)
@@ -566,7 +545,7 @@ c--------------------------------------------
        vt=fvt(r)
        vto=vt/vt0
        wpq=c0**2*pn
-       whe=dabs(btor)*c1
+       whe=dabs(b_tor)*c1
        v=wpq/ww**2
        u1=whe/ww
        u=u1**2
@@ -601,7 +580,6 @@ c       vz2(j)=cright*cltn/cn2  !Vpar/Vt0
 c       if(vz2(j).gt.0.9d0*cltn) vz2(j)=0.9d0*cltn
 c       v1=vz1(j)/vto !Vpar/Vt(rho)
 c       v2=vz2(j)/vto !Vpar/Vt(rho)
-
        vmax=cltn/vto
        v1=4.d0  !Vpar/Vt(rho)
        v2=10.d0 !cright*cltn/cn2 !10.d0 !Vpar/Vt(rho)
@@ -614,9 +592,9 @@ c       v2=vz2(j)/vto !Vpar/Vt(rho)
        do i=1,ipt
         vgrid(i,j)=vrj(i)*vto
        end do
-      end do                     ! end 'rho' cycle
+      end do                     ! end 'rho' cycle 
 
-!!!!!!!!!read data !!!!!!!!!!!!
+!!!!!!!!!read data !!!!!!!!!!!!       
        allocate(vvj(i0),vdfj(i0))
        k=(3-ispectr)/2
        do j=1,nr
@@ -644,7 +622,6 @@ c       v2=vz2(j)/vto !Vpar/Vt(rho)
          if(dfundv(i,j).gt.zero) dfundv(i,j)=zero
         end do
        end do
-
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       if(itend0.gt.0) then  ! begin alpha-source renormalisation
        fuspow=anb*talfa*1.6022d-19
@@ -679,7 +656,6 @@ c       v2=vz2(j)/vto !Vpar/Vt(rho)
 c------------------------------------
 c set initial values of arrays
 c------------------------------------
-!
       dland=zero
       dcoll=zero
       perpn=zero
@@ -1447,6 +1423,7 @@ c---------------------------------------------
       subroutine dfind(j,i,v,powpr,pil,pic,pia,df,decv
      &                             ,refr,vlf,vrt,ifast)
       use constants
+      use plasma
       use rt_parameters
       implicit real*8 (a-h,o-z)
       common /a0i2/ vk(100) !,pme !pchm
@@ -1457,7 +1434,7 @@ c---------------------------------------------
       common /vvv3/ pdfast(100)
       common /alph/ dqi0(50,100)
       !common/b0/ itend0
-      common /a0ef1/ r0,z0,rm,cltn
+      common /a0ef1/ cltn
       !common /a0befr/ pi,pi2
       common/findsigma/dncount(101,100)
       parameter(zero=0.d0, tiny=1.d-100)
@@ -1530,6 +1507,7 @@ c---------------------------------------------
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine traj(xm0,tet0,xbeg,nmax,nb1,nb2,nomth,nomnz) !sav2009
       use constants
+      use plasma
       use rt_parameters
       implicit real*8 (a-h,o-z)
       external extd4
@@ -1540,7 +1518,7 @@ c---------------------------------------------
       !common /a0bcp/ tin
       !common /a0bd/ rrange,hdrob
       !common /a0befr/ pi,pi2
-      common /a0ef1/ r0,z0,rm,cltn
+      common /a0ef1/ cltn
  !!     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       common /abc/ rzz,tetzz,xmzz,iznzz,iwzz,irszz
       common /abcd/ irs
@@ -1720,6 +1698,7 @@ c-------------------------------------
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine driver2(ystart,x1,x2,xsav,hmin,h1) !sav2008
       use constants
+      use plasma
       use rt_parameters
       implicit real*8 (a-h,o-z)
       external extd2
@@ -1730,7 +1709,7 @@ c-------------------------------------
       !common /a0befr/ pi,pi2
       !common /a0cd/ rbord,maxstep2,maxstep4
       !common /a0cdm/ hmin1
-      common /a0ef1/ r0,z0,rm,cltn
+      common /a0ef1/ cltn
       common /abc/ rzz,tetzz,xmzz,iznzz,iwzz,irszz
       common /abcd/ irs
       common /abcde/ izn!,iw
@@ -1867,6 +1846,7 @@ c---------------------------------------
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine driver4(ystart,x1,x2,rexi,hmin,derivs)
       use constants
+      use plasma
       use rt_parameters
       implicit real*8 (a-h,o-z)
       external derivs
@@ -1880,7 +1860,7 @@ c---------------------------------------
       common /abcde/ izn!,iw
       common /abcdg/ iabsorp
       common /bdeo/ ivar
-      common /a0ef1/ r0,z0,rm,cltn
+      common /a0ef1/ cltn
       common /bcef/ ynz,ynpopq
       common /df/ pdec14,pdec24,pdec34,idec
       common /dg/ pintld4,pintcl4,pintal4
@@ -2020,11 +2000,12 @@ c---------------------------------------
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine disp2(pa,yn2,ptet,xnro,prt,prm)
       use constants
+      use plasma
       use rt_parameters
       implicit real*8 (a-h,o-z)
       !common /a0befr/ pi,pi2
-      common /a0ef1/ r0,z0,rm,cltn
-      common /a0ef2/ btor,ww
+      common /a0ef1/ cltn
+      common /a0ef2/ ww
       common /a0ef3/ xmi,cnye,cnyi,xsz,vt0
       common /abcde/ izn!,iw
       common /bcef/ ynz,ynpopq
@@ -2087,7 +2068,7 @@ c--------------------------------------
 c--------------------------------------
 c  magnetic field
 c--------------------------------------
-      bt=btor*(r0/rm)/x0
+      bt=b_tor*(r0/rm)/x0
       bp=g2jq*g3v*xmy
       b=dsqrt(bp*bp+bt*bt)
       si=bp/b
@@ -2263,7 +2244,7 @@ c--------------------------------------
       g33t=two*x0*(-pa*sitet-two*xgm*sitet*cotet)
       g12t=dxdrdt*dxdt+dxdr*dxdtdt+dzdrdt*dzdt+dzdr*dzdtdt
       xjt=g11t*g22+g22t*g11-two*g12*g12t
-      btt=-btor*(r0/rm)/x0**2*x0t
+      btt=-b_tor*(r0/rm)/x0**2*x0t
       g2jqt=(g22t/xj-g22/xj**2*xjt)/(g2jq*two)
       bpt=xmy*(g2jqt*g3v-.5d0*g2jq*g3v/g33*g33t)
       bat=one/b*(bp*bpt+bt*btt)
@@ -2390,11 +2371,12 @@ c    reflection
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine disp4(pa,ptet,xnr,yn2)
       use constants
+      use plasma
       use rt_parameters            
       implicit real*8 (a-h,o-z)
       !common /a0befr/ pi,pi2
-      common /a0ef1/ r0,z0,rm,cltn
-      common /a0ef2/ btor,ww
+      common /a0ef1/ cltn
+      common /a0ef2/ ww
       common /a0ef3/ xmi,cnye,cnyi,xsz,vt0
       common /bcef/ ynz,ynpopq
       common /abefo/ yn3
@@ -2406,7 +2388,7 @@ c    reflection
       !common/b0/ itend0
       common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       !common /cnew/ inew !est !sav2008
-      common/plasma/v,u,e1,e2,e3,dvdr,dudr,dudt
+      !common/plasma/v,u,e1,e2,e3,dvdr,dudr,dudt
       common/metrika/g11,g12,g22,g33,gg,g,si,co
       common/fj/dhdm,dhdnr,dhdtet,dhdr,ddn,dhdn3,dhdv2v,dhdu2u
       common/fjham/ham
@@ -2480,7 +2462,7 @@ c--------------------------------------
 c--------------------------------------
 c  magnetic field
 c--------------------------------------
-      bt=btor*(r0/rm)/x0
+      bt=b_tor*(r0/rm)/x0
       bp=g2gq*xmy
       b=dsqrt(bp*bp+bt*bt)
       whe=b*c1
@@ -2566,8 +2548,8 @@ c--------------------------------------
       g2gqr=(g22r/g-g22/g**2*gr)/(g2gq*two)
       bpt=xmy*g2gqt
       bpr=g2gqr*xmy+g2gq*xmyp
-      btr=-btor*(r0/rm)/x0**2*x0r
-      btt=-btor*(r0/rm)/x0**2*x0t
+      btr=-b_tor*(r0/rm)/x0**2*x0r
+      btt=-b_tor*(r0/rm)/x0**2*x0t
       bat=one/b*(bp*bpt+bt*btt)
       bar=one/b*(bp*bpr+bt*btr)
       sit=bpt/b-bp/b**2*bat
@@ -2724,7 +2706,7 @@ c      dydx(5)=znak*dhdn3/ddn
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine dhdomega(rho,theta,yn1,yn2)
       implicit real*8 (a-h,o-z)
-      common /a0ef2/ btor,ww
+      common /a0ef2/ ww
       common /abefo/ yn3
       common/fj/dhdm,dhdnr,dhdtet,dhdr,ddn,dhdn3,dhdv2v,dhdu2u
       common/direct/znakstart
@@ -3102,9 +3084,10 @@ cu    uses derivs,mmid,pzextr
 
       double precision  function obeom(ptet,pa)
       use constants
+      use plasma
       implicit real*8 (a-h,o-z)
       !common /a0befr/ pi,pi2
-      common /a0ef1/ r0,z0,rm,cltn
+      common /a0ef1/ cltn
       common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       parameter(two=2.d0, pa0=0.d0)
       xdl=fdf(pa,cdl,ncoef,xdlp)
@@ -3137,9 +3120,10 @@ c--------------------------------------
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       double precision  function ploshad(ptet,pa)
       use constants
+      use plasma
       implicit real*8 (a-h,o-z)
       !common /a0befr/ pi,pi2
-      common /a0ef1/ r0,z0,rm,cltn
+      common /a0ef1/ cltn
       common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       parameter(two=2.d0, pa0=0.d0)
       xdl=fdf(pa,cdl,ncoef,xdlp)
@@ -3176,9 +3160,10 @@ c--------------------------------------
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       double precision  function ft(x)
 ! electron temperature, erg
+      use plasma
       implicit real*8 (a-h,o-z)
-      common /a0l3/ rh(501),y2dn(501),y2tm(501),y2tmi(501)
-      common /a0l4/ con(501),tem(501),temi(501),nspl
+      common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
+      !common /a0l4/ con(501),tem(501),temi(501),nspl
       parameter(zero=0.d0,alfa=4.d0,dr=.02d0)
       pa=dabs(x) !#@sav
       if(pa.le.rh(nspl)) then
@@ -3193,9 +3178,10 @@ c--------------------------------------
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       double precision  function fti(x)
 ! ion temperature, kev
+      use plasma
       implicit real*8 (a-h,o-z)
-      common /a0l3/ rh(501),y2dn(501),y2tm(501),y2tmi(501)
-      common /a0l4/ con(501),tem(501),temi(501),nspl
+      common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
+      !common /a0l4/ con(501),tem(501),temi(501),nspl
       parameter(zero=0.d0,alfa=4.d0,dr=.02d0)
       pa=dabs(x) !#@sav
       if(pa.le.rh(nspl)) then
@@ -3209,10 +3195,11 @@ c--------------------------------------
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       double precision  function zefff(x)
 ! z_effective profile
+      use plasma
       implicit real*8 (a-h,o-z)
-      common /a0l3/ rh(501),y2dn(501),y2tm(501),y2tmi(501)
-      common /a0l4/ con(501),tem(501),temi(501),nspl
-      common /a0l5/ zeff(501),y2zeff(501)
+      common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
+      !common /a0l4/ con(501),tem(501),temi(501),nspl
+      common /a0l5/ y2zeff(501)
       parameter(zero=0.d0,alfa=4.d0,dr=.02d0)
       pa=dabs(x) !#@sav
       if(pa.le.rh(nspl)) then
@@ -3226,9 +3213,10 @@ c--------------------------------------
 c----------------------------------------------------------------
       double precision  function fn(x)
 ! plasma  density,  cm^-3
+      use plasma
       implicit real*8 (a-h,o-z)
-      common /a0l3/ rh(501),y2dn(501),y2tm(501),y2tmi(501)
-      common /a0l4/ con(501),tem(501),temi(501),nspl
+      common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
+      !common /a0l4/ con(501),tem(501),temi(501),nspl
       parameter(zero=0.d0,alfa=4.d0,dr=.02d0)
       pa=dabs(x)
       if(pa.le.rh(nspl)) then
@@ -3242,9 +3230,10 @@ c----------------------------------------------------------------
 c----------------------------------------------------------------
       double precision  function fn1(x,fnp)
 ! plasma density and its derivative
+      use plasma      
       implicit real*8 (a-h,o-z)
-      common /a0l3/ rh(501),y2dn(501),y2tm(501),y2tmi(501)
-      common /a0l4/ con(501),tem(501),temi(501),nspl
+      common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
+      !common /a0l4/ con(501),tem(501),temi(501),nspl
       parameter(zero=0.d0,alfa=4.d0,dr=.02d0)
       pa=dabs(x)
       if(pa.le.rh(nspl)) then
@@ -4248,6 +4237,7 @@ cu    uses derivs
  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine view(tview,iview,nnz,ntet) !sav2008
       use constants
+      use plasma
       use rt_parameters, only :  nr, itend0, kv, nmaxm           
       implicit real*8 (a-h,o-z)
       integer iview  !sav#
@@ -4263,7 +4253,7 @@ cc      common /xn1xn2/ an1,an2
       common/viewdat/mbeg,mend,mbad,rbeg,tetbeg,xnrbeg,xmbeg,yn3beg
       common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
-      common /a0ef1/ r0,z0,rm,cltn
+      common /a0ef1/ cltn
       common /bcef/ ynz,ynpopq
       !common /a0befr/ pi,pi2
       common /a0a1/ ynzm(1001),pm(1001) !,nmaxm(4)

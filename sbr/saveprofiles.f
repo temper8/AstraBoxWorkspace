@@ -1,4 +1,5 @@
       subroutine saveprofiles
+       use plasma
       implicit none
       real*8 fn,polin,polin1
       external fn,polin,polin1
@@ -6,28 +7,26 @@
       include 'for/parameter.inc'
       include 'for/const.inc'
       include 'for/status.inc'
-      real*8 drhodr(NRD),delta(NRD),ell(NRD),gamm(NRD),amy(NRD)
-     &,afld(NRD),rha(NRD)
-      integer itend0,kvv,ncheb,ntet,nnz,ispl,ilhdata,nspl,ncoef
+      integer itend0,kvv,ncheb,ntet,nnz,ispl,ilhdata,ncoef
       integer nmaxm,maxstep2,maxstep4,nr,ni1,ni2,niterat,im,ip
       integer ipri,iw,ismth,ismthalf,ismthout,inew,itor,ipoll
-      real*8 coeffs(10),rm,r0,z0,cltn,zero,p_in
+      real*8 coeffs(10),cltn,zero,p_in
       real*8 rmin,rmax,sitet,cotet,xb1,yb1,xb2,yb2
       real*8 freq,xmi1,zi1,xmi2,zi2,dni2,xmi3,zi3,dni3
-      real*8 rh,con,tem,temi,zeff,y2dn,y2tm,y2tmi,y2zeff
+      real*8 y2dn,y2tm,y2tmi,y2zeff
       real*8 cdl,cly,cgm,cmy,ynzm,pm,anz,apz,share
       real*8 energy,dra,dble,dsign
       real*8 cleft,cright,cdel,rbord,pchm0,pabs0,pgiter
-      real*8 abtor,fpol,fdf,dfmy,hmin1
+      real*8 fpol,fdf,dfmy,hmin1
       real*8 zplus,zminus,ynzm0,pm0,rrange,eps,hdrob
       real*8 chebne,chebdne,chebddne
       real*8 xlog,zalfa,xmalfa,dn1,dn2,factor,xlogj
 
       common/a00/ xlog,zalfa,xmalfa,dn1,dn2,factor
       common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
-      common /a0l3/ rh(501),y2dn(501),y2tm(501),y2tmi(501)
-      common /a0l4/ con(501),tem(501),temi(501),nspl
-      common /a0l5/ zeff(501),y2zeff(501)
+      common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
+      !common /a0l4/ con(501),tem(501),temi(501),nspl
+      common /a0l5/ y2zeff(501)
       common /a0a1/ ynzm(1001),pm(1001),nmaxm(4)
       common /a0ab/ nr
       common /a0abcd/ ipri
@@ -35,7 +34,7 @@
       common /a0bd/ rrange,hdrob
       common /a0cd/ rbord,maxstep2,maxstep4
       common /a0cdm/ hmin1
-      common /a0ef1/ r0,z0,rm,cltn
+      common /a0ef1/ cltn
       common/b0/ itend0
       common /cnew/ inew
       common/physpar/ freq,xmi1,zi1,xmi2,zi2,dni2,xmi3,zi3,dni3
@@ -44,8 +43,8 @@
       common/numpar1/ ni1,ni2,niterat
       common/optpar/ iw,ismth,ismthalf,ismthout
       common/grillpar/ zplus,zminus,ntet,nnz
-      real*8 rh1,znak_tor,znak_pol
-      common/left/ abtor,rh1,znak_tor,znak_pol,itor,ipoll
+      real*8 znak_tor,znak_pol
+      common/left/ znak_tor,znak_pol,itor,ipoll
       real*8 ynzmp,pmp,ynzmm,pmm,plaunp,plaunm
       common/grillmp/ ynzmp(1001),pmp(1001),ynzmm(1001),pmm(1001)
       common/grillspektr/ ynzm0(1001),pm0(1001),ispl
@@ -64,37 +63,14 @@
       common/firstcall/calls
       parameter(zero=0.d0,ipsy=5)
       save share
-
       ncoef=ipsy
-      inpt=NA1          ! ASTRA radial grid number
-      nspl=inpt
       p_in=dble(QLH)    ! input LH power, MW
-      do i=1,inpt
-!!!       rhj(i)=RHO(i)/ROC
-       rh(i)=AMETR(i)/ABC
-       rha(i)=RHO(i)/ABC  !/ABC instead of /ROC is not a mistake!
-       delta(i)=(SHIF(1)-SHIF(i))/ABC  !FRTC Shafr. shift. defin.
-       ell(i)=ELON(i)
-       gamm(i)=rh(i)*TRIA(i)
-!!variant       afld(i)=ULON(i)/RTOR/GP2
-       afld(i)=UPL(i)/RTOR/GP2 !!variant
-       !write(*,*)'afld=',afld(i),'Upl=',UPL(i)
-       con(i)=NE(i)
-       tem(i)=TE(i)
-       temi(i)=TI(i)
-       zeff(i)=ZEF(i)
-      end do
-      rh(inpt)=1.d0
-      rh1=rh(1)          !saving the first ASTRA radial grid element
-      rh(1)=zero         !shifting the first element to zero
-      rha(1)=zero        !shifting the first element to zero
-      delta(1)=zero      !putting delta(rh=0.)=0.
-      gamm(1)=zero       !putting gamm(rh=0.)=0.
 
-      abtor=1.d4*BTOR*RTOR/(RTOR+SHIF(1)) !B_tor_(magnetic axis), Gauss
-      rm=1.d2*ABC                       !minor radius in mid-plane, cm
-      r0=1.d2*(RTOR+SHIF(1))     !x-coordinate of the magnetic axis, cm
-      z0=1.d2*UPDWN              !z-coordinate of the magnetic axis, cm
+      call init_plasma(NA1,ABC,BTOR,RTOR,UPDWN,GP2,
+     & AMETR,RHO,SHIF,ELON,TRIA, NE,TE,TI,ZEF,UPL)
+ 
+      inpt = NA1
+      rh(inpt)=1.d0
 
 !!!!!!!!!!!!!! spline approximation of plasma profiles !!!!!!!!!!!!!!!!
       ipsy1=ipsy-1
@@ -254,7 +230,7 @@ cccc   "poloidal magnetic field":
       end if
 !
       znak_tor=dsign(1.d0,dble(itor))
-      abtor=znak_tor*dabs(abtor)
+      b_tor=znak_tor*dabs(b_tor0)
       fpol=fdf(1.d0,cmy,ncoef,dfmy)
       znak_pol=dsign(1.d0,dble(ipoll))*dsign(1.d0,fpol)
       do i=1,ncoef
@@ -296,6 +272,7 @@ cccc   "poloidal magnetic field":
        do j=1,nr
          r=dble(j)/dble(nr+1)
          vclt=3.d10/fvt(r)
+         print *, vclt
          call init_vi(vclt, vij(:,j))
          call init_fmaxw_classic(vclt,enorm(j),fij(:,j,1),dfij(:,j,1))
          call init_fmaxw_ext(vclt,enorm(j),fij(:,j,2),dfij(:,j,2))     
