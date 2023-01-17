@@ -26,12 +26,7 @@ cc******************************************************************
 !     real*8,dimension(:),allocatable:: rh,rha,drhodr,delta,ell,gamm,amy
       real*8,dimension(:),allocatable:: cdl,cly,cgm,cmy,coeffs
       parameter(zero=0.d0)
-      integer, parameter :: ipsy = 5
-!
-cc*********************************************************************
-cc   ipsy = number of polinomial decomposition coefficients
-cc           used for interpolation of Zakharov's moments.
-cc*********************************************************************
+
 
 cc*********************************************************************
 cc    Co-ordinates used in ray-tracing:
@@ -106,7 +101,7 @@ cccc   "poloidal magnetic field":
       ispectr=1
       pe_p=zero
       outpep=zero
-      call ourlhcd2017(ispectr,p_in,ipsy, cdl,cly,cgm,cmy, !input
+      call ourlhcd2017(ispectr,p_in, cdl,cly,cgm,cmy, !input
      &  outpep,pe_p)     !output
        if(pe_p.ne.zero) then
         c_p=vint(outpep,roc)
@@ -122,7 +117,7 @@ cccc   "poloidal magnetic field":
       ispectr=-1
       pe_m=zero
       outpem=zero
-      call ourlhcd2017(ispectr,p_in,ipsy, cdl,cly,cgm,cmy, !input
+      call ourlhcd2017(ispectr,p_in, cdl,cly,cgm,cmy, !input
      &  outpem,pe_m)     !output
        if(pe_m.ne.zero) then
         c_m=vint(outpem,roc)
@@ -145,17 +140,17 @@ cccc   "poloidal magnetic field":
 
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine ourlhcd2017(ispec,p_in,ncoe,acdl,acly,acgm,acmy, 
+      subroutine ourlhcd2017(ispec,p_in,acdl,acly,acgm,acmy, 
      & outpe,pe_out) ! output data      
       use constants
       use plasma
       use rt_parameters
       use spectrum1D
       implicit real*8 (a-h,o-z)
-      integer ncoe
+      !integer ncoe
       real*8 outpe,pe_out !,outpec,outpef,outpa,outda
       dimension outpe(*)
-      dimension acdl(ncoe),acly(ncoe),acgm(ncoe),acmy(ncoe)
+      dimension acdl(ipsy),acly(ipsy),acgm(ipsy),acmy(ipsy)
 !!!!    maximum grid sizes:
 !!!!    rho=100, v_par_electrons=100, v_perp_ions=50
       external obeom,ploshad,fn
@@ -241,7 +236,7 @@ cccc   "poloidal magnetic field":
 !
 
       lfree=1
-      ncoef=ncoe
+      ncoef=ipsy
       !nspl=ngrid
       !rm=arm
       !r0=ar0

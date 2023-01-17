@@ -3,7 +3,7 @@
       implicit none
       real*8 fn,polin,polin1
       external fn,polin,polin1
-      integer i,k,j,inpt,inpt3,ipsy,ipsy1,klo,khi,ierr
+      integer i,k,j,inpt,inpt3,ipsy1,klo,khi,ierr
       include 'for/parameter.inc'
       include 'for/const.inc'
       include 'for/status.inc'
@@ -61,7 +61,6 @@
      &,dij(i0,100,2),enorm(100),fst(100)
       real*8 calls
       common/firstcall/calls
-      parameter(zero=0.d0,ipsy=5)
       save share
       ncoef=ipsy
       p_in=dble(QLH)    ! input LH power, MW
