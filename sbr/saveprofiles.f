@@ -1,8 +1,9 @@
       subroutine saveprofiles
+       use approximation       
        use plasma
       implicit none
-      real*8 fn,polin,polin1
-      external fn,polin,polin1
+      real*8 fn
+      external fn
       integer i,k,j,inpt,inpt3,ipsy1,klo,khi,ierr
       include 'for/parameter.inc'
       include 'for/const.inc'

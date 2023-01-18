@@ -9,14 +9,15 @@ cc   djdt(i)  = dJr2/dt, time drivative of runaway current Jr2, MA/m^2/sec
 cc   outpa(i)  = LH power density deposited into alphas, MW/m^3
 cc   outda(i)  = (Na/Ne) relative density of alpha-particles
 cc******************************************************************
+      use approximation
       use plasma
       implicit none
       integer i,k,iview, ipsy1,iunit
       integer klo,khi,ierr,inpt2,ispectr
       real*8 zero,p_in,pe_p,pe_m,c_p,c_m
-      real*8 polin,polin1,vint,tcur
+      real*8 vint,tcur
       common/testf/ tcur
-      external polin,polin1
+      !external polin,polin1
       include 'for/parameter.inc'
       include 'for/const.inc'
       include 'for/status.inc'
@@ -3614,161 +3615,7 @@ c----------------------------------------------------------------
         dy(n)=(y(n)-y(n-1))/(x(n)-x(n-1))
       return
       end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      double precision function polin(k,x)
-      implicit real*8 (a-h,o-z)
-       polin=1d0
-       if(k.gt.1) polin=x**(k-1)
-      return
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      double precision function polin1(k,x)
-      implicit real*8 (a-h,o-z)
-       polin1=x**k
-      return
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      double precision function polin2(k,x)
-      implicit real*8 (a-h,o-z)
-       polin2=x**(k+1)
-      return
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine approx(x,y,n,f,m,b)
-c
-c     y(i)=y(x(i))  the data to be approximated
-c     n             number of points in the input data
-c     m             number of coefficients of decomposition
-c                   over base functions "f(k,x)" :
-c                          y(x)=sum_1^m [b(k)*f(k,x)]
-c     b(i)          found decomposition coefficients
-c
-      implicit real*8 (a-h,o-z)
-      parameter(zero=0.d0, np=20)
-      dimension a(np,np),indx(np)
-      dimension y(n),x(n),b(*)
 
-       if(m.gt.np) then
-         write(*,*)'index error subroutine "approx"'
-         return
-       end if
-
-         do j=1,m
-          do k=1,j
-           a(k,j)=zero
-            do i=1,n
-             a(k,j)=a(k,j)+f(j,x(i))*f(k,x(i))
-            end do
-          end do
-         end do
-                 do k=2,m
-                  do j=1,k-1
-                    a(k,j)=a(j,k)
-                  end do
-                 end do
-
-          do k=1,m
-           b(k)=zero
-            do i=1,n
-             b(k)=b(k)+y(i)*f(k,x(i))
-            end do
-          end do
-
-        call ludcmp(a,m,np,indx,d)
-        call lubksb(a,m,np,indx,b)
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine ludcmp(a,n,np,indx,d)
-      implicit real*8 (a-h,o-z)
-      parameter (nmax=501, tiny=1.d-20, zero=0.d0)
-      dimension a(np,np),indx(n),vv(nmax)
-      d=1.d0
-      do 12 i=1,n
-        aamax=zero
-        do 11 j=1,n
-          if (dabs(a(i,j)).gt.aamax) aamax=dabs(a(i,j))
-11      continue
-        if (aamax.eq.zero) pause 'singular matrix.'
-        vv(i)=1.d0/aamax
-12    continue
-      do 19 j=1,n
-        if (j.gt.1) then
-          do 14 i=1,j-1
-            sum=a(i,j)
-            if (i.gt.1)then
-              do 13 k=1,i-1
-                sum=sum-a(i,k)*a(k,j)
-13            continue
-              a(i,j)=sum
-            endif
-14        continue
-        endif
-        aamax=zero
-        do 16 i=j,n
-          sum=a(i,j)
-          if (j.gt.1)then
-            do 15 k=1,j-1
-              sum=sum-a(i,k)*a(k,j)
-15          continue
-            a(i,j)=sum
-          endif
-          dum=vv(i)*dabs(sum)
-          if (dum.ge.aamax) then
-            imax=i
-            aamax=dum
-          endif
-16      continue
-        if (j.ne.imax)then
-          do 17 k=1,n
-            dum=a(imax,k)
-            a(imax,k)=a(j,k)
-            a(j,k)=dum
-17        continue
-          d=-d
-          vv(imax)=vv(j)
-        endif
-        indx(j)=imax
-        if(j.ne.n) then
-          if(a(j,j).eq.zero) a(j,j)=tiny
-          dum=1.d0/a(j,j)
-          do 18 i=j+1,n
-            a(i,j)=a(i,j)*dum
-18        continue
-        endif
-19    continue
-      if(a(n,n).eq.zero) a(n,n)=tiny
-      return
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine lubksb(a,n,np,indx,b)
-      implicit real*8 (a-h,o-z)
-      parameter(zero=0.d0)
-      dimension a(np,np),indx(n),b(n)
-      ii=0
-      do 12 i=1,n
-        ll=indx(i)
-        sum=b(ll)
-        b(ll)=b(i)
-        if (ii.ne.0)then
-          do 11 j=ii,i-1
-            sum=sum-a(i,j)*b(j)
-11        continue
-        else if (sum.ne.zero) then
-          ii=i
-        endif
-        b(i)=sum
-12    continue
-      do 14 i=n,1,-1
-        sum=b(i)
-        if(i.lt.n)then
-          do 13 j=i+1,n
-            sum=sum-a(i,j)*b(j)
-13        continue
-        endif
-        b(i)=sum/a(i,i)
-14    continue
-      return
-      end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine source_new(r,out)
       implicit real*8 (a-h,o-z)
@@ -4140,8 +3987,9 @@ cu    uses derivs
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine fsmoth4(x,y,n,ys)
+      use approximation
       implicit real*8 (a-h,o-z)
-      external polin2
+      !external polin2
       parameter(zero=0.d0,np=10,imax=601)
       parameter(m0=1,ndp=1)
       ! m0,ndp - parameters of smoothing procedure
