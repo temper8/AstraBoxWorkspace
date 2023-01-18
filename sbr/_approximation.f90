@@ -145,28 +145,28 @@ subroutine lubksb(a,n,np,indx,b)
     real(dp)  a(np,np),indx(n),b(n)
     integer i,j,ii,ll,n,np 
     ii=0
-    do 12 i=1,n
+    do i=1,n
         ll=indx(i)
         sum=b(ll)
         b(ll)=b(i)
         if (ii.ne.0)then
-            do 11 j=ii,i-1
+            do j=ii,i-1
                 sum=sum-a(i,j)*b(j)
-11          continue
+            end do
         else if (sum.ne.zero) then
             ii=i
         endif
         b(i)=sum
-12    continue
-    do 14 i=n,1,-1
-    sum=b(i)
-    if(i.lt.n)then
-        do 13 j=i+1,n
-            sum=sum-a(i,j)*b(j)
-13        continue
-    endif
-    b(i)=sum/a(i,i)
-14    continue
+    end do
+    do i=n,1,-1
+        sum=b(i)
+        if(i.lt.n)then
+            do j=i+1,n
+                sum=sum-a(i,j)*b(j)
+            end do
+        endif
+        b(i)=sum/a(i,i)
+    end do
     return
 end    
 end module approximation
