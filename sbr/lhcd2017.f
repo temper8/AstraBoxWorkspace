@@ -223,14 +223,8 @@ cccc   "poloidal magnetic field":
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
       if(p_in.eq.zero) then
-       do j=1,100
-        do k=1,2
-         do i=1,i0
-          dij(i,j,k)=zero
-         end do
-        end do
-       end do
-       return
+          dij(:,:,:)=zero
+          return
       end if
       ispectr=ispec
 !
