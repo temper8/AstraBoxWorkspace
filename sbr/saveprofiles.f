@@ -8,14 +8,14 @@
       include 'for/parameter.inc'
       include 'for/const.inc'
       include 'for/status.inc'
-      integer itend0,kvv,ncheb,ntet,nnz,ispl,ilhdata,ncoef
+      integer itend0,kvv,ncheb,ntet,nnz,ispl,ilhdata
       integer nmaxm,maxstep2,maxstep4,nr,ni1,ni2,niterat,im,ip
       integer ipri,iw,ismth,ismthalf,ismthout,inew,itor,ipoll
-      real*8 coeffs(10),cltn,zero,p_in
+      real*8 cltn,zero,p_in
       real*8 rmin,rmax,sitet,cotet,xb1,yb1,xb2,yb2
       real*8 freq,xmi1,zi1,xmi2,zi2,dni2,xmi3,zi3,dni3
       real*8 y2dn,y2tm,y2tmi,y2zeff
-      real*8 cdl,cly,cgm,cmy,ynzm,pm,anz,apz,share
+      real*8 ynzm,pm,anz,apz,share
       real*8 energy,dra,dble,dsign
       real*8 cleft,cright,cdel,rbord,pchm0,pabs0,pgiter
       real*8 fpol,fdf,dfmy,hmin1
@@ -24,7 +24,7 @@
       real*8 xlog,zalfa,xmalfa,dn1,dn2,factor,xlogj
 
       common/a00/ xlog,zalfa,xmalfa,dn1,dn2,factor
-      common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
+!      common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
       !common /a0l4/ con(501),tem(501),temi(501),nspl
       common /a0l5/ y2zeff(501)
@@ -63,7 +63,7 @@
       real*8 calls
       common/firstcall/calls
       save share
-      ncoef=ipsy
+      !ncoef=ipsy
       p_in=dble(QLH)    ! input LH power, MW
 
       call init_plasma(NA1,ABC,BTOR,RTOR,UPDWN,GP2,

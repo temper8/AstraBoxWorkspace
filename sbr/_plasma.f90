@@ -12,10 +12,10 @@ module plasma
     real(dp), dimension(:),allocatable:: con,tem,temi,zeff,afld
     real(dp), dimension(:),allocatable:: rh,rha,drhodr,delta,ell,gamm,amy
 
-    integer, parameter :: ipsy = 5
+    integer, parameter :: ipsy = 5, ncoef = 5
     !+   ipsy = number of polinomial decomposition coefficients
     !+   used for interpolation of Zakharov's moments.
-
+    real(dp), dimension(ipsy) :: cdl,cly,cgm,cmy,coeffs
 contains
     subroutine init_plasma(NA1, ABC, BTOR, RTOR, UPDWN, GP2, AMETR, RHO, SHIF, ELON, TRIA, NE, TE, TI, ZEF, UPL)
         implicit none

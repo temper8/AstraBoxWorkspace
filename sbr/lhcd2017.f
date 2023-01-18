@@ -25,7 +25,7 @@ cc******************************************************************
       real*8,dimension(:),allocatable:: outpep,outpem
 !     real*8,dimension(:),allocatable:: con,tem,temi,azef,afld
 !     real*8,dimension(:),allocatable:: rh,rha,drhodr,delta,ell,gamm,amy
-      real*8,dimension(:),allocatable:: cdl,cly,cgm,cmy,coeffs
+!     real*8,dimension(:),allocatable:: cdl,cly,cgm,cmy,coeffs
       parameter(zero=0.d0)
 
 
@@ -50,7 +50,7 @@ cc*********************************************************************
 !     allocate(rh(inpt),rha(inpt),drhodr(inpt),con(inpt),tem(inpt))
 !      allocate(temi(inpt),azef(inpt))
 !      allocate(delta(inpt),ell(inpt),gamm(inpt),amy(inpt))
-      allocate(cdl(ipsy),cly(ipsy),cgm(ipsy),cmy(ipsy),coeffs(ipsy))
+      !allocate(cdl(ipsy),cly(ipsy),cgm(ipsy),cmy(ipsy),coeffs(ipsy))
 
       call init_plasma(NA1,ABC,BTOR,RTOR,UPDWN,GP2,
      & AMETR,RHO,SHIF,ELON,TRIA, NE,TE,TI,ZEF,UPL)
@@ -102,7 +102,7 @@ cccc   "poloidal magnetic field":
       ispectr=1
       pe_p=zero
       outpep=zero
-      call ourlhcd2017(ispectr,p_in, cdl,cly,cgm,cmy, !input
+      call ourlhcd2017(ispectr,p_in, !input
      &  outpep,pe_p)     !output
        if(pe_p.ne.zero) then
         c_p=vint(outpep,roc)
@@ -118,7 +118,7 @@ cccc   "poloidal magnetic field":
       ispectr=-1
       pe_m=zero
       outpem=zero
-      call ourlhcd2017(ispectr,p_in, cdl,cly,cgm,cmy, !input
+      call ourlhcd2017(ispectr,p_in, !input
      &  outpem,pe_m)     !output
        if(pe_m.ne.zero) then
         c_m=vint(outpem,roc)
@@ -136,12 +136,12 @@ cccc   "poloidal magnetic field":
       deallocate(outpep,outpem)
       !deallocate(rh,rha,drhodr,con,tem,temi,zeff)
       !deallocate(delta,ell,gamm,amy)
-      deallocate(cdl,cly,cgm,cmy,coeffs)
+!     deallocate(cdl,cly,cgm,cmy,coeffs)
       !pause
 
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine ourlhcd2017(ispec,p_in,acdl,acly,acgm,acmy, 
+      subroutine ourlhcd2017(ispec,p_in, 
      & outpe,pe_out) ! output data      
       use constants
       use plasma
@@ -151,7 +151,7 @@ cccc   "poloidal magnetic field":
       !integer ncoe
       real*8 outpe,pe_out !,outpec,outpef,outpa,outda
       dimension outpe(*)
-      dimension acdl(ipsy),acly(ipsy),acgm(ipsy),acmy(ipsy)
+!      dimension acdl(ipsy),acly(ipsy),acgm(ipsy),acmy(ipsy)
 !!!!    maximum grid sizes:
 !!!!    rho=100, v_par_electrons=100, v_perp_ions=50
       external obeom,ploshad,fn
@@ -186,7 +186,7 @@ cccc   "poloidal magnetic field":
       common /a0i4/ fcoll(100),dens(100),eta(100)
       common /asou/ rsou(102),sou(102),npta
       common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
-      common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
+      !common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
       !common /a0l4/ con(501),tem(501),temi(501),nspl
       common /a0l5/ y2zeff(501)
@@ -231,18 +231,18 @@ cccc   "poloidal magnetic field":
 !
 
       lfree=1
-      ncoef=ipsy
+      !ncoef=ipsy
       !nspl=ngrid
       !rm=arm
       !r0=ar0
       !z0=az0
       !btor=btt
-      do i=1,ncoef
-       cdl(i)=acdl(i)
-       cly(i)=acly(i)
-       cgm(i)=acgm(i)
-       cmy(i)=acmy(i)
-      end do
+!      do i=1,ncoef
+!       cdl(i)=acdl(i)
+!       cly(i)=acly(i)
+!       cgm(i)=acgm(i)
+!       cmy(i)=acmy(i)
+!      end do
 !
        call get_unit(iunit)
        if(iunit.eq.0) then
@@ -1521,7 +1521,7 @@ c---------------------------------------------
       common /be2/ ider
       common /beo/ iroot
       common /bg/ im4
-      common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
+ !     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       integer nomth,nomnz
       parameter (pgdop=0.02d0,hmin=0.d-7) !sav2008, old hmin=1.d-7
       eps0=eps
@@ -2013,7 +2013,7 @@ c---------------------------------------
       !common/a00/ xlog,zalfa,xmalfa,dn1,dn2 !,factor
       common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
       !common/b0/ itend0
-      common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
+!     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       !common /cnew/ inew !est !sav2008
       common/fj/dhdm,dhdnr,dhdtet,dhdr,ddn,dhdn3,dhdv2v,dhdu2u
       common/direct/znakstart
@@ -2376,7 +2376,7 @@ c    reflection
       !common/a00/ xlog,zalfa,xmalfa,dn1,dn2!,factor
       common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
       !common/b0/ itend0
-      common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
+!     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       !common /cnew/ inew !est !sav2008
       !common/plasma/v,u,e1,e2,e3,dvdr,dudr,dudt
       common/metrika/g11,g12,g22,g33,gg,g,si,co
@@ -3078,7 +3078,7 @@ cu    uses derivs,mmid,pzextr
       implicit real*8 (a-h,o-z)
       !common /a0befr/ pi,pi2
       common /a0ef1/ cltn
-      common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
+!     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       parameter(two=2.d0, pa0=0.d0)
       xdl=fdf(pa,cdl,ncoef,xdlp)
       xly=fdf(pa,cly,ncoef,xlyp)
@@ -3114,7 +3114,7 @@ c--------------------------------------
       implicit real*8 (a-h,o-z)
       !common /a0befr/ pi,pi2
       common /a0ef1/ cltn
-      common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
+!     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       parameter(two=2.d0, pa0=0.d0)
       xdl=fdf(pa,cdl,ncoef,xdlp)
       xly=fdf(pa,cly,ncoef,xlyp)
@@ -4088,7 +4088,7 @@ cc      common /xn1xn2/ an1,an2
       dimension mbeg(mpnt),mend(mpnt),mbad(mpnt),rbeg(mpnt) !sav2008
       dimension tetbeg(mpnt),xnrbeg(mpnt),xmbeg(mpnt),yn3beg(mpnt)
       common/viewdat/mbeg,mend,mbad,rbeg,tetbeg,xnrbeg,xmbeg,yn3beg
-      common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
+!     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
       common /a0ef1/ cltn
       common /bcef/ ynz,ynpopq
