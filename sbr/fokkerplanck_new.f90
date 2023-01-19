@@ -3,6 +3,7 @@ subroutine fokkerplanck_new(time, TAU)
     use FokkerPlanck1D_mod
     use Utils
     use rt_parameters
+    use maxwell    
     implicit none
 
     type(FokkerPlanck1D) fp_test
@@ -12,42 +13,23 @@ subroutine fokkerplanck_new(time, TAU)
     !integer nr
     !common /a0ab/ nr
     integer, parameter :: ntau = 10
-    integer i0
-    parameter(i0=1002)
-    real*8 vij,fij0,fij,dfij,dij,enorm,fst
-    common/lh/vij(i0,100),fij0(i0,100,2),fij(i0,100,2),dfij(i0,100,2), dij(i0,100,2),enorm(100),fst(100)
+    !integer i0
+    !parameter(i0=1002)
+    !real*8 vij,fij0,fij,dfij,dij,enorm,fst
+    !common/lh/vij(i0,100),fij0(i0,100,2),fij(i0,100,2),dfij(i0,100,2), dij(i0,100,2),enorm(100),fst(100)
     integer n,i,j,it,nt,k
     real*8 xend,h,dt
-    real*8 znak,alfa2,zero,dt0,h0,r,fvt
+    real*8 znak,alfa2,dt0,h0,r,fvt
     !common/ef/ alfa2
     
     real*8 d0
     integer jindex,kindex
     common/dddql/ d0,jindex,kindex
-    parameter(zero=0.d0,dt0=0.1d0,h0=0.1d0)
+    parameter(dt0=0.1d0,h0=0.1d0)
     real time1, time2
 
    
     interface 
-    subroutine fokkerplanck1D_iter(alfa2, h, n, dt, nt, xend, d1, d2, d3, vj, fj0, out_fj, dfj0)
-        implicit none
-        real*8, intent(in)  :: alfa2           
-        integer, intent(in) :: n, nt
-        real*8, intent(in) :: h, dt, xend
-        real*8, intent(in) ::  d1(:), d2(:), d3(:), vj(:)
-        real*8, intent(inout) :: fj0(:)
-        real*8, intent(inout) :: out_fj(:)        
-        real*8, intent (inout), optional :: dfj0(:)
-    end subroutine fokkerplanck1D_iter      
-    
-    subroutine init_diffusion(h, n, vj, dj, d1, d2, d3)
-        implicit none
-        integer, intent(in) :: n
-        real*8, intent(in) :: h
-        real*8, dimension(:), intent(in) :: vj, dj
-        real*8, dimension(:), intent(out) :: d1, d2, d3
-    end subroutine init_diffusion
-
     subroutine write_distribution(arr,N,time)
         implicit none
         real*8, intent(in) :: arr(*)
@@ -107,7 +89,7 @@ subroutine fokkerplanck_new(time, TAU)
             fij(:,j,k) = fp_test%f
         end do
    
-        call write_distribution(fij0(:,j,k), i0, time)
+        call write_distribution(fij0(:,j,2), i0, time)
         !call write_distribution(out_fj, n, time)
     end do
 

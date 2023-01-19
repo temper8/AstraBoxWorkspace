@@ -90,6 +90,7 @@ cc*********************************************************************
       use plasma
       use rt_parameters
       use spectrum1D
+      use maxwell      
       implicit real*8 (a-h,o-z)
       !integer ncoe
       real*8 outpe,pe_out !,outpec,outpef,outpa,outda
@@ -148,11 +149,11 @@ cc*********************************************************************
       !common /cnew/ inew !est !sav2008
       common/ne_cheb/chebne(50),chebdne(50),chebddne(50),ncheb
 
-      integer i0,ispectr
-      parameter(i0=1002)
-      real*8 vij,fij0,fij,dfij,dij,enorm,fst,kofpar,timecof
-      common/lh/vij(i0,100),fij0(i0,100,2),fij(i0,100,2),dfij(i0,100,2)
-     &,dij(i0,100,2),enorm(100),fst(100)
+      !integer i0,ispectr
+      !parameter(i0=1002)
+      real*8 kofpar,timecof
+      !common/lh/vij(i0,100),fij0(i0,100,2),fij(i0,100,2),dfij(i0,100,2)
+      !&,dij(i0,100,2),enorm(100),fst(100)
       real*8,dimension(:),allocatable:: vvj,vdfj
       integer kpt1,kpt3
       parameter(kpt1=20,kpt3=20)

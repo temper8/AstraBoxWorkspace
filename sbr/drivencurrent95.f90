@@ -111,6 +111,7 @@
       subroutine lhcurrent(outj,ohj,cuj,cujoh,inpt,ispectr)
 !!      implicit real*8 (a-h,o-z)
       use plasma
+      use maxwell
       use rt_parameters, only : nr
       implicit none
       real*8 outj(*),ohj(*),cuj,cujoh,curs,curs0,curdir
@@ -124,13 +125,12 @@
       common /cnew/ inew !est !sav2008
       real*8 zv1,zv2,sk,fout
       common/plosh/ zv1(100,2),zv2(100,2),sk(100)
-      integer i0,k
-      parameter(i0=1002)
-      real*8 vij,fij0,fij,dfij,dij,enorm,fst
-      common/lh/ vij(i0,100), fij0(i0,100,2), fij(i0,100,2), dfij(i0,100,2), dij(i0,100,2), enorm(100), fst(100)
+      integer k
+      !parameter(i0=1002)
+      !real*8 vij,fij0,fij,dfij,dij,enorm,fst
+      !common/lh/ vij(i0,100), fij0(i0,100,2), fij(i0,100,2), dfij(i0,100,2), dij(i0,100,2), enorm(100), fst(100)
       real*8,dimension(:),allocatable:: vj, fj, fj0, cur, cur0, currnt, rxx, wrk
-      real*8 zero
-      parameter(zero=0.d0, ismthout=1)
+      parameter(ismthout=1)
       interface 
       function currlhcd(v,f) result(curs)
             implicit none
@@ -296,14 +296,15 @@ end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
       subroutine ddc(diffusion)
+      use maxwell
       implicit none
       common/testf/ tcur
 
       integer ntau,tc,koltoch,i,j,k,klo
-      real*8 curtime,tcur,zero,dij
+      real*8 curtime,tcur
       real*16 tau0,spacing,curtime0
-      parameter(tau0=3.000990745207882E-002, zero=0.d0)
-      common/lh/dij(1002,100,2)
+      parameter(tau0=3.000990745207882E-002)
+      !common/lh/dij(1002,100,2)
       real*8 b,b1,b2,d,diffusion
 !      real*8,dimension(:),allocatable:: diffusion
       integer i1,iunit6
@@ -347,17 +348,17 @@ end
 
 
       real*8 function d(x)
+      use maxwell
       implicit none
-      integer i0
-      parameter(i0=1002)
-      real*8 vij,fij0,fij,dfij,dij,enorm,fst
-      common/lh/vij(i0,100),fij0(i0,100,2),fij(i0,100,2),dfij(i0,100,2),dij(i0,100,2),enorm(100),fst(100)
+      !integer i0
+      !parameter(i0=1002)
+      !real*8 vij,fij0,fij,dfij,dij,enorm,fst
+      !common/lh/vij(i0,100),fij0(i0,100,2),fij(i0,100,2),dfij(i0,100,2),dij(i0,100,2),enorm(100),fst(100)
       real*8,dimension(:),allocatable:: vvj,ddj
       integer klo,khi,ierr
-      real*8 d0,zero,x
+      real*8 d0,x
       integer jindex,kindex,k,j,i
       common/dddql/ d0,jindex,kindex
-      parameter(zero=0.d0)
       d=zero
       if(d0.eq.zero) return
       j=jindex

@@ -1,22 +1,29 @@
-!!!!!!!!!!!!
+module maxwell
+      use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64          
+      use constants, only : zero
+      implicit none
+      integer, parameter :: i0 = 1002
+
+      real(dp) vij(i0,100), fij0(i0,100,2), fij(i0,100,2)
+      real(dp) dfij(i0,100,2), dij(i0,100,2)
+      real(dp) enorm(100), fst(100)
+contains
       subroutine init_vi(vclt, vi)
-            integer, parameter :: i0 = 1002
             real*8, intent(in) :: vclt
             real*8, intent(out) :: vi(i0)            
             real*8 vmax
-
+            integer i
             vmax = 2.d0*vclt
             do i=1,i0
                   vi(i)=dble(i-1)*vmax/dble(i0-1)
             end do
-      end subroutine
+      end subroutine      
 
       subroutine init_fmaxw_classic(vclt, enorm, fi, dfi)
-            integer, parameter :: i0 = 1002
             real*8, intent(in) :: vclt, enorm
             real*8, intent(out) :: fi(i0), dfi(i0)
             real*8 vi, vmax
-
+            integer i
             vmax = 2.d0*vclt
             do i=1,i0
                   vi = dble(i-1)*vmax/dble(i0-1)
@@ -27,14 +34,13 @@
                         dfi(i) = zero
                   end if
             end do
-      end subroutine
+      end subroutine      
 
       subroutine init_fmaxw_ext(vclt, enorm, fi, dfi)
-            integer, parameter :: i0 = 1002
             real*8, intent(in) :: vclt, enorm
             real*8, intent(out) :: fi(i0), dfi(i0)
             real*8 vi, vmax
-
+            integer i
             vmax=2.d0*vclt
             do i=1,i0
                   vi = dble(i-1)*vmax/dble(i0-1)
@@ -47,7 +53,6 @@
             end do
       end subroutine      
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       double precision function funmaxwell(v,dfunmaxwell)
             implicit none
             real*8 v,dfunmaxwell,arg,pi2sqrt
@@ -56,12 +61,12 @@
             arg=-0.5d0*v**2
             funmaxwell=dexp(arg)/pi2sqrt
             dfunmaxwell=-v*funmaxwell
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      end      
+
       double precision function fmaxw_classic(v,alfa2,dfmaxw)
             implicit none
             real*8 v,alfa2,dfmaxw
-            real*8 arg,alfa,api,b,psiq,f,df,erfcc
+            real*8 arg,alfa,api,b,psiq,f,df
             real*8 pi2sqrt,pisqrt,zero
             parameter(pi2sqrt=2.506628274631d0,pisqrt=1.77245385090552d0)
             parameter(zero=0.d0)
@@ -74,7 +79,7 @@
       double precision function fmaxw_ext(v,alfa2,dfmaxw)
             implicit none
             real*8 v,alfa2,dfmaxw
-            real*8 arg,alfa,api,b,psiq,f,df,erfcc
+            real*8 arg,alfa,api,b,f,df
             real*8 pi2sqrt,pisqrt,zero
             parameter(pi2sqrt=2.506628274631d0,pisqrt=1.77245385090552d0)
             parameter(zero=0.d0)
@@ -86,12 +91,12 @@
             fmaxw_ext=(f+api)/b/pi2sqrt
             df=-v*((1.d0-alfa2*v**2)*f+api)
             dfmaxw=df/b/pi2sqrt
-      end
+      end      
 
       double precision function fmaxw(v,alfa2,dfmaxw)
             implicit none
             real*8 v,alfa2,dfmaxw
-            real*8 arg,alfa,api,b,psiq,f,df,erfcc
+            real*8 arg,alfa,api,b,f,df
             real*8 pi2sqrt,pisqrt,zero
             parameter(pi2sqrt=2.506628274631d0,pisqrt=1.77245385090552d0)
             parameter(zero=0.d0)
@@ -108,8 +113,7 @@
                   df=-v*((1.d0-alfa2*v**2)*f+api)
                   dfmaxw=df/b/pi2sqrt
             end if
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      end      
 
       double precision function psiq(v,alfa2)
 !!! psiq=exp(ksiV**2)*erfcc(ksiV)*exp(-0.25/alfa2)
@@ -158,5 +162,5 @@
             end if
             if(x.lt.zero) erfcc=2.d0-erfcc
             return
-            end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            end      
+end module maxwell
