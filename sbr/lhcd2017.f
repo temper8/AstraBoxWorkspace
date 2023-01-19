@@ -65,37 +65,35 @@ cc*********************************************************************
       ispectr=1
       pe_p=zero
       outpep=zero
-      call ourlhcd2017(ispectr,p_in, !input
-     &  outpep,pe_p)     !output
-       if(pe_p.ne.zero) then
-        c_p=vint(outpep,roc)
-        if(c_p.ne.zero) then
-         do i=1,ngrid
-          outpep(i)=pe_p*outpep(i)/c_p
-         end do
-        end if
-       end if
+      call ourlhcd2017(ispectr,p_in, outpep,pe_p)
+      if(pe_p.ne.zero) then
+            c_p=vint(outpep,roc)
+            if(c_p.ne.zero) then
+                  do i=1,ngrid
+                        outpep(i)=pe_p*outpep(i)/c_p
+                  end do
+            end if
+      end if
 
 !!negative spectrum:
        print *, 'negative spectrum'
       ispectr=-1
       pe_m=zero
       outpem=zero
-      call ourlhcd2017(ispectr,p_in, !input
-     &  outpem,pe_m)     !output
-       if(pe_m.ne.zero) then
-        c_m=vint(outpem,roc)
-        if(c_m.ne.zero) then
-         do i=1,ngrid
-          outpem(i)=pe_m*outpem(i)/c_m
-         end do
-        end if
-       end if
-!
+      call ourlhcd2017(ispectr,p_in, outpem,pe_m)  
+      if(pe_m.ne.zero) then
+            c_m=vint(outpem,roc)
+            if(c_m.ne.zero) then
+                  do i=1,ngrid
+                        outpem(i)=pe_m*outpem(i)/c_m
+                  end do
+            end if
+      end if
+
       do i=1,ngrid
        outpe(i)=outpep(i)+outpem(i)
       end do
-!
+
       deallocate(outpep,outpem)
       !deallocate(rh,rha,drhodr,con,tem,temi,zeff)
       !deallocate(delta,ell,gamm,amy)
@@ -104,8 +102,7 @@ cc*********************************************************************
 
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine ourlhcd2017(ispec,p_in, 
-     & outpe,pe_out) ! output data      
+      subroutine ourlhcd2017(ispec,p_in, outpe,pe_out)      
       use constants
       use plasma
       use rt_parameters
