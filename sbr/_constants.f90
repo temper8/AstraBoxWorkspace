@@ -10,6 +10,7 @@ module constants
     real(dp), parameter :: one=1.d0
     real(dp), parameter :: two=2.d0
     real(dp), parameter :: tiny=1.d-100
+    real(dp), parameter :: tin=1d-7
 
     real(dp), parameter :: talfa=3.5d0    
     !+ alpha particles' birth energy, MeV
@@ -17,8 +18,9 @@ module constants
     !+ alpha particles' electrical charge
     real(dp), parameter :: xmalfa=4.d0    
     !+ alpha particles' atomic mass
-    real(dp), parameter :: tin=1d-7
+
     real(dp), parameter :: clt=3.0d+10
+    !+ скорость света
     real(dp), parameter :: pme=9.11e-28
     real(dp), parameter :: pqe=4.803e-10
     real(dp), parameter :: xlog=16.d0+dlog(16.d0)
