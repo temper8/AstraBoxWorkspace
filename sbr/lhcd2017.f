@@ -92,10 +92,8 @@ cc*********************************************************************
       use spectrum1D
       use maxwell      
       implicit real*8 (a-h,o-z)
-      !integer ncoe
-      real*8 outpe,pe_out !,outpec,outpef,outpa,outda
+      real*8 outpe,pe_out 
       dimension outpe(*)
-!      dimension acdl(ipsy),acly(ipsy),acgm(ipsy),acmy(ipsy)
 !!!!    maximum grid sizes:
 !!!!    rho=100, v_par_electrons=100, v_perp_ions=50
       external obeom,ploshad,fn
@@ -108,32 +106,22 @@ cc*********************************************************************
       parameter(mpnt=10000)
       common/refl/nrefj(mpnt)
       real*8 ynzm, pm
-      common /a0a1/ ynzm(1001),pm(1001) !,nmaxm(4)
+      common /a0a1/ ynzm(1001),pm(1001) 
       common /a0a2/ tet1,tet2
       common /a0a4/ plost,pnab
-      !common /a0ab/ nr
-      !common /a0abcd/ ipri
-      !common /a0bcd/ eps
-      !common /a0bcp/ tin
-      !common /a0bd/ rrange,hdrob
-      !common /a0befr/ pi,pi2
-      !common /a0cd/ rbord,maxstep2,maxstep4
-      !common /a0cdm/ hmin1
       common /a0ef1/ cltn
       common /bcef/ ynz,ynpopq
       common /a0ef2/ ww
-      common /a0ef3/ xmi,cnye,cnyi,xsz,vt0 !c0,c1,
+      common /a0ef3/ xmi,cnye,cnyi,xsz,vt0 
       common /a0gh/ pabs
       common /a0ghp/ vlf,vrt,dflf,dfrt
       common/plosh/ zv1(100,2),zv2(100,2),sk(100)
-      common /a0i2/ vk(100)!,pme ,pchm
+      common /a0i2/ vk(100)
       common /a0i3/ dql(101,100),pdl(100),vzmin(100),vzmax(100)
       common /a0i4/ fcoll(100),dens(100),eta(100)
       common /asou/ rsou(102),sou(102),npta
       common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
-      !common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
-      !common /a0l4/ con(501),tem(501),temi(501),nspl
       common /a0l5/ y2zeff(501)
       common/gridv/vgrid(101,100),dfundv(101,100),nvpt
       common/vvv1/dq1(101,100),dq2(101,100),pdc(100),pda(100),ppv1,ppv2
@@ -142,18 +130,11 @@ cc*********************************************************************
       common /vvv3/ pdfast(100)
       common /arr/ dgdu(50,100),kzero(100)
       common /alph/ dqi0(50,100)
-      !common/a00/ xlog,zalfa,xmalfa,dn1,dn2 !,factor
       common /ag/ inak,lenstor,lfree
-      !common/b0/ itend0
       common /maxrho/ rmx_n,rmx_t,rmx_z,rmx_ti
-      !common /cnew/ inew !est !sav2008
       common/ne_cheb/chebne(50),chebdne(50),chebddne(50),ncheb
 
-      !integer i0,ispectr
-      !parameter(i0=1002)
       real*8 kofpar,timecof
-      !common/lh/vij(i0,100),fij0(i0,100,2),fij(i0,100,2),dfij(i0,100,2)
-      !&,dij(i0,100,2),enorm(100),fst(100)
       real*8,dimension(:),allocatable:: vvj,vdfj
       integer kpt1,kpt3
       parameter(kpt1=20,kpt3=20)
@@ -165,37 +146,20 @@ cc*********************************************************************
       common/t01/dijk(101,100,2), vrjnew(101,100,2), iptnew
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!
       if(p_in.eq.zero) then
           dij(:,:,:)=zero
           return
       end if
       ispectr=ispec
-!
 
       lfree=1
-      !ncoef=ipsy
-      !nspl=ngrid
-      !rm=arm
-      !r0=ar0
-      !z0=az0
-      !btor=btt
-!      do i=1,ncoef
-!       cdl(i)=acdl(i)
-!       cly(i)=acly(i)
-!       cgm(i)=acgm(i)
-!       cmy(i)=acmy(i)
-!      end do
-!
+
        call get_unit(iunit)
        if(iunit.eq.0) then
         write(*,*)'no free units up to 299'
         pause
         stop
        end if
- !!!      open(iunit,file='lhcd/lhdataFT2_05m.dat')
- !!!      open(iunit,file='lhcd/gaus25.dat')
-
 
        znak_tor=dsign(1.d0,dble(itor))
        b_tor=znak_tor*dabs(b_tor0)
@@ -272,17 +236,6 @@ cc*********************************************************************
        pause 'nnz and ntet changed, because nnz*ntet>10000'
       end if
 !!!!!!!!!!!!!!! spline approximation of plasma profiles !!!!!!!!!!!!!!!!
-      !rh(nspl)=1.d0
-      !do j=1,nspl
-      ! rh(j)=rhj(j)
-      ! con(j)=xne(j)
-      ! tem(j)=ate(j)
-      ! zeff(j)=azef(j)
-      ! if(itend0.gt.0) then
-      !  temi(j)=ati(j)
-      ! end if
-      !end do
-      print *, 'spline approximation of plasma profiles'
       call splne(rh,con,nspl,y2dn)
       call splne(rh,tem,nspl,y2tm)
       call splne(rh,zeff,nspl,y2zeff)
