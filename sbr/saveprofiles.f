@@ -12,6 +12,7 @@
       integer nmaxm,maxstep2,maxstep4,nr,ni1,ni2,niterat,im,ip
       integer ipri,iw,ismth,ismthalf,ismthout,inew,itor,ipoll
       real*8 cltn,zero,p_in
+      parameter(zero=0.d0)
       real*8 rmin,rmax,sitet,cotet,xb1,yb1,xb2,yb2
       real*8 freq,xmi1,zi1,xmi2,zi2,dni2,xmi3,zi3,dni3
       real*8 y2dn,y2tm,y2tmi,y2zeff
@@ -67,7 +68,7 @@
       p_in=dble(QLH)    ! input LH power, MW
 
       call init_plasma(NA1,ABC,BTOR,RTOR,UPDWN,GP2,
-     & AMETR,RHO,SHIF,ELON,TRIA, NE,TE,TI,ZEF,UPL)
+     & AMETR,RHO,SHIF,ELON,TRIA,MU,NE,TE,TI,ZEF,UPL)
  
       inpt = NA1
       rh(inpt)=1.d0
@@ -75,43 +76,6 @@
 !!!!!!!!!!!!!! spline approximation of plasma profiles !!!!!!!!!!!!!!!!
       ipsy1=ipsy-1
 !
-cccc   shift as a function of "minor radius":
-       call approx(rh,delta,inpt,polin1,ipsy1,coeffs)
-       cdl(1)=zero
-       do k=2,ipsy
-        cdl(k)=coeffs(k-1)
-       end do
-
-cccc   triangularity as a function of "minor radius":
-       call approx(rh,gamm,inpt,polin1,ipsy1,coeffs)
-       cgm(1)=zero
-       do k=2,ipsy
-        cgm(k)=coeffs(k-1)
-       end do
-
-cccc   ellipticity as a function of "minor radius":
-       call approx(rh,ell,inpt,polin,ipsy,cly)
-
-cccc   "poloidal magnetic field":
-       call diff(rh,rha,inpt,drhodr)
-       do i=2,inpt
-        amy(i)=1.d4*BTOR*MU(i)*rha(i)*drhodr(i)
-       end do
-       amy(1)=zero
-!! amy=(btor/q)*rho*(drho/dr) is a function of "minor radius" r=rh(i).
-!! Poloidal magnetic field: B_pol=amy(r)*sqrt(g22/g), where g is
-!! determinant of 3D metric tensor and g22 is the (22) element of
-!! the tensor, normalized on ABC^4 and ABC^2, correspondingly.
-!!
-!!  Polinomial approximation of the amy(r):
-!!!      if(calls.eq.zero) then
-       inpt3=inpt-3
-       call approx(rh,amy,inpt3,polin1,ipsy1,coeffs)
-       cmy(1)=zero
-       do k=2,ipsy
-        cmy(k)=coeffs(k-1)
-       end do
-!!!      end if
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       if(calls.eq.zero) then
        call get_unit(ilhdata)

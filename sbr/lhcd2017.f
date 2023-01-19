@@ -53,46 +53,12 @@ cc*********************************************************************
       !allocate(cdl(ipsy),cly(ipsy),cgm(ipsy),cmy(ipsy),coeffs(ipsy))
 
       call init_plasma(NA1,ABC,BTOR,RTOR,UPDWN,GP2,
-     & AMETR,RHO,SHIF,ELON,TRIA, NE,TE,TI,ZEF,UPL)
+     & AMETR,RHO,SHIF,ELON,TRIA,MU,NE,TE,TI,ZEF,UPL)
 
       print *, 'init plasma'
       ipsy1=ipsy-1
 
-cccc   shift as a function of "minor radius":
-       call approx(rh,delta,ngrid,polin1,ipsy1,coeffs)
-       cdl(1)=zero
-       do k=2,ipsy
-        cdl(k)=coeffs(k-1)
-       end do
 
-cccc   triangularity as a function of "minor radius":
-       call approx(rh,gamm,ngrid,polin1,ipsy1,coeffs)
-       cgm(1)=zero
-       do k=2,ipsy
-        cgm(k)=coeffs(k-1)
-       end do
-
-cccc   ellipticity as a function of "minor radius":
-       call approx(rh,ell,ngrid,polin,ipsy,cly)
-
-cccc   "poloidal magnetic field":
-       call diff(rh,rha,ngrid,drhodr)
-       do i=2,ngrid
-        amy(i)=1.d4*BTOR*MU(i)*rha(i)*drhodr(i)
-       end do
-       amy(1)=zero
-!! amy=(btor/q)*rho*(drho/dr) is a function of "minor radius" r=rh(i).
-!! Poloidal magnetic field: B_pol=amy(r)*sqrt(g22/g), where g is
-!! determinant of 3D metric tensor and g22 is the (22) element of
-!! the tensor, normalized on ABC^4 and ABC^2, correspondingly.
-!!
-!!  Polinomial approximation of the amy(r):
-       inpt2=ngrid-3
-       call approx(rh,amy,inpt2,polin1,ipsy1,coeffs)
-       cmy(1)=zero
-       do k=2,ipsy
-        cmy(k)=coeffs(k-1)
-       end do
 
 !!!!!!!!!!!!! starting ray-tracing !!!!!!!!!!!!!!!!!!!!!
       allocate(outpep(ngrid),outpem(ngrid))

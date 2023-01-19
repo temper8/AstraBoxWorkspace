@@ -17,12 +17,13 @@ module plasma
     !+   used for interpolation of Zakharov's moments.
     real(dp), dimension(ipsy) :: cdl,cly,cgm,cmy,coeffs
 contains
-    subroutine init_plasma(NA1, ABC, BTOR, RTOR, UPDWN, GP2, AMETR, RHO, SHIF, ELON, TRIA, NE, TE, TI, ZEF, UPL)
+    subroutine init_plasma(NA1, ABC, BTOR, RTOR, UPDWN, GP2, AMETR, RHO, SHIF, ELON, TRIA,MU, NE, TE, TI, ZEF, UPL)
+        use approximation
         implicit none
         integer, intent(in)  :: NA1
         real(dp), intent(in) :: ABC, BTOR, RTOR, UPDWN, GP2
-        real(dp), dimension(*) :: AMETR, RHO, SHIF, ELON, TRIA, NE, TE, TI, ZEF, UPL
-        integer i
+        real(dp), dimension(*) :: AMETR, RHO, SHIF, ELON, TRIA,MU,  NE, TE, TI, ZEF, UPL
+        integer i, k
         integer, parameter :: N  = 501
         ngrid = NA1
         nspl = ngrid
@@ -54,6 +55,47 @@ contains
         rm=1.d2*ABC                       !minor radius in mid-plane, cm
         r0=1.d2*(RTOR+SHIF(1))     !x-coordinate of the magnetic axis, cm
         z0=1.d2*UPDWN              !z-coordinate of the magnetic axis, cm
+
+    !   shift as a function of "minor radius":
+        call approx(rh,delta,ngrid,polin1,ipsy-1,coeffs)
+        cdl(1)=0.0d0
+        do k=2,ipsy
+            cdl(k)=coeffs(k-1)
+        end do
+ 
+    !   triangularity as a function of "minor radius":
+        call approx(rh,gamm,ngrid,polin1,ipsy-1,coeffs)
+        cgm(1)=0.0d0
+        do k=2,ipsy
+            cgm(k)=coeffs(k-1)
+        end do
+ 
+    !   ellipticity as a function of "minor radius":
+        call approx(rh,ell,ngrid,polin,ipsy,cly)            
+
+    !  "poloidal magnetic field":
+        call diff(rh,rha,ngrid,drhodr)
+ 
+        do i=2,ngrid
+            amy(i)=1.d4*BTOR*MU(i)*rha(i)*drhodr(i)
+            !print *, amy(i), BTOR, MU(i)
+        end do
+        !print *, '----------------'
+        amy(1)=0.d0  
+        
+    !! amy=(btor/q)*rho*(drho/dr) is a function of "minor radius" r=rh(i).
+    !! Poloidal magnetic field: B_pol=amy(r)*sqrt(g22/g), where g is
+    !! determinant of 3D metric tensor and g22 is the (22) element of
+    !! the tensor, normalized on ABC^4 and ABC^2, correspondingly.
+    !!
+    !!  Polinomial approximation of the amy(r):
+    !    inpt2=ngrid-3
+        call approx(rh,amy,ngrid-3,polin1,ipsy-1,coeffs)
+        cmy(1)=0.d0
+        do k=2,ipsy
+         cmy(k)=coeffs(k-1)
+        end do
+     
     end subroutine
 
         
