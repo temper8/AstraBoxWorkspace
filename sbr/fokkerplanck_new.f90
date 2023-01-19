@@ -2,14 +2,15 @@
 subroutine fokkerplanck_new(time, TAU)
     use FokkerPlanck1D_mod
     use Utils
+    use rt_parameters
     implicit none
 
     type(FokkerPlanck1D) fp_test
 
     real*8, intent(in) :: time, TAU
     real*8 t, dtstep, dtau
-    integer nr
-    common /a0ab/ nr
+    !integer nr
+    !common /a0ab/ nr
     integer, parameter :: ntau = 10
     integer i0
     parameter(i0=1002)
@@ -17,13 +18,13 @@ subroutine fokkerplanck_new(time, TAU)
     common/lh/vij(i0,100),fij0(i0,100,2),fij(i0,100,2),dfij(i0,100,2), dij(i0,100,2),enorm(100),fst(100)
     integer n,i,j,it,nt,k
     real*8 xend,h,dt
-    real*8 znak,alfa2,zero,dt0,h0,eps,r,fvt
+    real*8 znak,alfa2,zero,dt0,h0,r,fvt
     !common/ef/ alfa2
     
     real*8 d0
     integer jindex,kindex
     common/dddql/ d0,jindex,kindex
-    parameter(zero=0.d0,dt0=0.1d0,h0=0.1d0,eps=1.d-7)
+    parameter(zero=0.d0,dt0=0.1d0,h0=0.1d0)
     real time1, time2
 
    

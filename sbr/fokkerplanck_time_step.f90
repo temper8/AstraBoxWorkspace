@@ -1,10 +1,11 @@
 !! calculation of distribution functions at time t1 = t + TAU !!
 subroutine fokkerplanck_time_step(time, TAU)
+    use rt_parameters
     implicit none
     real*8, intent(in) :: time, TAU
     real*8 t, dtstep, dtau
-    integer nr
-    common /a0ab/ nr
+    !integer nr
+    !common /a0ab/ nr
     integer, parameter :: ntau = 10
     integer i0
     parameter(i0=1002)
@@ -14,13 +15,13 @@ subroutine fokkerplanck_time_step(time, TAU)
     real*8 xend,h,dt
     real*8, allocatable :: d1(:),d2(:),d3(:)
     real*8, allocatable :: out_fj(:)
-    real*8 znak,alfa2,zero,dt0,h0,eps,r,fvt
+    real*8 znak,alfa2,zero,dt0,h0,r,fvt
     !common/ef/ alfa2
     
     real*8 d0
     integer jindex,kindex
     common/dddql/ d0,jindex,kindex
-    parameter(zero=0.d0,dt0=0.1d0,h0=0.1d0,eps=1.d-7)
+    parameter(zero=0.d0,dt0=0.1d0,h0=0.1d0)
 
     integer iptnew
     real*8 dijk, vrjnew

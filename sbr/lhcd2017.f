@@ -106,6 +106,7 @@ cc*********************************************************************
       dimension vmid(100),vz1(100),vz2(100),ibeg(100),iend(100)
       parameter(mpnt=10000)
       common/refl/nrefj(mpnt)
+      real*8 ynzm, pm
       common /a0a1/ ynzm(1001),pm(1001) !,nmaxm(4)
       common /a0a2/ tet1,tet2
       common /a0a4/ plost,pnab
