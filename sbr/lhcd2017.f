@@ -15,15 +15,14 @@ cc******************************************************************
       implicit none
       integer i,k,iview, iunit
       integer klo,khi,ierr,inpt2,ispectr
-      real*8 zero,p_in,pe_p,pe_m,c_p,c_m
-      real*8 vint,tcur
-      common/testf/ tcur
+      real*8 p_in,pe_p,pe_m,c_p,c_m
+      real*8 vint
       include 'for/parameter.inc'
       include 'for/const.inc'
       include 'for/status.inc'
       real*8 outpe(NRD)
       real*8,dimension(:),allocatable:: outpep,outpem
-      parameter(zero=0.d0)
+      real*8, parameter :: zero=0.d0
 
 cc*********************************************************************
 cc    Co-ordinates used in ray-tracing:
@@ -158,7 +157,6 @@ cc*********************************************************************
       parameter(kpt1=20,kpt3=20)
       double precision vrj(101),dj(101),djnew(1001)
       double precision dj2(101),d2j(101)
-      common/testf/ tcur
 
       integer iptnew
       real*8 dijk, vrjnew

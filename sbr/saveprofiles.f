@@ -73,7 +73,6 @@
       inpt = NA1
       rh(inpt)=1.d0
 
-!!!!!!!!!!!!!! spline approximation of plasma profiles !!!!!!!!!!!!!!!!
       ipsy1=ipsy-1
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

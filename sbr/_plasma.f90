@@ -3,9 +3,12 @@ module plasma
     implicit none
     integer ngrid, nspl
     !+ ASTRA radial grid number
+    real(dp) tcur
+    !+ время (придумать название для переменной получше)
     real(dp) rm
     !+ minor radius in mid-plane, cm
     real(dp) b_tor0, b_tor
+    !+ временно нужно две переменных, тоже нужно исправить
     real(dp) r0
     real(dp) z0
     real(dp) rh1
@@ -56,6 +59,9 @@ contains
         r0=1.d2*(RTOR+SHIF(1))     !x-coordinate of the magnetic axis, cm
         z0=1.d2*UPDWN              !z-coordinate of the magnetic axis, cm
 
+
+    !   spline approximation of plasma profiles         
+    !
     !   shift as a function of "minor radius":
         call approx(rh,delta,ngrid,polin1,ipsy-1,coeffs)
         cdl(1)=0.0d0
