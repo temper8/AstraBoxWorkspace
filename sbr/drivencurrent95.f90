@@ -334,19 +334,6 @@ end
 ! !     deallocate(diffusion)
       end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
       real*8 function d(x)
       use maxwell
       implicit none
