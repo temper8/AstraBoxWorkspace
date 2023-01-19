@@ -169,7 +169,6 @@ cc*********************************************************************
       common /maxrho/ rmx_n,rmx_t,rmx_z,rmx_ti
       !common /cnew/ inew !est !sav2008
       common/ne_cheb/chebne(50),chebdne(50),chebddne(50),ncheb
-      parameter(zero=0.d0, one=1.d0)
 
       integer i0,ispectr
       parameter(i0=1002)
@@ -968,7 +967,6 @@ c------------------------------------------
       common /aef2/ icall1,icall2
       common /ag/ inak,lenstor,lfree
       common/refl/nrefj(mpnt)
-      parameter(zero=0.d0)
       data mbad /mpnt*0/
       lenstor=length
       htet=zero
@@ -1393,7 +1391,7 @@ c---------------------------------------------
       common /a0ef1/ cltn
       !common /a0befr/ pi,pi2
       common/findsigma/dncount(101,100)
-      parameter(zero=0.d0, tiny=1.d-100)
+      !parameter(zero=0.d0, tiny=1.d-100)
 
       if(v.gt.cltn) return
       if(pil.gt.zero) then
@@ -1676,7 +1674,7 @@ c-------------------------------------
       common /ceg/ ipow,jfoundr
       common /cmn/ ind
       dimension ystart(2)
-      parameter(zero=0.d0,nvar=2)
+      parameter(nvar=2)
       dimension yscal(nvar),y(nvar),dydx(nvar),yold(nvar),dyold(nvar)
       x=x1
       h=dsign(h1,x2-x1)
@@ -1820,7 +1818,7 @@ c---------------------------------------
       common /bcef/ ynz,ynpopq
       common /df/ pdec14,pdec24,pdec34,idec
       common /dg/ pintld4,pintcl4,pintal4
-      parameter(zero=0.d0,hbeg=1.d-4,iturns=1,maxat=3,nvar=4) !sav2008
+      parameter(hbeg=1.d-4,iturns=1,maxat=3,nvar=4) !sav2008
       dimension ystart(4),yscal(nvar),y(nvar),dydx(nvar),yold(nvar)
       ipr1=0
       iat=0
@@ -1985,7 +1983,6 @@ c---------------------------------------
       common/direct/znakstart
       common/metrika/g11,g12,g22,g33,gg,g,si,co
       common/fjham/ham
-      parameter(zero=0.d0,one=1.d0,two=2.d0)
       !parameter(clt=3.d10)
       iconv=0
       irefl=0
@@ -2348,7 +2345,6 @@ c    reflection
       common/metrika/g11,g12,g22,g33,gg,g,si,co
       common/fj/dhdm,dhdnr,dhdtet,dhdr,ddn,dhdn3,dhdv2v,dhdu2u
       common/fjham/ham
-      parameter(zero=0d0, one=1d0, two=2d0)
       irefl=0
       iconv=0
       if(pa.eq.zero) pa=1.d-7
@@ -3045,7 +3041,7 @@ cu    uses derivs,mmid,pzextr
       !common /a0befr/ pi,pi2
       common /a0ef1/ cltn
 !     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
-      parameter(two=2.d0, pa0=0.d0)
+      parameter(pa0=0.d0)
       xdl=fdf(pa,cdl,ncoef,xdlp)
       xly=fdf(pa,cly,ncoef,xlyp)
       xgm=fdf(pa,cgm,ncoef,xgmp)
@@ -3081,7 +3077,7 @@ c--------------------------------------
       !common /a0befr/ pi,pi2
       common /a0ef1/ cltn
 !     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
-      parameter(two=2.d0, pa0=0.d0)
+      parameter(pa0=0.d0)
       xdl=fdf(pa,cdl,ncoef,xdlp)
       xly=fdf(pa,cly,ncoef,xlyp)
       xgm=fdf(pa,cgm,ncoef,xgmp)
@@ -3414,7 +3410,6 @@ c----------------------------------------------------------------
       dimension x(50),y(50),a(50),b(50)
       !common /a0befr/ pi,pi2
       common /arr/ dgdu(50,100),kzero(100)
-      parameter(zero=0.d0,one=1.d0)
       km=kzero(j)
       um=u(km,j)
       if(um.ge.one) then
@@ -4077,7 +4072,6 @@ cc      common /xn1xn2/ an1,an2
       data name/'lhcd/out/1.dat','lhcd/out/2.dat','lhcd/out/3.dat'
      &,'lhcd/out/4.dat','lhcd/out/5.dat'
      &,'lhcd/out/rest.dat','lhcd/out/traj.dat'/
-      parameter(zero=0.d0)
       if(iview.eq.0) return
       print *, 'view_time=',tview
       print *, name(m)

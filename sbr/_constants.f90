@@ -6,6 +6,11 @@ module constants
     real(dp), parameter :: pi4=4.d0*pi
     real(dp), parameter :: piq=dsqrt(pi)
 
+    real(dp), parameter :: zero=0.d0      
+    real(dp), parameter :: one=1.d0
+    real(dp), parameter :: two=2.d0
+    real(dp), parameter :: tiny=1.d-100
+
     real(dp), parameter :: talfa=3.5d0    
     !+ alpha particles' birth energy, MeV
     real(dp), parameter :: zalfa=2.d0     
