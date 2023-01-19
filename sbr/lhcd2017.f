@@ -11,6 +11,7 @@ cc   outda(i)  = (Na/Ne) relative density of alpha-particles
 cc******************************************************************
       use approximation
       use plasma
+      use rt_parameters
       implicit none
       integer i,k,iview, iunit
       integer klo,khi,ierr,inpt2,ispectr
@@ -55,7 +56,7 @@ cc*********************************************************************
       call init_plasma(NA1,ABC,BTOR,RTOR,UPDWN,GP2,
      & AMETR,RHO,SHIF,ELON,TRIA,MU,NE,TE,TI,ZEF,UPL)
 
-      print *, 'init plasma'
+      call read_parameters('lhcd/ray_tracing.dat')
 
 !!!!!!!!!!!!! starting ray-tracing !!!!!!!!!!!!!!!!!!!!!
       allocate(outpep(ngrid),outpem(ngrid))
@@ -211,12 +212,12 @@ cc*********************************************************************
        end if
  !!!      open(iunit,file='lhcd/lhdataFT2_05m.dat')
  !!!      open(iunit,file='lhcd/gaus25.dat')
-       call read_parameters('lhcd/ray_tracing.dat')
+
 
        znak_tor=dsign(1.d0,dble(itor))
        b_tor=znak_tor*dabs(b_tor0)
        fpol=fdf(1.d0,cmy,ncoef,dfmy)
-       znak_pol=dsign(1.d0,dble(ipol))*dsign(1.d0,fpol)
+       znak_pol=dsign(1.d0,dble(i_pol))*dsign(1.d0,fpol)
        do i=1,ncoef
         cmy(i)=znak_pol*cmy(i)
        end do

@@ -89,7 +89,7 @@ module rt_parameters
     !+ inew=0 for usual tokamak&Ntor_grill; 1 or 2 for g' in ST&Npol_grill
     integer ::  itor
     !+ itor,      +-1, Btor direction in right coord{drho,dteta,dfi}
-    integer ::  ipol
+    integer ::  i_pol
     !+ ipol,      +-1, Bpol direction in right coord{drho,dteta,dfi}
 
   !!!!!!!!!!!!!  grill parameters and input LH spectrum !!!!!!!!!!!!
@@ -178,7 +178,7 @@ module rt_parameters
                read(iunit,*) inew
         
                read(iunit,*) itor     !Btor direction in right-hand {drho,dteta,dfi}
-               read(iunit,*) ipol     !Bpol direction in right-hand {drho,dteta,dfi}
+               read(iunit,*) i_pol     !Bpol direction in right-hand {drho,dteta,dfi}
         
         !!!!!!!!!!!!!  read grill parameters and input LH spectrum !!!!!!!!!!!!
                read(iunit,*)
