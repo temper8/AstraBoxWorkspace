@@ -9,49 +9,28 @@
       include 'for/parameter.inc'
       include 'for/const.inc'
       include 'for/status.inc'
-      integer kvv,ncheb,ilhdata
+      integer ncheb
       integer im,ip
-      !integer ipoll
       real*8 zero,p_in
       parameter(zero=0.d0)
-      real*8 rmin,rmax,sitet,cotet,xb1,yb1,xb2,yb2
-      !real*8 freq,xmi1,zi1,xmi2,zi2,dni2,xmi3,zi3,dni3
+      ! real*8 rmin,rmax,sitet,cotet,xb1,yb1,xb2,yb2
+
       real*8 y2dn,y2tm,y2tmi,y2zeff
       real*8 anz,apz,share
-      real*8 dble,dsign
+      !real*8 dble,dsign
       real*8 pchm0
       real*8 fpol,fdf,dfmy
-      !real*8 ynzm0,pm0
+
       real*8 chebne,chebdne,chebddne
-      !real*8 xlog,zalfa,xmalfa,dn1,dn2,xlogj
+
       real*8 xlogj
-      !common/a00/ xlog,zalfa,xmalfa,dn1,dn2
-!      common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
+
       common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
-      !common /a0l4/ con(501),tem(501),temi(501),nspl
       common /a0l5/ y2zeff(501)
-      !common /a0a1/ ynzm(1001),pm(1001)
-      !common /a0ab/ nr
-      !common /a0abcd/ ipri
-      !common /a0bcd/ eps
-      !common /a0bd/ rrange,hdrob
-      !common /a0cd/ rbord,maxstep2,maxstep4
-      !common /a0cdm/ hmin1
-      !common /a0ef1/ cltn
-      !common/b0/ itend0
-      !common /cnew/ inew
-      !common/physpar/ freq,xmi1,zi1,xmi2,zi2,dni2,xmi3,zi3,dni3
-      !common/alfaspar/ energy,dra,kvv
-      !common/numpar/ cleft,cright,cdel,pchm0,pabs0,pgiter
-      !common/numpar1/ ni1,ni2,niterat
-      !common/optpar/ iw,ismth,ismthalf,ismthout
-      !common/grillpar/ zplus,zminus,ntet,nnz
+
       real*8 znak_tor,znak_pol
       common/left/ znak_tor,znak_pol
-      real*8 ynzmp(1001),pmp(1001),ynzmm(1001),pmm(1001) !,plaunp,plaunm
-      ! common/grillmp/ ynzmp(1001),pmp(1001),ynzmm(1001),pmm(1001)
-      ! common/grillspektr/ ynzm0(1001),pm0(1001),ispl
-      ! &,plaunp,plaunm,ip,im
+      real*8 ynzmp(1001),pmp(1001),ynzmm(1001),pmm(1001)
       common/ne_cheb/chebne(50),chebdne(50),chebddne(50),ncheb
       real*8 efld(100),r,vmax,fvt,funmaxwell,fmaxw
       real*8 fmaxw_classic, fmaxw_ext
@@ -65,18 +44,12 @@
       real*8 calls
       common/firstcall/calls
       save share
-      !ncoef=ipsy
+
       p_in=dble(QLH)    ! input LH power, MW
 
       call init_plasma(NA1,ABC,BTOR,RTOR,UPDWN,GP2,
      & AMETR,RHO,SHIF,ELON,TRIA,MU,NE,TE,TI,ZEF,UPL)
- 
-  !    inpt = NA1
-    !  rh(inpt)=1.d0
 
- !     ipsy1=ipsy-1
-!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       if(calls.eq.zero) then
             call read_parameters('lhcd/ray_tracing.dat')
       end if
@@ -104,7 +77,6 @@
       pme=9.11e-28
       pqe=4.803e-10
       c0=dsqrt(pi4*pqe**2/pme)
-      !xlog=16.d0+dlog(16.d0)
 !
       do j=1,nr
        r=dble(j)/dble(nr+1)
