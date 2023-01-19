@@ -48,7 +48,7 @@
       !common/grillpar/ zplus,zminus,ntet,nnz
       real*8 znak_tor,znak_pol
       common/left/ znak_tor,znak_pol
-      real*8 ynzmp(1001),pmp(1001),ynzmm(1001),pmm(1001),plaunp,plaunm
+      real*8 ynzmp(1001),pmp(1001),ynzmm(1001),pmm(1001) !,plaunp,plaunm
       ! common/grillmp/ ynzmp(1001),pmp(1001),ynzmm(1001),pmm(1001)
       ! common/grillspektr/ ynzm0(1001),pm0(1001),ispl
       ! &,plaunp,plaunm,ip,im
@@ -78,110 +78,9 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       if(calls.eq.zero) then
-       call get_unit(ilhdata)
-       if(ilhdata.eq.0) then
-        write(*,*)'no free units up to 299 to read lhdata.dat'
-        pause
-        stop
-       end if
- !!!      open(ilhdata,file='lhcd/gaus25.dat')
- !!!      open(ilhdata,file='lhcd/lhdataFT2_05p.dat')
-       open(ilhdata,file='lhcd/ray_tracing.dat')
-!!!      open(ilhdata,file='lhdatanew_Npar_2.0.dat')
-!!!!!!!!!!!!!  read  physical parameters !!!!!!!!!!!!!!!!!!!!!!!!!!!
-       read(ilhdata,*)
-       read(ilhdata,*) freq
-       read(ilhdata,*) xmi1
-       read(ilhdata,*) zi1
-       read(ilhdata,*) xmi2
-       read(ilhdata,*) zi2
-       read(ilhdata,*) dni2
-       read(ilhdata,*) xmi3
-       read(ilhdata,*) zi3
-       read(ilhdata,*) dni3
-!!!!!!!!!!!!  read parameters for alphas calculation !!!!!!!!!!!!!!!!
-       read(ilhdata,*)
-       read(ilhdata,*) itend0
-       read(ilhdata,*) energy
-       read(ilhdata,*) factor
-       read(ilhdata,*) dra
-       read(ilhdata,*) kvv
-!!!!!!!!!!!!  read  numerical parameters !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-       read(ilhdata,*)
-       read(ilhdata,*) nr
-       read(ilhdata,*) hmin1
-       read(ilhdata,*) rrange
-       read(ilhdata,*) eps
-       read(ilhdata,*) hdrob
-       read(ilhdata,*) cleft
-       read(ilhdata,*) cright
-       read(ilhdata,*) cdel
-       read(ilhdata,*) rbord
-       read(ilhdata,*) pchm0
-       read(ilhdata,*) pabs0
-       read(ilhdata,*) pgiter
-       read(ilhdata,*) ni1
-       read(ilhdata,*) ni2
-       read(ilhdata,*) niterat
-       read(ilhdata,*) nmaxm(1)
-       read(ilhdata,*) nmaxm(2)
-       read(ilhdata,*) nmaxm(3)
-       read(ilhdata,*) nmaxm(4)
-       read(ilhdata,*) maxstep2
-       read(ilhdata,*) maxstep4
-!!!!!!!!!!!!  read  options !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-       read(ilhdata,*)
-       read(ilhdata,*) ipri
-       read(ilhdata,*) iw
-       read(ilhdata,*) ismth
-       read(ilhdata,*) ismthalf
-       read(ilhdata,*) ismthout
-       read(ilhdata,*) inew
-       read(ilhdata,*) itor     !Btor direction in right-hand {drho,dteta,dfi}
-       read(ilhdata,*) i_pol     !Bpol direction in right-hand {drho,dteta,dfi}
-
-!!!!!!!!!!!!  read grill parameters and input LH spectrum !!!!!!!!!!!!
-       read(ilhdata,*)
-       read(ilhdata,*) zplus
-       read(ilhdata,*) zminus
-       read(ilhdata,*) ntet
-       read(ilhdata,*) nnz
-!!!!!!!!!!!!  read positive spectrum !!!!!!!!
-       read(ilhdata,*)
-       do i=1,1000
-        read (ilhdata,*) anz,apz
-        if(apz.eq.-88888.d0) then
-         share=anz 
-         go to 10
-        end if
-        ynzmp(i)=anz
-        pmp(i)=apz
-        ip=i
-       end do
-10     continue
-       if(ip.gt.1001) then
-        pause 'too many points in positive spectrum'
-        stop
-       end if
-!!!!!!!!!!!!  read negative spectrum !!!!!!!!
-       read(ilhdata,*)
-       do i=1,1000
-        read (ilhdata,*,end=11) ynzmm(i),pmm(i)
-        im=i
-       end do
-11     continue
-       close(ilhdata)
-       if(im.gt.1001) then
-        pause 'too many points in negative spectrum'
-        stop
-       end if
+            call read_parameters('lhcd/ray_tracing.dat')
       end if
-!
-      plaunp=p_in*share !input power in positive spectrum
-      plaunm=p_in*(1.d0-share) !input power in negative spectrum
-!!!      write(*,*)'plaunp=',plaunp,' plaunm=',plaunm
-!!!      pause
-!
+
       call splne(rh,con,nspl,y2dn)
       call splne(rh,tem,nspl,y2tm)
       call splne(rh,zeff,nspl,y2zeff)
