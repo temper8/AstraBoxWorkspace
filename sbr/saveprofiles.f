@@ -1,4 +1,5 @@
       subroutine saveprofiles
+       use constants , only :pi4, pme, pqe, c0, zero
        use approximation       
        use plasma
        use rt_parameters
@@ -11,13 +12,11 @@
       include 'for/status.inc'
       integer ncheb
       integer im,ip
-      real*8 zero,p_in
-      parameter(zero=0.d0)
-      ! real*8 rmin,rmax,sitet,cotet,xb1,yb1,xb2,yb2
-
+      real*8 p_in
+  
       real*8 y2dn,y2tm,y2tmi,y2zeff
       real*8 anz,apz,share
-      !real*8 dble,dsign
+
       real*8 pchm0
       real*8 fpol,fdf,dfmy
 
@@ -34,7 +33,7 @@
       common/ne_cheb/chebne(50),chebdne(50),chebddne(50),ncheb
       real*8 efld(100),r,vmax,fvt,funmaxwell,fmaxw
       real*8 fmaxw_classic, fmaxw_ext
-      real*8 pme,pqe,pi4,c0,zff,zefff,fnr,fnrr
+      real*8 zff,zefff,fnr,fnrr
       real*8 pn,fn1,fn2,gst,dens,tmp,ft,vt,vclt
       integer i0
       parameter(i0=1002)
@@ -72,12 +71,7 @@
       do i=1,ncoef
        cmy(i)=znak_pol*cmy(i)
       end do
-!
-      pi4=16.d0*datan(1.d0)
-      pme=9.11e-28
-      pqe=4.803e-10
-      c0=dsqrt(pi4*pqe**2/pme)
-!
+
       do j=1,nr
        r=dble(j)/dble(nr+1)
        call lock(rh,nspl,r,klo,khi,ierr)
