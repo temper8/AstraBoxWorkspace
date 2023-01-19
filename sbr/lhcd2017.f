@@ -154,13 +154,6 @@ cc*********************************************************************
 
       lfree=1
 
-       call get_unit(iunit)
-       if(iunit.eq.0) then
-        write(*,*)'no free units up to 299'
-        pause
-        stop
-       end if
-
        znak_tor=dsign(1.d0,dble(itor))
        b_tor=znak_tor*dabs(b_tor0)
        fpol=fdf(1.d0,cmy,ncoef,dfmy)
@@ -189,36 +182,6 @@ cc*********************************************************************
        end select 
 
       if(ispl.gt.4001) stop 'too many points in spectrum'
-
-!!!!!!!!!!!!! test !!!!!
-      write(*,*)'time=',tcur
-      if((tcur-0.030d0)*(tcur-0.036d0).lt.zero) then
-       call get_unit(iunit)
-       if(iunit.eq.0) then
-        write(*,*)'#test: no free units up to 299'
-        pause
-        stop
-       end if
-       if(ispectr.eq.1) then
-        open(iunit,file='test/fundfunp.dat')
-         write(iunit,*)'time=',tcur
-         write(iunit,*)
-       else
-        open(iunit,file='test/fundfunm.dat')
-         write(iunit,*)'time=',tcur
-         write(iunit,*)
-       end if
-       k=(3-ispectr)/2
-       do j=1,nr
-        do i=1,i0
-         write(iunit,88) vij(i,j),fij(i,j,k),dfij(i,j,k)
-     &                  ,fij0(i,j,k),dble(j)
-        end do
-        write(iunit,*)
-       end do
-       close(iunit)
-      end if
-88    format(1x,10(e14.7,1x))
 
       print *, 'checking initial parameters'
 !!!!!!!!!!!!! checking initial parameters !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
