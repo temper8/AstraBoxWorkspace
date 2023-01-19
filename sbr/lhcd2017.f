@@ -845,17 +845,14 @@ c------------------------------------------
       common/viewdat/mbeg,mend,mbad,rbeg,tetbeg,xnrbeg,xmbeg,yn3beg
       dimension iznzap(mpnt),iwzap(mpnt),irszap(mpnt)
       dimension rzap(mpnt),tetzap(mpnt),xmzap(mpnt),yn3zap(mpnt)
-      common /a0a1/ ynzm(1001),pm(1001) !,nmaxm(4)
+      common /a0a1/ ynzm(1001),pm(1001) 
       common /a0a2/ tet1,tet2
       common /a0a4/ plost,pnab
-      !common /a0ab/ nr
-      !common /a0abcd/ ipri
       common /abc/ rzz,tetzz,xmzz,iznzz,iwzz,irszz
       common /abcd/ irs
-      common /abcde/ izn!,iw
+      common /abcde/ izn
       common /abcdg/ iabsorp
       common /abefo/ yn3
-      !common /a0befr/ pi,pi2
       common /acg/ pow
       common /a0gh/ pabs
       common /aef2/ icall1,icall2
