@@ -12,7 +12,7 @@ cc******************************************************************
       use approximation
       use plasma
       implicit none
-      integer i,k,iview, ipsy1,iunit
+      integer i,k,iview, iunit
       integer klo,khi,ierr,inpt2,ispectr
       real*8 zero,p_in,pe_p,pe_m,c_p,c_m
       real*8 vint,tcur
@@ -56,9 +56,6 @@ cc*********************************************************************
      & AMETR,RHO,SHIF,ELON,TRIA,MU,NE,TE,TI,ZEF,UPL)
 
       print *, 'init plasma'
-      ipsy1=ipsy-1
-
-
 
 !!!!!!!!!!!!! starting ray-tracing !!!!!!!!!!!!!!!!!!!!!
       allocate(outpep(ngrid),outpem(ngrid))
