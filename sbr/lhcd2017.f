@@ -18,17 +18,12 @@ cc******************************************************************
       real*8 zero,p_in,pe_p,pe_m,c_p,c_m
       real*8 vint,tcur
       common/testf/ tcur
-      !external polin,polin1
       include 'for/parameter.inc'
       include 'for/const.inc'
       include 'for/status.inc'
       real*8 outpe(NRD)
       real*8,dimension(:),allocatable:: outpep,outpem
-!     real*8,dimension(:),allocatable:: con,tem,temi,azef,afld
-!     real*8,dimension(:),allocatable:: rh,rha,drhodr,delta,ell,gamm,amy
-!     real*8,dimension(:),allocatable:: cdl,cly,cgm,cmy,coeffs
       parameter(zero=0.d0)
-
 
 cc*********************************************************************
 cc    Co-ordinates used in ray-tracing:
@@ -43,15 +38,8 @@ cc    Interval for r:  0.<= r <=1.
 cc*********************************************************************
       print *, 'start start'
       tcur=time
-      !inpt=NA1          ! ASTRA radial grid number
       outpe=zero
       p_in=dble(QLH)    ! input LH power, MW
-!!!      if(p_in.le.zero) return
-
-!     allocate(rh(inpt),rha(inpt),drhodr(inpt),con(inpt),tem(inpt))
-!      allocate(temi(inpt),azef(inpt))
-!      allocate(delta(inpt),ell(inpt),gamm(inpt),amy(inpt))
-      !allocate(cdl(ipsy),cly(ipsy),cgm(ipsy),cmy(ipsy),coeffs(ipsy))
 
       call init_plasma(NA1,ABC,BTOR,RTOR,UPDWN,GP2,
      & AMETR,RHO,SHIF,ELON,TRIA,MU,NE,TE,TI,ZEF,UPL)
@@ -96,11 +84,6 @@ cc*********************************************************************
       end do
 
       deallocate(outpep,outpem)
-      !deallocate(rh,rha,drhodr,con,tem,temi,zeff)
-      !deallocate(delta,ell,gamm,amy)
-!     deallocate(cdl,cly,cgm,cmy,coeffs)
-      !pause
-
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine ourlhcd2017(ispec,p_in, outpe,pe_out)      
