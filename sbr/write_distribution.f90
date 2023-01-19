@@ -133,7 +133,7 @@ subroutine write_distribution(arr,N,time)
     integer i
     integer itime
     integer, parameter :: iunit = 20
-    character(80) fname
+    character(120) fname
 
     itime = INT(time*100000)
     !print *, N, time, itime, MOD(itime, 10)
@@ -141,8 +141,12 @@ subroutine write_distribution(arr,N,time)
         write(fname,'("lhcd/distribution/", f9.7,".dat")') time
         !print *, fname
         open(iunit,file=fname,position="append")
-        do i=1, n
-            write(iunit,*) i, arr(i)
+        do i=1, N
+            if (arr(i)>0) then
+                write(iunit,*) i, arr(i)
+            else
+                exit
+            end if
         end do
         close(iunit)
     end if
