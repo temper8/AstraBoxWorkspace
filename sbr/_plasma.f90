@@ -22,12 +22,16 @@ module plasma
 contains
     subroutine init_plasma(NA1, ABC, BTOR, RTOR, UPDWN, GP2, AMETR, RHO, SHIF, ELON, TRIA,MU, NE, TE, TI, ZEF, UPL)
         use approximation
+        use rt_parameters
         implicit none
         integer, intent(in)  :: NA1
         real(dp), intent(in) :: ABC, BTOR, RTOR, UPDWN, GP2
         real(dp), dimension(*) :: AMETR, RHO, SHIF, ELON, TRIA,MU,  NE, TE, TI, ZEF, UPL
         integer i, k
         integer, parameter :: N  = 501
+        real(dp) :: znak_tor, znak_pol, fpol, dfmy
+        real*8 fdf ! это функция
+
         ngrid = NA1
         nspl = ngrid
         if (.not. allocated(rh)) then
@@ -101,7 +105,16 @@ contains
         do k=2,ipsy
          cmy(k)=coeffs(k-1)
         end do
-     
+  
+        ! зачем-то меняет знак коэффициентов????
+        znak_tor=dsign(1.d0,dble(itor))
+        b_tor=znak_tor*dabs(b_tor0)
+        fpol=fdf(1.d0,cmy,ncoef,dfmy)
+        znak_pol=dsign(1.d0,dble(i_pol))*dsign(1.d0,fpol)
+        do i=1,ncoef
+         cmy(i)=znak_pol*cmy(i)
+        end do
+  
     end subroutine
 
         

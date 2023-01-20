@@ -62,13 +62,6 @@
        call chder(zero,1.d0,chebdne,chebddne,ncheb)
       end if
 !
-      znak_tor=dsign(1.d0,dble(itor))
-      b_tor=znak_tor*dabs(b_tor0)
-      fpol=fdf(1.d0,cmy,ncoef,dfmy)
-      znak_pol=dsign(1.d0,dble(i_pol))*dsign(1.d0,fpol)
-      do i=1,ncoef
-       cmy(i)=znak_pol*cmy(i)
-      end do
 
       do j=1,nr
        r=dble(j)/dble(nr+1)
