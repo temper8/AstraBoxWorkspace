@@ -188,6 +188,23 @@ module rt_parameters
                read(iunit,*) nnz
                read(iunit,*)
         close(iunit)        
+
+        print *, 'checking initial parameters'
+        !!!!!!!!!!!!! checking initial parameters !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        if(kv.gt.50) kv=50
+        if(nr.gt.100) nr=100
+        if(ni1.eq.0) ni1=20
+        if(ni2.eq.0) ni2=20
+        if(ni1+ni2.gt.100) then
+            ni1=60
+            ni2=40
+        end if
+        if(nnz*ntet.gt.10000) then
+            nnz=250
+            ntet=40
+            pause 'nnz and ntet changed, because nnz*ntet>10000'
+        end if
+
         call show_parameters
     end subroutine read_parameters
 end module rt_parameters
