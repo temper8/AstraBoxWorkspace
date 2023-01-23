@@ -12,6 +12,8 @@ cc******************************************************************
       use approximation
       use plasma
       use rt_parameters
+      use spectrum1D      
+      use maxwell        
       implicit none
       integer i,k,iview, iunit
       real*8 p_in,pe_p,pe_m,c_p,c_m
@@ -21,7 +23,6 @@ cc******************************************************************
       include 'for/status.inc'
       real*8 outpe(NRD)
       real*8,dimension(:),allocatable:: outpep,outpem
-      real*8, parameter :: zero=0.d0
 
 cc*********************************************************************
 cc    Co-ordinates used in ray-tracing:
@@ -50,9 +51,14 @@ cc*********************************************************************
 
 !!positive spectrum:
       print *, 'positive spectrum'
+      call read_positive_spectrum('lhcd/ray_tracing.dat', p_in)
       pe_p=zero
       outpep=zero
-      call ourlhcd2017(+1,p_in, outpep,pe_p)
+      if(plaun.eq.zero) then
+            dij(:,:,1)=zero
+      else
+            call ourlhcd2017(+1,p_in, outpep,pe_p)
+      end if      
       if(pe_p.ne.zero) then
             c_p=vint(outpep,roc)
             if(c_p.ne.zero) then
@@ -64,10 +70,15 @@ cc*********************************************************************
 
 !!negative spectrum:
        print *, 'negative spectrum'
-      pe_m=zero
-      outpem=zero
-      call ourlhcd2017(-1,p_in, outpem,pe_m)  
-      if(pe_m.ne.zero) then
+       call read_negative_spectrum('lhcd/ray_tracing.dat', p_in)
+       pe_m=zero
+       outpem=zero       
+       if(plaun.eq.zero) then
+            dij(:,:,2)=zero
+       else
+            call ourlhcd2017(-1,p_in, outpem,pe_m)  
+       endif     
+       if(pe_m.ne.zero) then
             c_m=vint(outpem,roc)
             if(c_m.ne.zero) then
                   do i=1,ngrid
@@ -146,27 +157,7 @@ cc*********************************************************************
  
       lfree=1
 
-       select case (ispectr)
-       case (1) !read positive spectrum
-            call read_positive_spectrum('lhcd/ray_tracing.dat', p_in)
-            if(plaun.eq.zero) then
-                  dij(:,:,1)=zero
-                  return
-            end if
-       case (-1) !read negative spectrum
-            call read_negative_spectrum('lhcd/ray_tracing.dat', p_in)
-            if(plaun.eq.zero) then
-                  dij(:,:,2)=zero
-            return
-            end if
-       case DEFAULT
-            write(*,*)'wrong ispectr=',ispectr
-            pause
-            stop
-       end select 
-
       if(ispl.gt.4001) stop 'too many points in spectrum'
-
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
