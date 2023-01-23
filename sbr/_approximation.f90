@@ -169,6 +169,39 @@ subroutine lubksb(a,n,np,indx,b)
     end do
     return
 end    
+
+double precision function fdf(x,c,n,df)
+    real(dp) x,c(n),df
+    integer n,j
+    real(dp) p, dp
+    p=c(n)
+    dp=0.d0
+    do j=n-1,1,-1
+        dp=dp*x+p
+        p=p*x+c(j)
+    end do
+    fdf=p
+    df=dp
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+double precision function fdfddf(x,c,n,df,ddf)
+    real(dp) x,c(n),df, ddf
+    integer n,j
+    real(dp) p, dp,ddp
+    p=c(n)
+    dp=0d0
+    ddp=0d0
+    do j=n-1,1,-1
+        ddp=ddp*x+2d0*dp
+        dp=dp*x+p
+        p=p*x+c(j)
+    end do
+    fdfddf=p
+    df=dp
+    ddf=ddp
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 end module approximation
 
 

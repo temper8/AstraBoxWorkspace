@@ -88,6 +88,7 @@ cc*********************************************************************
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine ourlhcd2017(ispec,p_in, outpe,pe_out)      
       use constants
+      use approximation
       use spline
       use chebyshev
       use plasma
@@ -181,8 +182,8 @@ cc*********************************************************************
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      hr=1.d0/dble(nr+1)
-      xly=fdf(one,cly,ncoef,xlyp)
+      hr = 1.d0/dble(nr+1)
+      xly = fdf(one,cly,ncoef,xlyp)
       arg1=(zplus-z0)/(xly*rm)
       arg2=(zminus-z0)/(xly*rm)
       if(dabs(arg1).lt.1.d0) then
@@ -1320,6 +1321,7 @@ c---------------------------------------------
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine traj(xm0,tet0,xbeg,nmax,nb1,nb2,nomth,nomnz) !sav2009
       use constants
+      use approximation
       use plasma
       use rt_parameters
       implicit real*8 (a-h,o-z)
@@ -1390,9 +1392,9 @@ c---------------------------------------
          rnew2=ystart(3)
          cotet=dcos(tet)
          sitet=dsin(tet)
-         xdl=fdf(rnew2,cdl,ncoef,xdlp)
-         xly=fdf(rnew2,cly,ncoef,xlyp)
-         xgm=fdf(rnew2,cgm,ncoef,xgmp)
+         xdl = fdf(rnew2,cdl,ncoef,xdlp)
+         xly = fdf(rnew2,cly,ncoef,xlyp)
+         xgm = fdf(rnew2,cgm,ncoef,xgmp)
          xx=-xdl+rnew2*cotet-xgm*sitet**2
          zz=rnew2*xly*sitet
          xxx=(r0+rm*xx)/1d2
@@ -1813,6 +1815,7 @@ c---------------------------------------
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine disp2(pa,yn2,ptet,xnro,prt,prm)
       use constants
+      use approximation
       use plasma
       use rt_parameters
       implicit real*8 (a-h,o-z)
@@ -2183,6 +2186,7 @@ c    reflection
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine disp4(pa,ptet,xnr,yn2)
       use constants
+      use approximation
       use plasma
       use rt_parameters            
       implicit real*8 (a-h,o-z)
@@ -2895,6 +2899,7 @@ cu    uses derivs,mmid,pzextr
 
       double precision  function obeom(ptet,pa)
       use constants
+      use approximation
       use plasma
       implicit real*8 (a-h,o-z)
       !common /a0befr/ pi,pi2
@@ -2931,6 +2936,7 @@ c--------------------------------------
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       double precision  function ploshad(ptet,pa)
       use constants
+      use approximation
       use plasma
       implicit real*8 (a-h,o-z)
       !common /a0befr/ pi,pi2
@@ -3296,35 +3302,6 @@ c----------------------------------------------------------------
        return
        end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      double precision function fdf(x,c,n,df)
-      implicit real*8 (a-h,o-z)
-      dimension c(n)
-      p=c(n)
-      dp=0.d0
-      do j=n-1,1,-1
-        dp=dp*x+p
-        p=p*x+c(j)
-      end do
-      fdf=p
-      df=dp
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      double precision function fdfddf(x,c,n,df,ddf)
-      implicit real*8 (a-h,o-z)
-      dimension c(n)
-      p=c(n)
-      dp=0d0
-      ddp=0d0
-      do j=n-1,1,-1
-        ddp=ddp*x+2d0*dp
-        dp=dp*x+p
-        p=p*x+c(j)
-      end do
-      fdfddf=p
-      df=dp
-      ddf=ddp
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine diff(x,y,n,dy)
@@ -3716,6 +3693,7 @@ cu    uses derivs
  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine view(tview,iview,nnz,ntet) !sav2008
       use constants
+      use approximation
       use plasma
       use rt_parameters, only :  nr, itend0, kv, nmaxm           
       implicit real*8 (a-h,o-z)

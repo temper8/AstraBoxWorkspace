@@ -44,8 +44,7 @@ contains
         integer i, k
         integer, parameter :: N  = 501
         real(dp) :: znak_tor, znak_pol, fpol, dfmy
-        real*8 fdf ! это функция
-
+ 
         ngrid = NA1
         nspl = ngrid
         if (.not. allocated(rh)) then

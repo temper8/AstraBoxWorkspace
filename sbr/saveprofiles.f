@@ -20,7 +20,7 @@
       real*8 anz,apz,share
 
       real*8 pchm0
-      real*8 fpol,fdf,dfmy
+      real*8 fpol,dfmy
 
       !real*8 chebne,chebdne,chebddne
 
