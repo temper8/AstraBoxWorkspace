@@ -22,7 +22,10 @@ module plasma
 
 
     real(dp) y2dn(501),y2tm(501),y2tmi(501)
-    !+ бывший 
+    !+ бывший common /a0l3/
+    real(dp) y2zeff(501)
+    !+ бывший common /a0l5/ 
+    
 contains
     subroutine init_plasma(NA1, ABC, BTOR, RTOR, UPDWN, GP2, AMETR, RHO, SHIF, ELON, TRIA,MU, NE, TE, TI, ZEF, UPL)
         use approximation

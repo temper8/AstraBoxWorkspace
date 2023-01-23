@@ -16,7 +16,6 @@
       integer im,ip
       real*8 p_in
   
-      real*8 y2zeff
       real*8 anz,apz,share
 
       real*8 pchm0
@@ -27,7 +26,7 @@
       real*8 xlogj
 
       !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
-      common /a0l5/ y2zeff(501)
+      !common /a0l5/ y2zeff(501)
 
       real*8 znak_tor,znak_pol
       common/left/ znak_tor,znak_pol

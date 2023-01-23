@@ -124,7 +124,7 @@ cc*********************************************************************
       common /asou/ rsou(102),sou(102),npta
       common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
       !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
-      common /a0l5/ y2zeff(501)
+      !common /a0l5/ y2zeff(501)
       common/gridv/vgrid(101,100),dfundv(101,100),nvpt
       common/vvv1/dq1(101,100),dq2(101,100),pdc(100),pda(100),ppv1,ppv2
       common/findsigma/dncount(101,100)
@@ -3025,7 +3025,7 @@ c--------------------------------------
       implicit real*8 (a-h,o-z)
       !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
       !common /a0l4/ con(501),tem(501),temi(501),nspl
-      common /a0l5/ y2zeff(501)
+      !common /a0l5/ y2zeff(501)
       parameter(zero=0.d0,alfa=4.d0,dr=.02d0)
       pa=dabs(x) !#@sav
       if(pa.le.rh(nspl)) then
