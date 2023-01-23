@@ -88,6 +88,7 @@ cc*********************************************************************
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine ourlhcd2017(ispec,p_in, outpe,pe_out)      
       use constants
+      use spline
       use plasma
       use rt_parameters
       use spectrum1D
@@ -2982,6 +2983,7 @@ c--------------------------------------
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       double precision  function ft(x)
 ! electron temperature, erg
+      use spline
       use plasma
       implicit real*8 (a-h,o-z)
       !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
@@ -3000,6 +3002,7 @@ c--------------------------------------
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       double precision  function fti(x)
 ! ion temperature, kev
+      use spline      
       use plasma
       implicit real*8 (a-h,o-z)
       !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
@@ -3017,6 +3020,7 @@ c--------------------------------------
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       double precision  function zefff(x)
 ! z_effective profile
+      use spline      
       use plasma
       implicit real*8 (a-h,o-z)
       !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
@@ -3035,6 +3039,7 @@ c--------------------------------------
 c----------------------------------------------------------------
       double precision  function fn(x)
 ! plasma  density,  cm^-3
+      use spline      
       use plasma
       implicit real*8 (a-h,o-z)
       !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
@@ -3052,6 +3057,7 @@ c----------------------------------------------------------------
 c----------------------------------------------------------------
       double precision  function fn1(x,fnp)
 ! plasma density and its derivative
+      use spline      
       use plasma      
       implicit real*8 (a-h,o-z)
       !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
@@ -3346,95 +3352,7 @@ c----------------------------------------------------------------
       ddf=ddp
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine splne(x,y,n,y2)
-      implicit real*8 (a-h,o-z)
-      parameter(nn=1001, zero=0d0)
-      dimension x(n),y(n),y2(n),u(nn)
-      if(n.gt.nn) stop 'n>nn in splne!'
-      y2(1)=zero
-      u(1)=zero
-      do i=2,n-1
-       sig=(x(i)-x(i-1))/(x(i+1)-x(i-1))
-       p=sig*y2(i-1)+2.d0
-       y2(i)=(sig-1.d0)/p
-       u(i)=(6.d0*((y(i+1)-y(i))/(x(i+1)-x(i))-(y(i)-y(i-1))
-     *     /(x(i)-x(i-1)))/(x(i+1)-x(i-1))-sig*u(i-1))/p
-      end do
-       qn=zero
-       un=zero
-       y2(n)=(un-qn*u(n-1))/(qn*y2(n-1)+1.d0)
-         do k=n-1,1,-1
-          y2(k)=y2(k)*y2(k+1)+u(k)
-         end do
-      return
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine splnt(xa,ya,y2a,n,x,y,dy)
-      implicit real*8 (a-h,o-z)
-      parameter(zero=0.d0)
-      dimension xa(n),ya(n),y2a(n)
-      klo=1
-      khi=n
-      do while(khi-klo.gt.1)
-       k=(khi+klo)/2
-       if(xa(k).gt.x)then
-        khi=k
-       else
-        klo=k
-       endif
-      end do
-      h=xa(khi)-xa(klo)
-      if(h.eq.zero) then
-       write(*,*)'bad x input in splnt(), x=',x
-       write(*,*)'klo=',klo,' kho=',khi
-       stop
-      end if
-      a=(xa(khi)-x)/h
-      b=(x-xa(klo))/h
-      aa=a**2
-      bb=b**2
-      hh=h**2/6d0
-      ax=-1d0/h
-      bx=-ax
-      y=a*ya(klo)+b*ya(khi)+
-     *  (a*(aa-1d0)*y2a(klo)+b*(bb-1d0)*y2a(khi))*hh
-      dy=ax*ya(klo)+bx*ya(khi)+
-     *  ax*((3.d0*aa-1d0)*y2a(klo)-(3.d0*bb-1d0)*y2a(khi))*hh
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine dsplnt(xa,ya,y2a,n,x,y,dy,ddy)
-      implicit real*8 (a-h,o-z)
-      parameter(zero=0.d0)
-      dimension xa(n),ya(n),y2a(n)
-      klo=1
-      khi=n
-      do while(khi-klo.gt.1)
-       k=(khi+klo)/2
-       if(xa(k).gt.x)then
-        khi=k
-       else
-        klo=k
-       endif
-      end do
-      h=xa(khi)-xa(klo)
-      if(h.eq.zero) then
-       write(*,*)'bad x input in splnt(), x=',x
-       write(*,*)'klo=',klo,' kho=',khi
-       stop
-      end if
-      a=(xa(khi)-x)/h
-      b=(x-xa(klo))/h
-      aa=a**2
-      bb=b**2
-      hh=h**2/6d0
-      ax=-1d0/h
-      bx=-ax
-      y=a*ya(klo)+b*ya(khi)+
-     *  (a*(aa-1d0)*y2a(klo)+b*(bb-1d0)*y2a(khi))*hh
-      dy=ax*ya(klo)+bx*ya(khi)+
-     *  ax*((3.d0*aa-1d0)*y2a(klo)-(3.d0*bb-1d0)*y2a(khi))*hh
-      ddy=6.d0*ax*ax*(a*y2a(klo)+b*y2a(khi))*hh
-      end
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine diff(x,y,n,dy)
       implicit real*8 (a-h,o-z)
