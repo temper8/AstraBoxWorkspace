@@ -14,7 +14,6 @@ cc******************************************************************
       use rt_parameters
       implicit none
       integer i,k,iview, iunit
-      integer klo,khi,ierr,inpt2,ispectr
       real*8 p_in,pe_p,pe_m,c_p,c_m
       real*8 vint
       include 'for/parameter.inc'
@@ -51,10 +50,9 @@ cc*********************************************************************
 
 !!positive spectrum:
       print *, 'positive spectrum'
-      ispectr=1
       pe_p=zero
       outpep=zero
-      call ourlhcd2017(ispectr,p_in, outpep,pe_p)
+      call ourlhcd2017(+1,p_in, outpep,pe_p)
       if(pe_p.ne.zero) then
             c_p=vint(outpep,roc)
             if(c_p.ne.zero) then
@@ -66,10 +64,9 @@ cc*********************************************************************
 
 !!negative spectrum:
        print *, 'negative spectrum'
-      ispectr=-1
       pe_m=zero
       outpem=zero
-      call ourlhcd2017(ispectr,p_in, outpem,pe_m)  
+      call ourlhcd2017(-1,p_in, outpem,pe_m)  
       if(pe_m.ne.zero) then
             c_m=vint(outpem,roc)
             if(c_m.ne.zero) then
@@ -86,7 +83,7 @@ cc*********************************************************************
       deallocate(outpep,outpem)
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine ourlhcd2017(ispec,p_in, outpe,pe_out)      
+      subroutine ourlhcd2017(ispectr,p_in, outpe,pe_out)      
       use constants
       use approximation
       use spline
@@ -146,8 +143,7 @@ cc*********************************************************************
           dij(:,:,:)=zero
           return
       end if
-      ispectr=ispec
-
+ 
       lfree=1
 
        select case (ispectr)
