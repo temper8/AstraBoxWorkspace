@@ -36,6 +36,9 @@ module spectrum1D
         end do
         close(iunit)
         ispl=i1
+
+        if(ispl.gt.4001) stop 'too many points in spectrum'
+
     end subroutine read_positive_spectrum        
 
     subroutine read_negative_spectrum(file_name, p_in)
@@ -63,7 +66,10 @@ module spectrum1D
             end do        
         end if
 10      close(iunit)
-        ispl=i1        
+        ispl=i1     
+
+        if(ispl.gt.4001) stop 'too many points in spectrum'
+
     end subroutine read_negative_spectrum    
 
 end module spectrum1D
