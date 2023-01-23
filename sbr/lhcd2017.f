@@ -99,7 +99,7 @@ cc*********************************************************************
       dimension outpe(*)
 !!!!    maximum grid sizes:
 !!!!    rho=100, v_par_electrons=100, v_perp_ions=50
-      external obeom,ploshad,fn
+      external obeom,ploshad
       dimension galfa(50,100),vpmin(100),vcva(100)
      &,pd2(100),pd2a(100),pd2b(100),pdprev1(100),pdprev2(100)
      &,source(100),sour(100)
@@ -135,7 +135,7 @@ cc*********************************************************************
       common /alph/ dqi0(50,100)
       common /ag/ inak,lenstor,lfree
       common /maxrho/ rmx_n,rmx_t,rmx_z,rmx_ti
-      common/ne_cheb/chebne(50),chebdne(50),chebddne(50),ncheb
+      !common/ne_cheb/chebne(50),chebdne(50),chebddne(50),ncheb
 
       real*8 kofpar,timecof
       real*8,dimension(:),allocatable:: vvj,vdfj
@@ -179,20 +179,7 @@ cc*********************************************************************
       if(ispl.gt.4001) stop 'too many points in spectrum'
 
 
-!!!!!!!!!!!!!!! spline approximation of plasma profiles !!!!!!!!!!!!!!!!
-      call splne(rh,con,nspl,y2dn)
-      call splne(rh,tem,nspl,y2tm)
-      call splne(rh,zeff,nspl,y2zeff)
-      if(itend0.gt.0) then
-       call splne(rh,temi,nspl,y2tmi)
-      end if
-!
-      if(inew.ne.0) then
-       ncheb=20
-       call chebft1(zero,1.d0,chebne,ncheb,fn)
-       call chder(zero,1.d0,chebne,chebdne,ncheb)
-       call chder(zero,1.d0,chebdne,chebddne,ncheb)
-      end if
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       hr=1.d0/dble(nr+1)
       xly=fdf(one,cly,ncoef,xlyp)
@@ -3038,23 +3025,7 @@ c--------------------------------------
       zefff=y
       end
 c----------------------------------------------------------------
-      double precision  function fn(x)
-! plasma  density,  cm^-3
-      use spline      
-      use plasma
-      implicit real*8 (a-h,o-z)
-      !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
-      !common /a0l4/ con(501),tem(501),temi(501),nspl
-      parameter(zero=0.d0,alfa=4.d0,dr=.02d0)
-      pa=dabs(x)
-      if(pa.le.rh(nspl)) then
-       call splnt(rh,con,y2dn,nspl,pa,y,dy)
-      else
-       r=pa-rh(nspl)
-       y=con(nspl)*dexp(-alfa*(r/dr)**2)
-      end if
-      fn=y*1.d+13    !cm^-3
-      end
+
 c----------------------------------------------------------------
       double precision  function fn1(x,fnp)
 ! plasma density and its derivative

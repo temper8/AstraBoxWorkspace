@@ -7,13 +7,13 @@
        use rt_parameters
        use maxwell
       implicit none
-      real*8 fn
-      external fn
+      !real*8 fn
+      !external fn
       integer i,k,j,klo,khi,ierr
       include 'for/parameter.inc'
       include 'for/const.inc'
       include 'for/status.inc'
-      integer ncheb
+      !integer ncheb
       integer im,ip
       real*8 p_in
   
@@ -22,7 +22,7 @@
       real*8 pchm0
       real*8 fpol,fdf,dfmy
 
-      real*8 chebne,chebdne,chebddne
+      !real*8 chebne,chebdne,chebddne
 
       real*8 xlogj
 
@@ -32,7 +32,7 @@
       real*8 znak_tor,znak_pol
       common/left/ znak_tor,znak_pol
       real*8 ynzmp(1001),pmp(1001),ynzmm(1001),pmm(1001)
-      common/ne_cheb/chebne(50),chebdne(50),chebddne(50),ncheb
+      !common/ne_cheb/chebne(50),chebdne(50),chebddne(50),ncheb
       real*8 efld(100),r,vmax,fvt
       real*8 zff,zefff,fnr,fnrr
       real*8 pn,fn1,fn2,gst,dens,tmp,ft,vt,vclt
@@ -45,24 +45,12 @@
 
       p_in=dble(QLH)    ! input LH power, MW
 
-      call init_plasma(NA1,ABC,BTOR,RTOR,UPDWN,GP2,
-     & AMETR,RHO,SHIF,ELON,TRIA,MU,NE,TE,TI,ZEF,UPL)
-
       if(calls.eq.zero) then
             call read_parameters('lhcd/ray_tracing.dat')
       end if
 
-      call splne(rh,con,nspl,y2dn)
-      call splne(rh,tem,nspl,y2tm)
-      call splne(rh,zeff,nspl,y2zeff)
-      call splne(rh,temi,nspl,y2tmi)
-      if(inew.ne.0) then
-       ncheb=20
-       call chebft1(zero,1.d0,chebne,ncheb,fn)
-       call chder(zero,1.d0,chebne,chebdne,ncheb)
-       call chder(zero,1.d0,chebdne,chebddne,ncheb)
-      end if
-!
+      call init_plasma(NA1,ABC,BTOR,RTOR,UPDWN,GP2,
+     & AMETR,RHO,SHIF,ELON,TRIA,MU,NE,TE,TI,ZEF,UPL)
 
       do j=1,nr
        r=dble(j)/dble(nr+1)

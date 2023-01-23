@@ -25,11 +25,18 @@ module plasma
     !+ бывший common /a0l3/
     real(dp) y2zeff(501)
     !+ бывший common /a0l5/ 
-    
+
+    integer ncheb
+    real(dp) chebne(50),chebdne(50),chebddne(50)    
+    !+ бывший common/ne_cheb
+
 contains
     subroutine init_plasma(NA1, ABC, BTOR, RTOR, UPDWN, GP2, AMETR, RHO, SHIF, ELON, TRIA,MU, NE, TE, TI, ZEF, UPL)
+        use constants
         use approximation
         use rt_parameters
+        use spline
+        use chebyshev
         implicit none
         integer, intent(in)  :: NA1
         real(dp), intent(in) :: ABC, BTOR, RTOR, UPDWN, GP2
@@ -121,8 +128,38 @@ contains
         do i=1,ncoef
          cmy(i)=znak_pol*cmy(i)
         end do
-  
+
+        
+    !!!!!!!!!!!!!!! spline approximation of plasma profiles !!!!!!!!!!!!!!!!
+        call splne(rh,con,nspl,y2dn)
+        call splne(rh,tem,nspl,y2tm)
+        call splne(rh,zeff,nspl,y2zeff)
+        call splne(rh,temi,nspl,y2tmi)
+
+        if(inew.ne.0) then
+            ncheb=20
+            call chebft1(zero,1.d0,chebne,ncheb,fn)
+            call chder(zero,1.d0,chebne,chebdne,ncheb)
+            call chder(zero,1.d0,chebdne,chebddne,ncheb)
+        end if        
     end subroutine
 
+    double precision  function fn(x)
+    ! plasma  density,  cm^-3
+        use spline      
+    !      use plasma
+        implicit real*8 (a-h,o-z)
+        !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
+        !common /a0l4/ con(501),tem(501),temi(501),nspl
+        parameter(zero=0.d0,alfa=4.d0,dr=.02d0)
+        pa=dabs(x)
+        if(pa.le.rh(nspl)) then
+            call splnt(rh,con,y2dn,nspl,pa,y,dy)
+        else
+            r=pa-rh(nspl)
+            y=con(nspl)*dexp(-alfa*(r/dr)**2)
+        end if
+        fn=y*1.d+13    !cm^-3
+    end    
         
 end module plasma
