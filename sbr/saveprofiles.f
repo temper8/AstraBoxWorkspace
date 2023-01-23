@@ -1,6 +1,7 @@
       subroutine saveprofiles
        use constants , only :pi4, pme, pqe, c0, zero
        use spline
+       use chebyshev
        use approximation       
        use plasma
        use rt_parameters

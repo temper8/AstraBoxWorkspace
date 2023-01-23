@@ -89,6 +89,7 @@ cc*********************************************************************
       subroutine ourlhcd2017(ispec,p_in, outpe,pe_out)      
       use constants
       use spline
+      use chebyshev
       use plasma
       use rt_parameters
       use spectrum1D
@@ -3079,6 +3080,7 @@ c----------------------------------------------------------------
 
       double precision  function fn2(r,fnp,fnpp)
 ! plasma density and its first and second derivatives
+      use chebyshev
       implicit real*8 (a-h,o-z)
       common/ne_cheb/chebne(50),chebdne(50),chebddne(50),ncheb
       parameter(zero=0.d0,alfa=4.d0,dr=.02d0)
@@ -3452,87 +3454,7 @@ c----------------------------------------------------------------
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !sav2008: below this line there are new subroutins and functions
-      SUBROUTINE chebft1(a,b,c,n,func)
-! Chebyshev fit: Given a function func, lower and upper limits
-! of the interval [a,b], and a maximum degree n, this routine 
-! computes the n coefficients c(k) such that func(x) approximately =
-! SUMM_(k=1)^(k=n)[c(k)*T(k-1)(y)]-c(1)/2, where y and x are related by
-! (5.8.10). This routine is to be used with moderately large n 
-! (e.g., 30 or 50), the array of cs subsequently to be truncated
-! at the smaller value m such that c(m+1) and subsequent elements 
-! are negligible. Parameters: Maximum expected value of n, and ð. 
-      implicit none
-      INTEGER n,NMAX
-      DOUBLE PRECISION a,b,c(n),func,PI
-      EXTERNAL func
-      PARAMETER (NMAX=50, PI=3.141592653589793d0)
-      INTEGER j,k
-      DOUBLE PRECISION bma,bpa,fac,y,f(NMAX)
-      DOUBLE PRECISION sum
-      bma=0.5d0*(b-a)
-      bpa=0.5d0*(b+a)
-      do 11 k=1,n
-        y=cos(PI*(k-0.5d0)/n)
-        f(k)=func(y*bma+bpa)
-11    continue
-      fac=2.d0/n
-      do 13 j=1,n
-        sum=0.d0
-        do 12 k=1,n
-          sum=sum+f(k)*cos((PI*(j-1))*((k-0.5d0)/n))
-12      continue
-        c(j)=fac*sum
-13    continue
-      return
-      END
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      FUNCTION chebev(a,b,c,m,x)
-! Chebyshev evaluation: All arguments are input. 
-! c(1:m) is an array of Chebyshev coefficients, the first m elements 
-! of c output from chebft (which must have been called with
-! the same a and b). The Chebyshev polynomial evaluated
-! and the result is returned as the function value.
-      implicit none
-      INTEGER m
-      DOUBLE PRECISION chebev,a,b,x,c(m)
-      INTEGER j
-      DOUBLE PRECISION d,dd,sv,y,y2
-      if ((x-a)*(x-b).gt.0.d0) pause 'x not in range in chebev'
-      d=0.d0
-      dd=0.d0
-      y=(2.d0*x-a-b)/(b-a)
-      y2=2.d0*y
-      do 11 j=m,2,-1
-        sv=d
-        d=y2*d-dd+c(j)
-        dd=sv
-11    continue
-      chebev=y*d-dd+0.5d0*c(1)
-      return
-      END
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      SUBROUTINE chder(a,b,c,cder,n)
-! Given a,b,c(1:n), as output from routine chebft(), and given n, 
-! the desired degree of approximation (length of c to be used), 
-! this routine returns the array cder(1:n), the Chebyshev 
-! coefficients of the derivative of the function whose coefficients 
-! are c(1:n).
-      implicit none
-      INTEGER n
-      DOUBLE PRECISION a,b,c(n),cder(n)
-      INTEGER j
-      DOUBLE PRECISION con
-      cder(n)=0.d0
-      cder(n-1)=2*(n-1)*c(n)
-      do 11 j=n-2,1,-1
-        cder(j)=cder(j+2)+2*j*c(j+1)
-11    continue
-      con=2.d0/(b-a)
-      do 12 j=1,n
-        cder(j)=cder(j)*con
-12    continue
-      return
-      END
+ 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine rkqs(y,dydx,n,x,htry,eps,yscal,hdid,hnext,derivs)
       integer n,nmax
