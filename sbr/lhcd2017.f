@@ -113,10 +113,10 @@ cc*********************************************************************
       common /a0a1/ ynzm(1001),pm(1001) 
       !common /a0a2/ tet1,tet2
       common /a0a4/ plost,pnab
-      common /a0ef1/ cltn
+      !common /a0ef1/ cltn
       common /bcef/ ynz,ynpopq
-      common /a0ef2/ ww
-      common /a0ef3/ xmi,cnye,cnyi,xsz,vt0 
+      !common /a0ef2/ ww
+      !common /a0ef3/ xmi,cnye,cnyi,xsz,vt0 
       common /a0gh/ pabs
       common /a0ghp/ vlf,vrt,dflf,dfrt
       common/plosh/ zv1(100,2),zv2(100,2),sk(100)
@@ -124,7 +124,7 @@ cc*********************************************************************
       common /a0i3/ dql(101,100),pdl(100),vzmin(100),vzmax(100)
       common /a0i4/ fcoll(100),dens(100),eta(100)
       common /asou/ rsou(102),sou(102),npta
-      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
+      !common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
       !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
       !common /a0l5/ y2zeff(501)
       common/gridv/vgrid(101,100),dfundv(101,100),nvpt
@@ -183,6 +183,7 @@ cc*********************************************************************
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       hr = 1.d0/dble(nr+1)
+      iw0=iw
 
 c---------------------------------------------------
 c initial constants
@@ -199,35 +200,7 @@ c---------------------------------------------------
       !c1=pqe/pme/clt
       !xsgs=1d+13
       !xwtt=1d-7
-c------------------------------------------------------------
-c calculate constants
-c---------------------------------------
-      dn1=1d0/(zi1+dni2*zi2+dni3*zi3)
-      dn2=dni2*dn1
-      dn3=dni3*dn1
-      sss=zi1**2*dn1/xmi1+zi2**2*dn2/xmi2+zi3**2*dn3/xmi3
-      xmi=1836.d0/sss
-      cnstvc=(.75d0*piq*sss/1836.d0)**(1.d0/3.d0)
-      ww=freq*pi2*1.0d+09
-      cnye=xlog/pi4
-      cnyi=dsqrt(2d0)/(3d0*piq) !%for Vt=sqrt(Te/m)
-      vt0=fvt(zero)
-!!!!!!!!      ptkev=ft(zero)/0.16d-8  !Te in keV
-      cltn=clt/vt0
-      xsz=clt/ww/rm
-      ccur=pqe*vt0*0.333d-9
-!!      ccurnr=pqe*pqe*0.333d-9/pme
-      rrange=rrange*hr
-      iw0=iw
 
-      valfa=1.d9*dsqrt(1.91582d0*talfa/xmalfa)
-cccc  valfa (cgs units) = birth velocity
-      zza=cnst1*(zalfa/xmalfa/valfa)**2*(clt/valfa)**3/pi
-      zze=cnst2*2.d9*freq
-      cnstal=(dsqrt(cnst1)/xmalfa/pi)
-     &        *(zalfa*vt0/valfa)**2*clt/valfa
-      vpmax=dsqrt(energy/talfa)
-cccc  "vpmax" in valfa velocity units !
 c--------------------------------------------------------
 c find volums and surfaces
 c--------------------------------------------------------
@@ -1009,9 +982,10 @@ c---------------------------------------
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine dql1 !sav2008
       use rt_parameters
+      use plasma, only : fvt
       implicit real*8 (a-h,o-z)
       parameter(length=5000000)
-      real*8 radth,fvt
+      real*8 radth
       dimension dland(length),dcoll(length),perpn(length),dalf(length)
       dimension vel(length),jrad(length),iww(length),tetai(length)
       dimension xnpar(length),izz(length)
@@ -1032,7 +1006,7 @@ c---------------------------------------
       common /eg2/ pdec1,pdec2,pdec3,pdecv,pdecal,dfdv,icf1,icf2
       common /eg3/ cf1,cf2,cf3,cf4,cf5,cf6
       common /dg/ pintld4,pintcl4,pintal4
-      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
+      !common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
       !common/b0/ itend0
       parameter(clt=3.d10,zero=0.d0)
       powpr=pow
@@ -1132,7 +1106,7 @@ c----------------------------------
       dimension an1(length),an2(length)
       common /xn1xn2/ an1,an2
       common /a0ghp/ vlf,vrt,dflf,dfrt
-      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
+      !common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
       common /vvv2/ psum4
       !common/b0/ itend0
       parameter(clt=3.d10,zero=0.d0)
@@ -1232,12 +1206,12 @@ c---------------------------------------------
       common /a0i2/ vk(100) !,pme !pchm
       common /a0i3/ dql(101,100),pdl(100),vzmin(100),vzmax(100)
       common /a0i4/ fcoll(100),dens(100),eta(100)
-      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
+      !common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
       common/vvv1/dq1(101,100),dq2(101,100),pdc(100),pda(100),ppv1,ppv2
       common /vvv3/ pdfast(100)
       common /alph/ dqi0(50,100)
       !common/b0/ itend0
-      common /a0ef1/ cltn
+      !common /a0ef1/ cltn
       !common /a0befr/ pi,pi2
       common/findsigma/dncount(101,100)
       !parameter(zero=0.d0, tiny=1.d-100)
@@ -1322,7 +1296,7 @@ c---------------------------------------------
       !common /a0bcp/ tin
       !common /a0bd/ rrange,hdrob
       !common /a0befr/ pi,pi2
-      common /a0ef1/ cltn
+      !common /a0ef1/ cltn
  !!     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       common /abc/ rzz,tetzz,xmzz,iznzz,iwzz,irszz
       common /abcd/ irs
@@ -1513,7 +1487,7 @@ c-------------------------------------
       !common /a0befr/ pi,pi2
       !common /a0cd/ rbord,maxstep2,maxstep4
       !common /a0cdm/ hmin1
-      common /a0ef1/ cltn
+      !common /a0ef1/ cltn
       common /abc/ rzz,tetzz,xmzz,iznzz,iwzz,irszz
       common /abcd/ irs
       common /abcde/ izn!,iw
@@ -1664,7 +1638,7 @@ c---------------------------------------
       common /abcde/ izn!,iw
       common /abcdg/ iabsorp
       common /bdeo/ ivar
-      common /a0ef1/ cltn
+      !common /a0ef1/ cltn
       common /bcef/ ynz,ynpopq
       common /df/ pdec14,pdec24,pdec34,idec
       common /dg/ pintld4,pintcl4,pintal4
@@ -1809,9 +1783,9 @@ c---------------------------------------
       use rt_parameters
       implicit real*8 (a-h,o-z)
       !common /a0befr/ pi,pi2
-      common /a0ef1/ cltn
-      common /a0ef2/ ww
-      common /a0ef3/ xmi,cnye,cnyi,xsz,vt0
+      !common /a0ef1/ cltn
+      !common /a0ef2/ ww
+      !common /a0ef3/ xmi,cnye,cnyi,xsz,vt0
       common /abcde/ izn!,iw
       common /bcef/ ynz,ynpopq
       common /abefo/ yn3
@@ -1826,7 +1800,7 @@ c---------------------------------------
       common /eg2/ pdec1,pdec2,pdec3,pdecv,pdecal,dfdv,icf1,icf2
       common /eg3/ cf1,cf2,cf3,cf4,cf5,cf6
       !common/a00/ xlog,zalfa,xmalfa,dn1,dn2 !,factor
-      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
+      !common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
       !common/b0/ itend0
 !     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       !common /cnew/ inew !est !sav2008
@@ -2180,16 +2154,16 @@ c    reflection
       use rt_parameters            
       implicit real*8 (a-h,o-z)
       !common /a0befr/ pi,pi2
-      common /a0ef1/ cltn
-      common /a0ef2/ ww
-      common /a0ef3/ xmi,cnye,cnyi,xsz,vt0
+      !common /a0ef1/ cltn
+      !common /a0ef2/ ww
+      !common /a0ef3/ xmi,cnye,cnyi,xsz,vt0
       common /bcef/ ynz,ynpopq
       common /abefo/ yn3
       common /aef2/ icall1,icall2
       common /cefn/ iconv,irefl
       common /df/ pdec14,pdec24,pdec34,idec
       !common/a00/ xlog,zalfa,xmalfa,dn1,dn2!,factor
-      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
+      !common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
       !common/b0/ itend0
 !     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       !common /cnew/ inew !est !sav2008
@@ -2510,7 +2484,7 @@ c      dydx(5)=znak*dhdn3/ddn
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine dhdomega(rho,theta,yn1,yn2)
       implicit real*8 (a-h,o-z)
-      common /a0ef2/ ww
+      !common /a0ef2/ ww
       common /abefo/ yn3
       common/fj/dhdm,dhdnr,dhdtet,dhdr,ddn,dhdn3,dhdv2v,dhdu2u
       common/direct/znakstart
@@ -2892,7 +2866,7 @@ cu    uses derivs,mmid,pzextr
       use plasma
       implicit real*8 (a-h,o-z)
       !common /a0befr/ pi,pi2
-      common /a0ef1/ cltn
+      !common /a0ef1/ cltn
 !     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       parameter(pa0=0.d0)
       xdl=fdf(pa,cdl,ncoef,xdlp)
@@ -2929,7 +2903,7 @@ c--------------------------------------
       use plasma
       implicit real*8 (a-h,o-z)
       !common /a0befr/ pi,pi2
-      common /a0ef1/ cltn
+      !common /a0ef1/ cltn
 !     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       parameter(pa0=0.d0)
       xdl=fdf(pa,cdl,ncoef,xdlp)
@@ -2958,30 +2932,7 @@ c--------------------------------------
       ploshad=dsqrt(xj)
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      double precision  function fvt(r)
-      implicit real*8 (a-h,o-z)
-      pt=ft(r)
-      fvt=dsqrt(pt/9.11d-28)
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      double precision  function ft(x)
-! electron temperature, erg
-      use spline
-      use plasma
-      implicit real*8 (a-h,o-z)
-      !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
-      !common /a0l4/ con(501),tem(501),temi(501),nspl
-      parameter(zero=0.d0,alfa=4.d0,dr=.02d0)
-      pa=dabs(x) !#@sav
-      if(pa.le.rh(nspl)) then
-       call splnt(rh,tem,y2tm,nspl,pa,y,dy)
-      else
-       r=pa-rh(nspl)
-       y=tem(nspl)*dexp(-alfa*(r/dr)**2)
-      end if
-!!      ft=y            ! kev
-      ft=y*0.16d-8      ! erg
-      end
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       double precision  function fti(x)
 ! ion temperature, kev
@@ -3698,8 +3649,8 @@ cc      common /xn1xn2/ an1,an2
       dimension tetbeg(mpnt),xnrbeg(mpnt),xmbeg(mpnt),yn3beg(mpnt)
       common/viewdat/mbeg,mend,mbad,rbeg,tetbeg,xnrbeg,xmbeg,yn3beg
 !     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
-      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
-      common /a0ef1/ cltn
+      !common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
+      !common /a0ef1/ cltn
       common /bcef/ ynz,ynpopq
       !common /a0befr/ pi,pi2
       common /a0a1/ ynzm(1001),pm(1001) !,nmaxm(4)

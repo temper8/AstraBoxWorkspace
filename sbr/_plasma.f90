@@ -18,6 +18,21 @@ module plasma
     real(dp) tet1, tet2
     !+ бывший common /a0a2/ 
 
+    real(dp) xmi,cnye,cnyi,xsz,vt0 
+    ! common /a0ef3/ xmi,cnye,cnyi,xsz,vt0 
+    real(dp) cnstvc
+
+    real(dp) ww
+    ! common /a0ef2/ ww
+
+    real(dp) cltn
+    ! common /a0ef1/ cltn    
+
+    real(dp) vperp(50,100),cnstal,zza,zze,valfa!,kv
+    !common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
+
+    real(dp) vpmax
+
     integer, parameter :: ipsy = 5, ncoef = 5
     !+   ipsy = number of polinomial decomposition coefficients
     !+   used for interpolation of Zakharov's moments.
@@ -154,7 +169,8 @@ contains
         use approximation
         use rt_parameters
         implicit none
-        real(dp) :: xly, xlyp, arg1, arg2        
+        real(dp) :: xly, xlyp, arg1, arg2  
+        real(dp) :: hr, dn1, dn2, dn3, sss
     !!!   
         xly = fdf(one,cly,ncoef,xlyp)
         arg1=(zplus-z0)/(xly*rm)
@@ -168,7 +184,36 @@ contains
             tet2=dasin(arg2)      ! lower grill corner poloidal coordinate
         else
             tet2=-0.5d0*pi        ! lower grill corner poloidal coordinate
-        end if    
+        end if   
+        
+        !------------------------------------------------------------
+        ! calculate constants
+        !---------------------------------------
+        hr = 1.d0/dble(nr+1)        
+        dn1=1d0/(zi1+dni2*zi2+dni3*zi3)
+        dn2=dni2*dn1
+        dn3=dni3*dn1
+        sss=zi1**2*dn1/xmi1+zi2**2*dn2/xmi2+zi3**2*dn3/xmi3
+        xmi=1836.d0/sss
+        cnstvc=(.75d0*piq*sss/1836.d0)**(1.d0/3.d0)
+        ww=freq*pi2*1.0d+09
+        cnye=xlog/pi4
+        cnyi=dsqrt(2d0)/(3d0*piq) !%for Vt=sqrt(Te/m)
+        vt0=fvt(zero)
+        !!!!!!!!      ptkev=ft(zero)/0.16d-8  !Te in keV
+        cltn=clt/vt0
+        xsz=clt/ww/rm
+        !ccur=pqe*vt0*0.333d-9
+        !!      ccurnr=pqe*pqe*0.333d-9/pme
+        rrange=rrange*hr !ToDo если вызывается несколько раз то будут проблемы
+        
+        valfa=1.d9*dsqrt(1.91582d0*talfa/xmalfa)
+        !  valfa (cgs units) = birth velocity
+        zza=cnst1*(zalfa/xmalfa/valfa)**2*(clt/valfa)**3/pi
+        zze=cnst2*2.d9*freq
+        cnstal=(dsqrt(cnst1)/xmalfa/pi)*(zalfa*vt0/valfa)**2*clt/valfa
+        vpmax=dsqrt(energy/talfa)
+        !  "vpmax" in valfa velocity units !        
     end subroutine
 
     double precision  function fn(x)
@@ -188,5 +233,30 @@ contains
         end if
         fn=y*1.d+13    !cm^-3
     end    
-        
+
+    double precision  function fvt(r)
+        implicit real*8 (a-h,o-z)
+        pt=ft(r)
+        fvt=dsqrt(pt/9.11d-28)
+    end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    double precision  function ft(x)
+    ! electron temperature, erg
+        use spline
+    !    use plasma
+        implicit real*8 (a-h,o-z)
+        !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
+        !common /a0l4/ con(501),tem(501),temi(501),nspl
+        parameter(zero=0.d0,alfa=4.d0,dr=.02d0)
+        pa=dabs(x) !#@sav
+        if(pa.le.rh(nspl)) then
+            call splnt(rh,tem,y2tm,nspl,pa,y,dy)
+        else
+            r=pa-rh(nspl)
+            y=tem(nspl)*dexp(-alfa*(r/dr)**2)
+        end if
+        !!      ft=y            ! kev
+        ft=y*0.16d-8      ! erg
+    end    
+
 end module plasma

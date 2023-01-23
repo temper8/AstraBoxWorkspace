@@ -3,7 +3,8 @@ subroutine fokkerplanck_new(time, TAU)
     use FokkerPlanck1D_mod
     use Utils
     use rt_parameters
-    use maxwell    
+    use maxwell  
+    use plasma, only : fvt  
     implicit none
 
     type(FokkerPlanck1D) fp_test
@@ -19,7 +20,7 @@ subroutine fokkerplanck_new(time, TAU)
     !common/lh/vij(i0,100),fij0(i0,100,2),fij(i0,100,2),dfij(i0,100,2), dij(i0,100,2),enorm(100),fst(100)
     integer n,i,j,it,nt,k
     real*8 xend,h,dt
-    real*8 znak,alfa2,dt0,h0,r,fvt
+    real*8 znak,alfa2,dt0,h0,r
     !common/ef/ alfa2
     
     real*8 d0

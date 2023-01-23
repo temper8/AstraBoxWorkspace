@@ -33,9 +33,9 @@
       common/left/ znak_tor,znak_pol
       real*8 ynzmp(1001),pmp(1001),ynzmm(1001),pmm(1001)
       !common/ne_cheb/chebne(50),chebdne(50),chebddne(50),ncheb
-      real*8 efld(100),r,vmax,fvt
+      real*8 efld(100),r,vmax
       real*8 zff,zefff,fnr,fnrr
-      real*8 pn,fn1,fn2,gst,dens,tmp,ft,vt,vclt
+      real*8 pn,fn1,fn2,gst,dens,tmp,vt,vclt
       real*8 znak
 !      common/lh/vij(i0,100),fij0(i0,100,2),fij(i0,100,2),dfij(i0,100,2)
 !     &,dij(i0,100,2),enorm(100),fst(100)
