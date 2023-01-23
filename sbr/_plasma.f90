@@ -359,7 +359,7 @@ contains
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    double precision  function gaussint(f,a,b,r,eps)
+    real(dp) function gaussint(f,a,b,r,eps)
         implicit none
         real(dp) w(12), x(12)
         real(dp) f, a, b, r, eps
@@ -387,12 +387,14 @@ contains
         c2=c1-aa
         s8=0d0
         s16=0d0
-        do 1 i = 1,4
-        u=x(i)*c2
-  1     s8=s8+w(i)*(f(c1+u,r)+f(c1-u,r))
-        do 3 i = 5,12
-        u=x(i)*c2
-  3     s16=s16+w(i)*(f(c1+u,r)+f(c1-u,r))
+        do i = 1,4
+            u=x(i)*c2
+            s8=s8+w(i)*(f(c1+u,r)+f(c1-u,r))
+        end do 
+        do i = 5,12
+            u=x(i)*c2
+            s16=s16+w(i)*(f(c1+u,r)+f(c1-u,r))
+        end do
         s8=s8*c2
         s16=s16*c2
         if(dabs(s16-s8) .gt. eps*(1d0+dabs(s16))) go to 4
