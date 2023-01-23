@@ -110,7 +110,7 @@
 
       subroutine lhcurrent(outj,ohj,cuj,cujoh,inpt,ispectr)
 !!      implicit real*8 (a-h,o-z)
-      use plasma, only : rh, rh1, fvt
+      use plasma, only : rh, rh1, fvt, sk
       use maxwell
       use rt_parameters, only : nr
       implicit none
@@ -123,8 +123,8 @@
       !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
       integer inew
       common /cnew/ inew !est !sav2008
-      real*8 zv1,zv2,sk,fout
-      common/plosh/ zv1(100,2),zv2(100,2),sk(100)
+      real*8 zv1,zv2,fout
+      common/plosh/ zv1(100,2),zv2(100,2)!,sk(100)
       integer k
       !parameter(i0=1002)
       !real*8 vij,fij0,fij,dfij,dij,enorm,fst

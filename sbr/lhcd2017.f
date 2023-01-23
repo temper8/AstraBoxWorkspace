@@ -100,7 +100,7 @@ cc*********************************************************************
       dimension outpe(*)
 !!!!    maximum grid sizes:
 !!!!    rho=100, v_par_electrons=100, v_perp_ions=50
-      external obeom,ploshad
+!      external obeom,ploshad
       dimension galfa(50,100),vpmin(100),vcva(100)
      &,pd2(100),pd2a(100),pd2b(100),pdprev1(100),pdprev2(100)
      &,source(100),sour(100)
@@ -115,8 +115,8 @@ cc*********************************************************************
       common /bcef/ ynz,ynpopq
       common /a0gh/ pabs
       common /a0ghp/ vlf,vrt,dflf,dfrt
-      common/plosh/ zv1(100,2),zv2(100,2),sk(100)
-      common /a0i2/ vk(100)
+      common/plosh/ zv1(100,2),zv2(100,2)!,sk(100)
+      !common /a0i2/ vk(100)
       common /a0i3/ dql(101,100),pdl(100),vzmin(100),vzmax(100)
       common /a0i4/ fcoll(100),dens(100),eta(100)
       common /asou/ rsou(102),sou(102),npta
@@ -181,15 +181,15 @@ cc*********************************************************************
 c--------------------------------------------------------
 c find volums and surfaces
 c--------------------------------------------------------
-      vk0=pi2*hr*rm**3
-      sk0=hr*rm**2
+      !vk0=pi2*hr*rm**3
+      !sk0=hr*rm**2
       nrr=nr+2
       rxx(1)=zero
       rxx(nrr)=one
       do j=1,nr
        rxx(j+1)=hr*dble(j)
-       vk(j)=vk0*gaussint(obeom,zero,pi2,rxx(j+1),eps)
-       sk(j)=sk0*gaussint(ploshad,zero,pi2,rxx(j+1),eps)
+       !vk(j)=vk0*gaussint(obeom,zero,pi2,rxx(j+1),eps)
+       !sk(j)=sk0*gaussint(ploshad,zero,pi2,rxx(j+1),eps)
       end do
 !!!!!!!!!!!!!!!!!!!!!!!!
 c--------------------------------------------------------
@@ -1180,7 +1180,7 @@ c---------------------------------------------
       use plasma
       use rt_parameters
       implicit real*8 (a-h,o-z)
-      common /a0i2/ vk(100) !,pme !pchm
+      !common /a0i2/ vk(100) !,pme !pchm
       common /a0i3/ dql(101,100),pdl(100),vzmin(100),vzmax(100)
       common /a0i4/ fcoll(100),dens(100),eta(100)
       !common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
@@ -2835,80 +2835,6 @@ cu    uses derivs,mmid,pzextr
       end if
       deallocate(vzj,dfdvj)
       end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-      double precision  function obeom(ptet,pa)
-      use constants
-      use approximation
-      use plasma
-      implicit real*8 (a-h,o-z)
-      !common /a0befr/ pi,pi2
-      !common /a0ef1/ cltn
-!     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
-      parameter(pa0=0.d0)
-      xdl=fdf(pa,cdl,ncoef,xdlp)
-      xly=fdf(pa,cly,ncoef,xlyp)
-      xgm=fdf(pa,cgm,ncoef,xgmp)
-      xlyv=xlyp*pa+xly
-      cotet=dcos(ptet)
-      sitet=dsin(ptet)
-      dxdr=-xdlp+cotet-xgmp*sitet**2
-      dxdt=-(pa+two*xgm*cotet)*sitet
-      dzdr=xlyv*sitet
-      dzdt=xly*pa*cotet
-      x0=r0/rm-xdl+pa*cotet-xgm*sitet**2
-      dxdrdt=-sitet-two*xgmp*sitet*cotet
-      dzdrdt=xlyv*cotet
-      dxdtdt=-pa*cotet-two*xgm*(cotet**2-sitet**2)
-      dzdtdt=-xly*pa*sitet
-      x0t=dxdt
-c--------------------------------------
-c components of metric tensor
-c--------------------------------------
-      g11=dxdr**2+dzdr**2
-      g22=dxdt**2+dzdt**2
-      g12=dxdr*dxdt+dzdr*dzdt
-      g33=x0**2
-      xj=(dzdr*dxdt-dxdr*dzdt)**2  !gg=g11*g22-g12*g12
-      g=xj*g33
-      obeom=dsqrt(g)
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      double precision  function ploshad(ptet,pa)
-      use constants
-      use approximation
-      use plasma
-      implicit real*8 (a-h,o-z)
-      !common /a0befr/ pi,pi2
-      !common /a0ef1/ cltn
-!     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
-      parameter(pa0=0.d0)
-      xdl=fdf(pa,cdl,ncoef,xdlp)
-      xly=fdf(pa,cly,ncoef,xlyp)
-      xgm=fdf(pa,cgm,ncoef,xgmp)
-      xlyv=xlyp*pa+xly
-      cotet=dcos(ptet)
-      sitet=dsin(ptet)
-      dxdr=-xdlp+cotet-xgmp*sitet**2
-      dxdt=-(pa+two*xgm*cotet)*sitet
-      dzdr=xlyv*sitet
-      dzdt=xly*pa*cotet
-      x0=r0/rm-xdl+pa*cotet-xgm*sitet**2
-      dxdrdt=-sitet-two*xgmp*sitet*cotet
-      dzdrdt=xlyv*cotet
-      dxdtdt=-pa*cotet-two*xgm*(cotet**2-sitet**2)
-      dzdtdt=-xly*pa*sitet
-      x0t=dxdt
-c--------------------------------------
-c components of metric tensor
-c--------------------------------------
-      g11=dxdr**2+dzdr**2
-      g22=dxdt**2+dzdt**2
-      g12=dxdr*dxdt+dzdr*dzdt
-      xj=(dzdr*dxdt-dxdr*dzdt)**2  !gg=g11*g22-g12*g12
-      ploshad=dsqrt(xj)
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       double precision  function fti(x)
@@ -3076,51 +3002,7 @@ c----------------------------------------------------------------
 14    continue
       return
       end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      double precision  function gaussint(f,a,b,r,eps)
-      implicit real*8 (a-h,o-z)
-      dimension w(12),x(12)
-!!      save w,x,const !sav#
-      data const /1.0d-12/
-      data w
-     1/0.10122 85362 90376, 0.22238 10344 53374, 0.31370 66458 77887,
-     2 0.36268 37833 78362, 0.02715 24594 11754, 0.06225 35239 38648,
-     3 0.09515 85116 82493, 0.12462 89712 55534, 0.14959 59888 16577,
-     4 0.16915 65193 95003, 0.18260 34150 44924, 0.18945 06104 55069/
-      data x
-     1/0.96028 98564 97536, 0.79666 64774 13627, 0.52553 24099 16329,
-     2 0.18343 46424 95650, 0.98940 09349 91650, 0.94457 50230 73233,
-     3 0.86563 12023 87832, 0.75540 44083 55003, 0.61787 62444 02644,
-     4 0.45801 67776 57227, 0.28160 35507 79259, 0.09501 25098 37637/
-      delta=const*dabs(a-b)
-      gaussint=0d0
-      aa=a
-    5 y=b-aa
-      if(dabs(y) .le. delta) return
-    2 bb=aa+y
-      c1=0.5d0*(aa+bb)
-      c2=c1-aa
-      s8=0d0
-      s16=0d0
-      do 1 i = 1,4
-      u=x(i)*c2
-    1 s8=s8+w(i)*(f(c1+u,r)+f(c1-u,r))
-      do 3 i = 5,12
-      u=x(i)*c2
-    3 s16=s16+w(i)*(f(c1+u,r)+f(c1-u,r))
-      s8=s8*c2
-      s16=s16*c2
-      if(dabs(s16-s8) .gt. eps*(1d0+dabs(s16))) go to 4
-      gaussint=gaussint+s16
-      aa=bb
-      go to 5
-    4 y=0.5d0*y
-      if(dabs(y) .gt. delta) go to 2
-      write(*,7)
-      gaussint=0d0
-      return
-    7 format(1x,'gaussint ... too high accuracy required')
-      end
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine alphas(d,u,j,kmax,g)
       implicit real*8 (a-h,o-z)
