@@ -119,8 +119,8 @@
       real*8 r,pn,fn1,fn2,fnr,fnrr,vt,vto!,rh1
       integer klo,khi,ierr,nrr,i,j,inpt,ispectr,ismthout
       !common /a0ab/ nr
-      real*8 y2dn,y2tm,y2tmi
-      common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
+      !real*8 y2dn,y2tm,y2tmi
+      !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
       integer inew
       common /cnew/ inew !est !sav2008
       real*8 zv1,zv2,sk,fout

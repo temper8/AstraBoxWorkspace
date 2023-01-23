@@ -19,6 +19,10 @@ module plasma
     !+   ipsy = number of polinomial decomposition coefficients
     !+   used for interpolation of Zakharov's moments.
     real(dp), dimension(ipsy) :: cdl,cly,cgm,cmy,coeffs
+
+
+    real(dp) y2dn(501),y2tm(501),y2tmi(501)
+    !+ бывший 
 contains
     subroutine init_plasma(NA1, ABC, BTOR, RTOR, UPDWN, GP2, AMETR, RHO, SHIF, ELON, TRIA,MU, NE, TE, TI, ZEF, UPL)
         use approximation
