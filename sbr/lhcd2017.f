@@ -176,7 +176,7 @@ cc*********************************************************************
       rxx(1)=zero
       rxx(nrr)=one
       do j=1,nr
-       rxx(j+1)=hr*dble(j)
+            rxx(j+1)=hr*dble(j)
       end do
 !!!!!!!!!!!!!!!!!!!!!!!!
 c--------------------------------------------------------
@@ -188,14 +188,14 @@ c--------------------------------------------------------
       xx2=ynzm0(1)
       yy2=pm0(1)
       pinp=0d0
-       do i=1,innz
-        xx1=xx2
-        yy1=yy2
-        xx2=xx1+dxx
-        call splnt(ynzm0,pm0,yn2z,ispl,xx2,yy2,dynn)
-        dpw=.5d0*(yy2+yy1)*(xx2-xx1)
-        pinp=pinp+dpw
-       end do
+      do i=1,innz
+            xx1=xx2
+            yy1=yy2
+            xx2=xx1+dxx
+            call splnt(ynzm0,pm0,yn2z,ispl,xx2,yy2,dynn)
+            dpw=.5d0*(yy2+yy1)*(xx2-xx1)
+            pinp=pinp+dpw
+      end do
 
       dpower=pinp/dble(nnz)
       xx2=ynzm0(1)
@@ -203,36 +203,36 @@ c--------------------------------------------------------
       pwcurr=zero
       ptot=zero
       do i=1,nnz-1
-       xx0=xx2
-11     continue
-        xx1=xx2
-        yy1=yy2
-        xx2=xx1+dxx
-        call splnt(ynzm0,pm0,yn2z,ispl,xx2,yy2,dynn)
-        dpw=.5d0*(yy2+yy1)*(xx2-xx1)
-         if(pwcurr+dpw.gt.dpower) then
-          xx2=xx1+dxx*(dpower-pwcurr)/dpw
-          call splnt(ynzm0,pm0,yn2z,ispl,xx2,yy2,dynn)
-          dpw=.5d0*(yy2+yy1)*(xx2-xx1)
-          pwcurr=pwcurr+dpw
-         else
-          pwcurr=pwcurr+dpw
-          go to 11
-         end if
-       ynzm(i)=.5d0*(xx2+xx0)
-       pm(i)=pwcurr
-       ptot=ptot+pwcurr
-       pwcurr=zero
+            xx0=xx2
+11          continue
+            xx1=xx2
+            yy1=yy2
+            xx2=xx1+dxx
+            call splnt(ynzm0,pm0,yn2z,ispl,xx2,yy2,dynn)
+            dpw=.5d0*(yy2+yy1)*(xx2-xx1)
+            if(pwcurr+dpw.gt.dpower) then
+                  xx2=xx1+dxx*(dpower-pwcurr)/dpw
+                  call splnt(ynzm0,pm0,yn2z,ispl,xx2,yy2,dynn)
+                  dpw=.5d0*(yy2+yy1)*(xx2-xx1)
+                  pwcurr=pwcurr+dpw
+            else
+            pwcurr=pwcurr+dpw
+            go to 11
+            end if
+            ynzm(i)=.5d0*(xx2+xx0)
+            pm(i)=pwcurr
+            ptot=ptot+pwcurr
+            pwcurr=zero
       end do
       ynzm(nnz)=.5d0*(ynzm0(ispl)+xx2)
       pm(nnz)=pinp-ptot
       pnorm=plaun*xsgs/(pinp*ntet)
       pmax=-1d+10
       do i=1,nnz
-       call splnt(ynzm0,pm0,yn2z,ispl,ynzm(i),powinp(i),dynn)
-       pm(i)=pm(i)*pnorm
-       if (pm(i).gt.pmax) pmax=pm(i)
-       ynzm(i)=dble(ispectr)*ynzm(i) !sav2009
+            call splnt(ynzm0,pm0,yn2z,ispl,ynzm(i),powinp(i),dynn)
+            pm(i)=pm(i)*pnorm
+            if (pm(i).gt.pmax) pmax=pm(i)
+            ynzm(i)=dble(ispectr)*ynzm(i) !sav2009
       end do
 c       call get_unit(iunit)
 c       if(iunit.eq.0) then
@@ -268,133 +268,133 @@ c--------------------------------------------
       ipt2=ni1+ni2
       ipt=ipt1+ni1+ni2+kpt3
       if(ipt.gt.101) then
-       write(*,*)'ipt >101'
-       pause'stop program'
-       stop
+            write(*,*)'ipt >101'
+            pause'stop program'
+            stop
       end if
       nvpt=ipt
 
       do j=1,nr                  ! begin 'rho' cycle
-       r=hr*dble(j)
+            r=hr*dble(j)
 !!!!sav2008       pn=fn(r)
 !!       pn=fn1(r,fnr)
 !!       pn=fn2(r,fnr,fnrr) !sav2008
-       if(inew.eq.0) then !vardens
-        pn=fn1(r,fnr)
-       else
-        pn=fn2(r,fnr,fnrr)
-       end if
-       dens(j)=pn
-       vt=fvt(r)
-       vto=vt/vt0
-       wpq=c0**2*pn
-       whe=dabs(b_tor)*c1
-       v=wpq/ww**2
-       u1=whe/ww
-       u=u1**2
-       e1=1d0-v*(1d0/xmi-1d0/u)
-       e2=v/u1
-       e3=v
-       tmp=ft(r)/0.16d-8 !Te, keV
-       cn1=dsqrt(50d0/tmp)  !sav2008
-        if(itend0.gt.0) then
-         eta(j)=1d0-v
-         vcva(j)=cnstvc*vt*dsqrt(2d0)/valfa
-         vpmin(j)=2.0d0*dsqrt(tmp/(-eta(j)))
-222      continue
-         dvperp=(vpmax-vpmin(j))/dble(kv-1)
-            if(dvperp.le.zero) then
-             vpmax=1.3d0*vpmax
-             go to 222
+            if(inew.eq.0) then !vardens
+                  pn=fn1(r,fnr)
+            else
+                  pn=fn2(r,fnr,fnrr)
             end if
-         do k=1,kv
-          vperp(k,j)=vpmin(j)+dble(k-1)*dvperp
-         end do
-         fcoll(j)=.5d-13*dens(j)*zalfa**2*xlog/xmalfa/tmp**1.5d0
-         ddens=dn1*dens(j)
-         tdens=dn2*dens(j)
-         tt=fti(r)**0.33333d0    ! (ti, keV)^1/3
-         source(j)=4d-12*factor*ddens*tdens*dexp(-20d0/tt)/tt**2
-         anb=anb+source(j)*vk(j)
-        end if
-       cn2=dsqrt(dabs(e1))+e2/dsqrt(e3) !sav2008
+            dens(j)=pn
+            vt=fvt(r)
+            vto=vt/vt0
+            wpq=c0**2*pn
+            whe=dabs(b_tor)*c1
+            v=wpq/ww**2
+            u1=whe/ww
+            u=u1**2
+            e1=1d0-v*(1d0/xmi-1d0/u)
+            e2=v/u1
+            e3=v
+            tmp=ft(r)/0.16d-8 !Te, keV
+            cn1=dsqrt(50d0/tmp)  !sav2008
+            if(itend0.gt.0) then
+                  eta(j)=1d0-v
+                  vcva(j)=cnstvc*vt*dsqrt(2d0)/valfa
+                  vpmin(j)=2.0d0*dsqrt(tmp/(-eta(j)))
+222               continue
+                  dvperp=(vpmax-vpmin(j))/dble(kv-1)
+                  if(dvperp.le.zero) then
+                        vpmax=1.3d0*vpmax
+                        go to 222
+                  end if
+            do k=1,kv
+                  vperp(k,j)=vpmin(j)+dble(k-1)*dvperp
+            end do
+            fcoll(j)=.5d-13*dens(j)*zalfa**2*xlog/xmalfa/tmp**1.5d0
+            ddens=dn1*dens(j)
+            tdens=dn2*dens(j)
+            tt=fti(r)**0.33333d0    ! (ti, keV)^1/3
+            source(j)=4d-12*factor*ddens*tdens*dexp(-20d0/tt)/tt**2
+            anb=anb+source(j)*vk(j)
+            end if
+            cn2=dsqrt(dabs(e1))+e2/dsqrt(e3) !sav2008
 c       vz1(j)=cleft*cltn/cn1  !Vpar/Vt0
 c       vz2(j)=cright*cltn/cn2  !Vpar/Vt0
 c       if(vz2(j).gt.0.9d0*cltn) vz2(j)=0.9d0*cltn
 c       v1=vz1(j)/vto !Vpar/Vt(rho)
 c       v2=vz2(j)/vto !Vpar/Vt(rho)
-       vmax=cltn/vto
-       v1=4.d0  !Vpar/Vt(rho)
-       v2=10.d0 !cright*cltn/cn2 !10.d0 !Vpar/Vt(rho)
-       if(v2.ge.vmax) v2=0.5d0*vmax
-       if(v1.ge.v2) v1=v2-2.d0
-       call gridvel(v1,v2,vmax,0.5d0,ni1,ni2,ipt1,kpt3,vrj)
-       vz1(j)=v1*vto !Vpar/Vt0
-       vz2(j)=v2*vto !Vpar/Vt0
-       if(vz2(j).gt.0.9d0*cltn) vz2(j)=0.9d0*cltn
-       do i=1,ipt
-        vgrid(i,j)=vrj(i)*vto
-       end do
+            vmax=cltn/vto
+            v1=4.d0  !Vpar/Vt(rho)
+            v2=10.d0 !cright*cltn/cn2 !10.d0 !Vpar/Vt(rho)
+            if(v2.ge.vmax) v2=0.5d0*vmax
+            if(v1.ge.v2) v1=v2-2.d0
+            call gridvel(v1,v2,vmax,0.5d0,ni1,ni2,ipt1,kpt3,vrj)
+            vz1(j)=v1*vto !Vpar/Vt0
+            vz2(j)=v2*vto !Vpar/Vt0
+            if(vz2(j).gt.0.9d0*cltn) vz2(j)=0.9d0*cltn
+            do i=1,ipt
+                  vgrid(i,j)=vrj(i)*vto
+            end do
       end do                     ! end 'rho' cycle 
 
 !!!!!!!!!read data !!!!!!!!!!!!       
-       allocate(vvj(i0),vdfj(i0))
-       k=(3-ispectr)/2
-       do j=1,nr
-        r=hr*dble(j)
-        vt=fvt(r)
-        vto=vt/vt0
-        do i=1,i0
-         vvj(i)=vij(i,j)
-         vdfj(i)=dfij(i,j,k) !=dfundv(i,j)*vto**2
-        end do
-        do i=1,ipt
-         vrj(i)=vgrid(i,j)/vto   !Vpar/Vt
-         call lock(vvj,i0,vrj(i),klo,khi,ierr)
-         if(ierr.eq.1) then
-          write(*,*)'lock error in read distribution function'
-          write(*,*)'j=',j,'i0=',i0
-          write(*,*)'vvj(1)=',vvj(1),' vvj(i0)=',vvj(i0)
-          write(*,*)'i=',i,' vrj(i)=',vrj(i),' vmax=',cltn/vto
-          write(*,*)
-          pause'next key = stop'
-          stop
-         end if
-         call linf(vvj,vdfj,vrj(i),dfout,klo,khi)
-         dfundv(i,j)=dfout/vto**2
-         if(dfundv(i,j).gt.zero) dfundv(i,j)=zero
-        end do
-       end do
+      allocate(vvj(i0),vdfj(i0))
+      k=(3-ispectr)/2
+      do j=1,nr
+            r=hr*dble(j)
+            vt=fvt(r)
+            vto=vt/vt0
+            do i=1,i0
+                  vvj(i)=vij(i,j)
+                  vdfj(i)=dfij(i,j,k) !=dfundv(i,j)*vto**2
+            end do
+            do i=1,ipt
+                  vrj(i)=vgrid(i,j)/vto   !Vpar/Vt
+                  call lock(vvj,i0,vrj(i),klo,khi,ierr)
+            if(ierr.eq.1) then
+                  write(*,*)'lock error in read distribution function'
+                  write(*,*)'j=',j,'i0=',i0
+                  write(*,*)'vvj(1)=',vvj(1),' vvj(i0)=',vvj(i0)
+                  write(*,*)'i=',i,' vrj(i)=',vrj(i),' vmax=',cltn/vto
+                  write(*,*)
+                  pause'next key = stop'
+                  stop
+            end if
+            call linf(vvj,vdfj,vrj(i),dfout,klo,khi)
+            dfundv(i,j)=dfout/vto**2
+            if(dfundv(i,j).gt.zero) dfundv(i,j)=zero
+            end do
+      end do
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       if(itend0.gt.0) then  ! begin alpha-source renormalisation
-       fuspow=anb*talfa*1.6022d-19
-       anb0=anb
-       anb=zero
-       do j=1,nr
-        r=hr*dble(j)
-        if(r.le.dra) then
-         tt=fti(zero)**0.33333d0
-        else
-         tt=fti(r-dra)**0.33333d0    ! (shifted ti, kev)^1/3
-        end if
-        ddens=dn1*dens(j)
-        tdens=dn2*dens(j)
-        sour(j)=4d-12*factor*ddens*tdens*dexp(-20d0/tt)/tt**2
-        anb=anb+sour(j)*vk(j)
-       end do
-       aratio=anb0/anb
-       rsou(1)=zero
-       sou(1)=aratio*sour(1)
-       do j=1,nr
-        r=hr*dble(j)
-        rsou(j+1)=r
-        sou(j+1)=aratio*sour(j)
-        if(j.eq.nr) sssour=source(j)
-        source(j)=sou(j+1)
-       end do
-       npta=nr+2
-       rsou(npta)=1.d0
-       sou(npta)=aratio*sour(nr)
+            fuspow=anb*talfa*1.6022d-19
+            anb0=anb
+            anb=zero
+            do j=1,nr
+                  r=hr*dble(j)
+                  if(r.le.dra) then
+                        tt=fti(zero)**0.33333d0
+                  else
+                  tt=fti(r-dra)**0.33333d0    ! (shifted ti, kev)^1/3
+                  end if
+                  ddens=dn1*dens(j)
+                  tdens=dn2*dens(j)
+                  sour(j)=4d-12*factor*ddens*tdens*dexp(-20d0/tt)/tt**2
+                  anb=anb+sour(j)*vk(j)
+            end do
+            aratio=anb0/anb
+            rsou(1)=zero
+            sou(1)=aratio*sour(1)
+            do j=1,nr
+                  r=hr*dble(j)
+                  rsou(j+1)=r
+                  sou(j+1)=aratio*sour(j)
+                  if(j.eq.nr) sssour=source(j)
+                  source(j)=sou(j+1)
+            end do
+            npta=nr+2
+            rsou(npta)=1.d0
+            sou(npta)=aratio*sour(nr)
       end if
 c------------------------------------
 c set initial values of arrays
@@ -431,12 +431,12 @@ c------------------------------------
       nrefj=0
 
       if(itend0.gt.0) then
-        do j=1,nr           ! begin 'rho' cycle
-          do i=1,50
-           dqi0(i,j)=zero
-          end do
-         call alphas(dqi0,vperp,j,kv,galfa)
-        end do              ! end 'rho' cycle
+            do j=1,nr           ! begin 'rho' cycle
+                  do i=1,50
+                        dqi0(i,j)=zero
+                  end do
+                  call alphas(dqi0,vperp,j,kv,galfa)
+            end do              ! end 'rho' cycle
       end if
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -458,28 +458,28 @@ c----------------------------------------------
       jbeg=1
       jend=0
       do j=1,nr
-       nvach=0
-       do i=1,nvpt
-        nvach=nvach+dncount(i,j)
-       end do
-       if(nvach.lt.nvmin) then
-        if(jend.eq.0) jbeg=jbeg+1
-       else
-        jend=j
-       end if
+            nvach=0
+            do i=1,nvpt
+                  nvach=nvach+dncount(i,j)
+            end do
+            if(nvach.lt.nvmin) then
+                  if(jend.eq.0) jbeg=jbeg+1
+            else
+            jend=j
+            end if
       end do
       if(jend.eq.0.or.jbeg.ge.jend) then
-       write(*,*)'failure: jbeg=',jbeg,' jend=',jend 
-       pause
-       stop
+            write(*,*)'failure: jbeg=',jbeg,' jend=',jend 
+            pause
+            stop
       end if
 
       do j=1,nr
-       pdl(j)=pdl(j)*xwtt
-       pdc(j)=pdc(j)*xwtt
-       pda(j)=pda(j)*xwtt
-       pdfast(j)=pdfast(j)*xwtt
-       pwe(j+1)=(pdl(j)+pdc(j))/vk(j)
+            pdl(j)=pdl(j)*xwtt
+            pdc(j)=pdc(j)*xwtt
+            pda(j)=pda(j)*xwtt
+            pdfast(j)=pdfast(j)*xwtt
+            pwe(j+1)=(pdl(j)+pdc(j))/vk(j)
       end do
       pwe(1)=pwe(2)
       pwe(nr+2)=zero
@@ -491,16 +491,16 @@ c----------------------------------------------
       pchg=zero
       pchg1=zero
       pchg2=zero
-       do j=1,nr
-        dpw1=pdl(j)+pdc(j)
-        dpw2=pda(j)
-        psum1=psum1+dpw1**2
-        psum2=psum2+dpw2**2
-        pchg1=pchg1+(dpw1-pdprev1(j))**2
-        pchg2=pchg2+(dpw2-pdprev2(j))**2
-        pdprev1(j)=dpw1
-        pdprev2(j)=dpw2
-       end do
+      do j=1,nr
+            dpw1=pdl(j)+pdc(j)
+            dpw2=pda(j)
+            psum1=psum1+dpw1**2
+            psum2=psum2+dpw2**2
+            pchg1=pchg1+(dpw1-pdprev1(j))**2
+            pchg2=pchg2+(dpw2-pdprev2(j))**2
+            pdprev1(j)=dpw1
+            pdprev2(j)=dpw2
+      end do
       if(psum1.ne.zero) pchg=pchg1/psum1 !sav2008
       if(psum2.ne.zero) pchg=pchg+pchg2/psum2
 c----------------------------------------
@@ -511,10 +511,10 @@ c----------------------------------------
       cppa=zero
       cppf=zero
       do j=1,nr
-       cppl=cppl+pdl(j)
-       cppc=cppc+pdc(j)
-       cppa=cppa+pda(j)
-       cppf=cppf+pdfast(j)
+            cppl=cppl+pdl(j)
+            cppc=cppc+pdc(j)
+            cppa=cppa+pda(j)
+            cppf=cppf+pdfast(j)
       end do
       ol=cppl*1d-6
       oc=cppc*1d-6
@@ -559,43 +559,43 @@ c   recalculate f' for a new mesh
 c-------------------------------------------
       k=(3-ispectr)/2
       do j=1,nr
-       r=hr*dble(j)
-       vt=fvt(r)
-       vto=vt/vt0
-       if(iterat.gt.0) then
-        v1=dmin1(vzmin(j),vz1(j))
-        v2=dmax1(vzmax(j),vz2(j))
-       else
-        v1=vzmin(j)
-        v2=vzmax(j)
-       end if
-       vmax=cltn/vto
-       vp1=v1/vto
-       vp2=v2/vto
-       call gridvel(vp1,vp2,vmax,cdel,ni1,ni2,ipt1,kpt3,vrj)
-       do i=1,i0
-        vvj(i)=vij(i,j)
-        vdfj(i)=dfij(i,j,k) !=dfundv(i,j)*vto**2
-       end do
-       do i=1,ipt
+            r=hr*dble(j)
+            vt=fvt(r)
+            vto=vt/vt0
+            if(iterat.gt.0) then
+                  v1=dmin1(vzmin(j),vz1(j))
+                  v2=dmax1(vzmax(j),vz2(j))
+            else
+                  v1=vzmin(j)
+                  v2=vzmax(j)
+            end if
+            vmax=cltn/vto
+            vp1=v1/vto
+            vp2=v2/vto
+            call gridvel(vp1,vp2,vmax,cdel,ni1,ni2,ipt1,kpt3,vrj)
+            do i=1,i0
+                  vvj(i)=vij(i,j)
+                  vdfj(i)=dfij(i,j,k) !=dfundv(i,j)*vto**2
+            end do
+      do i=1,ipt
         call lock(vvj,i0,vrj(i),klo,khi,ierr)
         if(ierr.eq.1) then
 !!!         if(vrj(i).gt.vvj(i0)) exit
-         write(*,*)'lock error in new v-mesh'
-         write(*,*)'j=',j,' i0=',i0
-         write(*,*)'vvj(1)=',vvj(1),' vvj(i0)=',vvj(i0)
-         write(*,*)'i=',i,' vrj(i)=',vrj(i)
-         write(*,*)
-         pause'next key = stop'
-         stop
+            write(*,*)'lock error in new v-mesh'
+            write(*,*)'j=',j,' i0=',i0
+            write(*,*)'vvj(1)=',vvj(1),' vvj(i0)=',vvj(i0)
+            write(*,*)'i=',i,' vrj(i)=',vrj(i)
+            write(*,*)
+            pause'next key = stop'
+            stop
         end if
         call linf(vvj,vdfj,vrj(i),dfout,klo,khi)
         vgrid(i,j)=vrj(i)*vto
         dfundv(i,j)=dfout/vto**2
         if(dfundv(i,j).gt.zero) dfundv(i,j)=zero
-       end do
-       vz1(j)=v1
-       vz2(j)=v2
+      end do
+      vz1(j)=v1
+      vz2(j)=v2
       end do
 !!----------------------------
         ppv1=zero
@@ -613,10 +613,10 @@ c-------------------------------------------
         pdc=zero
         pda=zero
         pdfast=zero
-        if(itend0.gt.0) then
-         dqi0=zero
-        end if
-       goto 80
+      if(itend0.gt.0) then
+            dqi0=zero
+      end if
+      goto 80
       end if
 c------------------------------------------
 c save results
