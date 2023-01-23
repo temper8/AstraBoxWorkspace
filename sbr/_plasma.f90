@@ -15,6 +15,9 @@ module plasma
     real(dp), dimension(:),allocatable:: con,tem,temi,zeff,afld
     real(dp), dimension(:),allocatable:: rh,rha,drhodr,delta,ell,gamm,amy
 
+    real(dp) tet1, tet2
+    !+ бывший common /a0a2/ 
+
     integer, parameter :: ipsy = 5, ncoef = 5
     !+   ipsy = number of polinomial decomposition coefficients
     !+   used for interpolation of Zakharov's moments.
@@ -44,7 +47,7 @@ contains
         integer i, k
         integer, parameter :: N  = 501
         real(dp) :: znak_tor, znak_pol, fpol, dfmy
- 
+
         ngrid = NA1
         nspl = ngrid
         if (.not. allocated(rh)) then
@@ -140,7 +143,32 @@ contains
             call chebft1(zero,1.d0,chebne,ncheb,fn)
             call chder(zero,1.d0,chebne,chebdne,ncheb)
             call chder(zero,1.d0,chebdne,chebddne,ncheb)
-        end if        
+        end if    
+        
+        call init_parameters
+
+    end subroutine
+
+    subroutine init_parameters
+        use constants
+        use approximation
+        use rt_parameters
+        implicit none
+        real(dp) :: xly, xlyp, arg1, arg2        
+    !!!   
+        xly = fdf(one,cly,ncoef,xlyp)
+        arg1=(zplus-z0)/(xly*rm)
+        arg2=(zminus-z0)/(xly*rm)
+        if(dabs(arg1).lt.1.d0) then
+            tet1=dasin(arg1)      ! upper grill corner poloidal coordinate
+        else
+            tet1=0.5d0*pi         ! upper grill corner poloidal coordinate
+        end if
+        if(dabs(arg2).lt.1.d0) then
+            tet2=dasin(arg2)      ! lower grill corner poloidal coordinate
+        else
+            tet2=-0.5d0*pi        ! lower grill corner poloidal coordinate
+        end if    
     end subroutine
 
     double precision  function fn(x)

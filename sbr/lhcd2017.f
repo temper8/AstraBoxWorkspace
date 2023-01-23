@@ -111,7 +111,7 @@ cc*********************************************************************
       common/refl/nrefj(mpnt)
       real*8 ynzm, pm
       common /a0a1/ ynzm(1001),pm(1001) 
-      common /a0a2/ tet1,tet2
+      !common /a0a2/ tet1,tet2
       common /a0a4/ plost,pnab
       common /a0ef1/ cltn
       common /bcef/ ynz,ynpopq
@@ -183,19 +183,7 @@ cc*********************************************************************
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       hr = 1.d0/dble(nr+1)
-      xly = fdf(one,cly,ncoef,xlyp)
-      arg1=(zplus-z0)/(xly*rm)
-      arg2=(zminus-z0)/(xly*rm)
-      if(dabs(arg1).lt.1.d0) then
-       tet1=dasin(arg1)      ! upper grill corner poloidal coordinate
-      else
-       tet1=0.5d0*pi         ! upper grill corner poloidal coordinate
-      end if
-      if(dabs(arg2).lt.1.d0) then
-       tet2=dasin(arg2)      ! lower grill corner poloidal coordinate
-      else
-       tet2=-0.5d0*pi        ! lower grill corner poloidal coordinate
-      end if
+
 c---------------------------------------------------
 c initial constants
 c---------------------------------------------------
@@ -802,6 +790,7 @@ c------------------------------------------
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine manager(iterat,iw0,nnz ,ntet)
       use constants            
+      use plasma
       use rt_parameters, only : nr, ipri, iw, nmaxm            
       implicit real*8 (a-h,o-z)
       parameter(length=5000000, mpnt=10000)
@@ -815,7 +804,7 @@ c------------------------------------------
       dimension iznzap(mpnt),iwzap(mpnt),irszap(mpnt)
       dimension rzap(mpnt),tetzap(mpnt),xmzap(mpnt),yn3zap(mpnt)
       common /a0a1/ ynzm(1001),pm(1001) 
-      common /a0a2/ tet1,tet2
+      !common /a0a2/ tet1,tet2
       common /a0a4/ plost,pnab
       common /abc/ rzz,tetzz,xmzz,iznzz,iwzz,irszz
       common /abcd/ irs
@@ -3714,7 +3703,7 @@ cc      common /xn1xn2/ an1,an2
       common /bcef/ ynz,ynpopq
       !common /a0befr/ pi,pi2
       common /a0a1/ ynzm(1001),pm(1001) !,nmaxm(4)
-      common /a0a2/ tet1,tet2
+      !common /a0a2/ tet1,tet2
       !common /a0ab/ nr
       common /vth/ vthc(length),poloidn(length)
       !common/b0/ itend0
