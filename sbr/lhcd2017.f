@@ -216,8 +216,8 @@ c--------------------------------------------------------
                   dpw=.5d0*(yy2+yy1)*(xx2-xx1)
                   pwcurr=pwcurr+dpw
             else
-            pwcurr=pwcurr+dpw
-            go to 11
+                  pwcurr=pwcurr+dpw
+                  go to 11
             end if
             ynzm(i)=.5d0*(xx2+xx0)
             pm(i)=pwcurr
