@@ -7,38 +7,24 @@
        use rt_parameters
        use maxwell
       implicit none
-      !real*8 fn
-      !external fn
       integer i,k,j,klo,khi,ierr
       include 'for/parameter.inc'
       include 'for/const.inc'
       include 'for/status.inc'
-      !integer ncheb
       integer im,ip
       real*8 p_in
-  
-      real*8 anz,apz,share
-
+        real*8 anz,apz,share
       real*8 pchm0
       real*8 fpol,dfmy
-
-      !real*8 chebne,chebdne,chebddne
-
       real*8 xlogj
-
-      !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
-      !common /a0l5/ y2zeff(501)
-
       real*8 znak_tor,znak_pol
       common/left/ znak_tor,znak_pol
       real*8 ynzmp(1001),pmp(1001),ynzmm(1001),pmm(1001)
-      !common/ne_cheb/chebne(50),chebdne(50),chebddne(50),ncheb
+
       real*8 efld(100),r,vmax
       real*8 zff,zefff,fnr,fnrr
       real*8 pn,fn1,fn2,gst,dens,tmp,vt,vclt
       real*8 znak
-!      common/lh/vij(i0,100),fij0(i0,100,2),fij(i0,100,2),dfij(i0,100,2)
-!     &,dij(i0,100,2),enorm(100),fst(100)
       real*8 calls
       common/firstcall/calls
       save share

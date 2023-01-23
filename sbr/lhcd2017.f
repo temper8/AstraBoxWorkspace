@@ -111,12 +111,8 @@ cc*********************************************************************
       common/refl/nrefj(mpnt)
       real*8 ynzm, pm
       common /a0a1/ ynzm(1001),pm(1001) 
-      !common /a0a2/ tet1,tet2
       common /a0a4/ plost,pnab
-      !common /a0ef1/ cltn
       common /bcef/ ynz,ynpopq
-      !common /a0ef2/ ww
-      !common /a0ef3/ xmi,cnye,cnyi,xsz,vt0 
       common /a0gh/ pabs
       common /a0ghp/ vlf,vrt,dflf,dfrt
       common/plosh/ zv1(100,2),zv2(100,2),sk(100)
@@ -124,9 +120,6 @@ cc*********************************************************************
       common /a0i3/ dql(101,100),pdl(100),vzmin(100),vzmax(100)
       common /a0i4/ fcoll(100),dens(100),eta(100)
       common /asou/ rsou(102),sou(102),npta
-      !common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
-      !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
-      !common /a0l5/ y2zeff(501)
       common/gridv/vgrid(101,100),dfundv(101,100),nvpt
       common/vvv1/dq1(101,100),dq2(101,100),pdc(100),pda(100),ppv1,ppv2
       common/findsigma/dncount(101,100)
@@ -136,7 +129,6 @@ cc*********************************************************************
       common /alph/ dqi0(50,100)
       common /ag/ inak,lenstor,lfree
       common /maxrho/ rmx_n,rmx_t,rmx_z,rmx_ti
-      !common/ne_cheb/chebne(50),chebdne(50),chebddne(50),ncheb
 
       real*8 kofpar,timecof
       real*8,dimension(:),allocatable:: vvj,vdfj
@@ -185,21 +177,6 @@ cc*********************************************************************
       hr = 1.d0/dble(nr+1)
       iw0=iw
 
-c---------------------------------------------------
-c initial constants
-c---------------------------------------------------
-      !talfa=3.5d0    ! alpha particles' birth energy, MeV
-      !zalfa=2.d0     ! alpha particles' electrical charge
-      !xmalfa=4.d0    ! alpha particles' atomic mass
-      !tin=1d-7
-      !clt=3.0d+10
-      !pme=9.11e-28
-      !pqe=4.803e-10
-      !xlog=16.d0+dlog(16.d0)
-      !c0=dsqrt(pi4*pqe**2/pme)
-      !c1=pqe/pme/clt
-      !xsgs=1d+13
-      !xwtt=1d-7
 
 c--------------------------------------------------------
 c find volums and surfaces
