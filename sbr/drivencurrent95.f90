@@ -1,11 +1,11 @@
       subroutine drivencurrent95(outj, sigmaj, UPL, NRD, NA1, TIME, TAU, ROC, RTOR, GP2)
-! ******************************************************************
-!   outj(i)  = LH driven current density, MA/m^2
-!   dndt(i)  = d^2Jr1/dt^2/E, MA/m^2/sec^2/(V/m), ~runaway d(el.density)/dt/E
-!   djdt(i)  = dJr2/dt, time drivative of runaway current Jr2, MA/m^2/sec
-!   outjrun(i)  = LH driven runaway current density, MA/m^2
-!   outnerun(i) = runaway electron density/10^19 m^-3
-! ******************************************************************
+!! ******************************************************************
+!!   outj(i)  = LH driven current density, MA/m^2
+!!   dndt(i)  = d^2Jr1/dt^2/E, MA/m^2/sec^2/(V/m), ~runaway d(el.density)/dt/E
+!!   djdt(i)  = dJr2/dt, time drivative of runaway current Jr2, MA/m^2/sec
+!!   outjrun(i)  = LH driven runaway current density, MA/m^2
+!!   outnerun(i) = runaway electron density/10^19 m^-3
+!! ******************************************************************
       implicit none
  ! variables imported from ASTRA
       integer NRD
