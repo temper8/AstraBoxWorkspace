@@ -1,7 +1,9 @@
 module constants 
+    !! модуль с математическими и физическими константами
     use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64    
     implicit none
     real(dp), parameter :: pi=4.d0*datan(1.d0)
+    !! число Пи = 3.1415....
     real(dp), parameter :: pi2=2.d0*pi
     real(dp), parameter :: pi4=4.d0*pi
     real(dp), parameter :: piq=dsqrt(pi)
