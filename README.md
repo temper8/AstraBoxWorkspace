@@ -1,3 +1,3 @@
 # Astra Box Workspace
  
-[Documentaion](https://temper8.github.io/AstraBoxWorkspace/doc/index.html)
+[Documentation](https://temper8.github.io/AstraBoxWorkspace/doc/index.html)
