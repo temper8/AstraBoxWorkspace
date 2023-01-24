@@ -15,7 +15,7 @@ cc******************************************************************
       use spectrum1D      
       use maxwell        
       implicit none
-      integer i,k,iview, iunit
+      integer i
       real*8 p_in,pe_p,pe_m,c_p,c_m
       real*8 vint
       include 'for/parameter.inc'
