@@ -8,15 +8,18 @@
 ! ******************************************************************
       implicit none
  ! variables imported from ASTRA
-      integer NRD, NA1
+      integer NRD
+      ! NRD     501 - Maximum size of the radial grid
+      integer NA1
+      ! NA1     Edge grid point number: ROC=RHO(NA1)      
       double precision TIME, TAU, RTOR, ROC, GP2
       double precision UPL(NRD)
 !
       real*8 outj(NRD),sigmaj(NRD),afld(NRD),dtau
-      integer i,inpt,ispectr,ntau
+      integer i,inpt,ispectr
       real*8,dimension(:),allocatable:: outjp,outjm,ohjp,ohjm
-      real*8 dt,zero,eps,cup,cup0,cum,cum0,cp,cm,cp0,cm0,aiint
-      parameter(zero=0.d0,eps=1.d-2,ntau=10)
+      real*8 dt, cup,cup0,cum,cum0,cp,cm,cp0,cm0,aiint
+      real*8, parameter :: zero=0.d0, eps=1.d-2 
 !
       inpt=NA1
       allocate(outjp(inpt),outjm(inpt),ohjp(inpt),ohjm(inpt))
@@ -88,8 +91,8 @@
 !!!!       write(*,*) i,outj(i)
       end do
 !
-      dt=tau/dble(ntau) !seconds 
-      write(*,*)'time=',time,' dt=',dt
+
+      write(*,*)'time=',time
       write(*,*)'cup=',cup,' cp=',cp
       write(*,*)'cum=',cum,' cm=',cm
       write(*,*)'cup0=',cup0,' cp0=',cp0
@@ -98,11 +101,7 @@
       write(*,*)'driven current, MA=',cup+cum
       write(*,*)
 !
-!! calculation of distribution functions at time t1=t+dtau !!
-      do i=1,ntau
-          write(*,*)'fokkerplanck №',i,'of',ntau
-          call fokkerplanck(dt,time,i)
-      end do
+      call fokkerplanck_new(time, TAU)
 !
       deallocate(outjp,outjm,ohjp,ohjm)
 !
@@ -111,26 +110,35 @@
 
       subroutine lhcurrent(outj,ohj,cuj,cujoh,inpt,ispectr)
 !!      implicit real*8 (a-h,o-z)
+      use plasma, only : rh, rh1, fvt, sk
+      use maxwell
+      use rt_parameters, only : nr
       implicit none
       real*8 outj(*),ohj(*),cuj,cujoh,curs,curs0,curdir
-      real*8 currn,pqe,vt0,fvt,ccur,cfull,cfull0
-      real*8 r,pn,fn1,fn2,fnr,fnrr,vt,vto,rh1
-      integer nr,klo,khi,ierr,nrr,i,j,inpt,ispectr,ismthout
-      common /a0ab/ nr
-      real*8 rh,y2dn,y2tm,y2tmi
-      common /a0l3/ rh(501),y2dn(501),y2tm(501),y2tmi(501)
+      real*8 currn,pqe,vt0,ccur,cfull,cfull0
+      real*8 r,pn,fn1,fn2,fnr,fnrr,vt,vto!,rh1
+      integer klo,khi,ierr,nrr,i,j,inpt,ispectr,ismthout
+      !common /a0ab/ nr
+      !real*8 y2dn,y2tm,y2tmi
+      !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
       integer inew
       common /cnew/ inew !est !sav2008
-      real*8 zv1,zv2,sk,fout
-      common/plosh/ zv1(100,2),zv2(100,2),sk(100)
-      integer i0,k
-      parameter(i0=1002)
-      real*8 vij,fij0,fij,dfij,dij,enorm,fst
-      common/lh/ vij(i0,100), fij0(i0,100,2), fij(i0,100,2), dfij(i0,100,2), dij(i0,100,2), enorm(100), fst(100)
+      real*8 zv1,zv2,fout
+      common/plosh/ zv1(100,2),zv2(100,2)!,sk(100)
+      integer k
+      !parameter(i0=1002)
+      !real*8 vij,fij0,fij,dfij,dij,enorm,fst
+      !common/lh/ vij(i0,100), fij0(i0,100,2), fij(i0,100,2), dfij(i0,100,2), dij(i0,100,2), enorm(100), fst(100)
       real*8,dimension(:),allocatable:: vj, fj, fj0, cur, cur0, currnt, rxx, wrk
-      real*8 zero
-      parameter(zero=0.d0, ismthout=1)
-!
+      parameter(ismthout=1)
+      interface 
+      function currlhcd(v,f) result(curs)
+            implicit none
+            real*8 v(:),f(:)
+            real*8 curs
+      end function
+      end interface
+
       allocate(vj(i0),fj(i0),fj0(i0),cur(nr),cur0(nr),currnt(nr+2),rxx(nr+2),wrk(nr+2))
 !---------------------------------------------------
 ! initial constants
@@ -148,10 +156,6 @@
               vj(i)=vij(i,j) !Vpar/Vt
               fj0(i)=fij0(i,j,k)
               fj(i)=fij(i,j,k)-fij0(i,j,k)
-!!        fj(i)=zero
-!!        if((vj(i)-zv1(j,k))*(vj(i)-zv2(j,k)).le.zero) then
-!!         fj(i)=fij(i,j,k)-fij0(i,j,k)
-!!        end if
           end do
           r=dble(j)/dble(nr+1)
           if(inew.eq.0) then !vardens
@@ -161,13 +165,12 @@
           end if
           vt=fvt(r)
           vto=vt/vt0
-          call currlhcd(i0,vj,fj,fj0,curs,curs0)
+          curs  = currlhcd(vj,fj)
           cur(j)=curs*pn*ccur*curdir*vto  !Ampere/cm2
           cfull=cfull+cur(j)*sk(j)
+          curs0 = currlhcd(vj,fj0)          
           cur0(j)=curs0*pn*ccur*curdir*vto  !Ampere/cm2
           cfull0=cfull0+cur0(j)*sk(j)
-!!!       tok(j)=cur(j)*sk(j) !Ampere
-!!!       write(*,88) dble(j),cur(j)*sk(j)
       end do
       cuj=cfull*1d-6   !driven current, MA
       cujoh=cfull0*1d-6   !driven current, MA
@@ -251,8 +254,25 @@
       deallocate(vj,fj,fj0,cur,cur0,currnt,rxx,wrk)
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+function currlhcd(v,f) result(curs)
+      implicit none
+      real*8 v(:),f(:)
+      real*8 curs      
+      integer i0,k
 
-      subroutine currlhcd(i0,v,f,f0,curs,curs0)
+      real*8 vl,vr,fl,fr
+      curs=0.d0
+      i0 = size(v)
+      do k=1,i0-1
+            vl=v(k)
+            vr=v(k+1)
+            fl=f(k)
+            fr=f(k+1)
+            curs=curs+(fl*vl+fr*vr)/2d0*(vr-vl)
+      end do
+end
+
+subroutine currlhcd_old(i0,v,f,f0,curs,curs0)
       implicit none
       integer i0,k
       real*8 v(*),f(*),f0(*),curs,curs0
@@ -261,220 +281,30 @@
       curs=zero
       curs0=zero
       do k=1,i0-1
-          vl=v(k)
-          vr=v(k+1)
-          fl=f(k)
-       fr=f(k+1)
-       curs=curs+(fl*vl+fr*vr)/2d0*(vr-vl)
-       fl=f0(k)
-       fr=f0(k+1)
-       curs0=curs0+(fl*vl+fr*vr)/2d0*(vr-vl)
+            vl=v(k)
+            vr=v(k+1)
+            fl=f(k)
+            fr=f(k+1)
+            curs=curs+(fl*vl+fr*vr)/2d0*(vr-vl)
+            fl=f0(k)
+            fr=f0(k+1)
+            curs0=curs0+(fl*vl+fr*vr)/2d0*(vr-vl)
       end do
-      end
+end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine abccoef(a,b,c,f,y,dt,n,ybeg,yend,xx,h,d1,d2,d3)
-      implicit none
-      integer i,n,iunit,iunit2
-      real*8 a(n),b(n),c(n),f(n),y(n),d1(n+1),d2(n+1),d3(n+1)
-      real*8 a1(n),b1(n),c1(n),f1(n),a2(n),b2(n),c2(n),f2(n)
-      real*8 dt,kinv,rs,rmink,rplusk,q,qf,r1,rmink2,rplusk2,kinv2
-      real*8 ybeg,yend,xx(*),h,r,kappa,sum,bmin,bplus,sum2,sum3,sum4
-      real*8 dc,as(n+1),k,k2,d
-      external kinv,rs,rmink,rplusk,q,kinv2,rmink2,rplusk2,d
-
-      sum=(kinv(xx(1)-h/2d0,d2(1))+kinv(xx(1)+h/2d0,d3(1)))*h/2d0
-      as(1)=h/sum
-
-      sum=(kinv(xx(2)-h/2d0,d2(2))+kinv(xx(2)+h/2d0,d3(2)))*h/2d0
-      as(2)=h/sum
-
-      r=h/2d0*dabs(rs(xx(1)+h/2d0,d3(1)))/k(xx(1)+h/2d0,d3(1))
-      kappa=1d0/(1d0+r)
-      sum=(rmink(xx(1),d1(1))+rmink(xx(2),d1(2)))*h/2d0
-      bmin=sum/h
-
-      sum=(rplusk(xx(1),d1(1))+rplusk(xx(2),d1(2)))*h/2d0
-      bplus=sum/h
-
-      sum=qf(xx(2))-qf(xx(1))
-      dc=sum/h
-
-      a(1)=as(1)*(kappa/h**2-bmin/h)
-      c(1)=as(2)*(kappa/h**2+bplus/h)
-      b(1)=-(1d0/dt+a(1)+c(1)+dc)
-      f(1)=-y(1)/dt-a(1)*ybeg
-	open(iunit,file='lhcd/distribution/RAZNICA.dat',position="append")
-      do i=2,n
-!       sum=1d0      !(kinv(xx(i+1)-h/2d0,d2(i+1)))+kinv(xx(i+1)+h/2d0,d3(i+1)))*h/2d0
-!      sum2=(rplusk(xx(i),d1(i))+rplusk(xx(i+1),d1(i+1)))*h/2d0
-      !sum2=sum2*h/2d0
-!      sum3=(rplusk2(xx(i),d1(i))+rplusk2(xx(i+1),d1(i+1)))*h/2d0
-      !sum3=sum3*h/2d0
-!	sum4=sum3-sum2
-!        if(dabs(sum4).gt.0d0) then
-!	write(iunit,*)sum2,sum3,sum4
-!	end if
-       sum=(kinv(xx(i+1)-h/2d0,d2(i+1))+kinv(xx(i+1)+h/2d0,d3(i+1)))
-       sum=sum*h/2d0
-       as(i+1)=h/sum
-       r=h/2d0*dabs(rs(xx(i)+h/2d0))/k(xx(i)+h/2d0,d3(i))
-       kappa=1d0/(1d0+r)
-       sum=(rmink(xx(i),d1(i))+rmink(xx(i+1),d1(i+1)))*h/2d0
-       bmin=sum/h
-       sum=(rplusk(xx(i),d1(i))+rplusk(xx(i+1),d1(i+1)))*h/2d0
-       bplus=sum/h
-       sum=qf(xx(i+1))-qf(xx(i))
-       dc=sum/h
-       a(i)=as(i)*(kappa/h**2-bmin/h)
-       c(i)=as(i+1)*(kappa/h**2+bplus/h) 
-       b(i)=-(1d0/dt+a(i)+c(i)+dc) 
-       f(i)=-y(i)/dt
-
-!       sum=(kinv2(xx(i+1)-h/2d0,d2(i+1))+kinv2(xx(i+1)+h/2d0,d3(i+1)))
-!       sum=sum*h/2d0
-!       as(i+1)=h/sum
-!       r=h/2d0*dabs(rs(xx(i)+h/2d0))/k2(xx(i)+h/2d0,d3(i))
-!       kappa=1d0/(1d0+r)
-!       sum=(rmink2(xx(i),d1(i))+rmink2(xx(i+1),d1(i+1)))*h/2d0
-!       bmin=sum/h
-!       sum=(rplusk2(xx(i),d1(i))+rplusk2(xx(i+1),d1(i+1)))*h/2d0
-!       bplus=sum/h
-!       sum=qf(xx(i+1))-qf(xx(i))
-!       dc=sum/h
-!       a1(i)=as(i)*(kappa/h**2-bmin/h)
-!       c1(i)=as(i+1)*(kappa/h**2+bplus/h) 
-!       b1(i)=-(1d0/dt+a(i)+c(i)+dc) 
-!       f1(i)=-y(i)/dt
-
-!       a2(i)=a1(i)-a(i)
-!       c2(i)=c1(i)-c(i)
-!       b2(i)=b1(i)-b(i)
-!       f2(i)=f1(i)-f(i)
-!	open(iunit2,file='lhcd/distribution/abcr.dat',position="append")
-!        if(dabs(c2(i)).gt.0d0) then
-!	write(iunit,*)f2(i),f1(i),f(i)
-!	end if
-!	close(iunit2)
-      end do
-	close(iunit)
-      f(n)=f(n)-c(n)*yend
-      a(1)=0d0
-      c(n)=0d0
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      real*8 function rplusk(x,dif)
-      implicit none
-      integer iunit
-      real*8 x,k,rs,dif,d,razn
-      rplusk=0.5d0*(rs(x)+dabs(rs(x)))/k(x,dif)
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      real*8 function rplusk2(x,dif)
-      implicit none
-      integer iunit
-      real*8 x,k2,rs,dif,d,razn
-      rplusk2=0.5d0*(rs(x)+dabs(rs(x)))/k2(x,dif)
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      real*8 function rmink(x,dif)
-      implicit none
-      integer iunit
-      real*8 x,k,rs,dif,d,razn
-      rmink=0.5d0*(rs(x)-dabs(rs(x)))/k(x,dif)
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      real*8 function rmink2(x,dif)
-      implicit none
-      integer iunit
-      real*8 x,k2,rs,dif,d,razn
-      rmink2=0.5d0*(rs(x)-dabs(rs(x)))/k2(x,dif)
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      real*8 function rs(x)
-      implicit none
-      real*8 x
-      real*8 alfa2
-      common/ef/ alfa2
-       rs=1d0/x**2-alfa2
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      real*8 function q(x)
-      implicit none
-      real*8 x
-      q=2d0/x**3
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      real*8 function qf(x)
-      implicit none
-      real*8 x
-      qf=-1d0/x**2
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      real*8 function k(x,dif)
-      implicit none
-      integer iunit
-      real*8 x,dif,d,razn
-!	razn=dif-d(x)
-!	open(iunit,file='lhcd/distribution/kkk.dat',position="append")
-!	if(dabs(razn).gt.0d0) then
-!	write(iunit,*)razn
-!	end if
-!	close(iunit)
-
-      k=dif+1d0/x**3
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      real*8 function k2(x,dif)
-      implicit none
-      integer iunit
-      real*8 x,dif,d,razn
-!	razn=dif-d(x)
-!	open(iunit,file='lhcd/distribution/kkk.dat',position="append")
-!	if(dabs(razn).gt.0d0) then
-!	write(iunit,*)razn
-!	end if
-!	close(iunit)
-
-      k2=d(x)+1d0/x**3
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      real*8 function kinv(x,dif)
-      implicit none
-      integer iunit
-      real*8 x,dif,razn,d
-      kinv=x**3/(dif*x**3+1d0)
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      real*8 function kinv2(x,dif)
-      implicit none
-      integer iunit
-      real*8 x,dif,razn,d,kino
-      kinv2=x**3/(d(x)*x**3+1d0)
-!	kino=x**3/(dif*x**3+1d0)
-!	razn=kino-kinv2
-!	open(iunit,file='lhcd/distribution/kino.dat',position="append")!
-!	if(dabs(razn).gt.0d0) then
-!	write(iunit,*)razn
-!	end if
-!	close(iunit)
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
       subroutine ddc(diffusion)
+      use maxwell
       implicit none
       common/testf/ tcur
 
       integer ntau,tc,koltoch,i,j,k,klo
-      real*8 curtime,tcur,zero,dij
+      real*8 curtime,tcur
       real*16 tau0,spacing,curtime0
-      parameter(tau0=3.000990745207882E-002, zero=0.d0)
-      common/lh/dij(1002,100,2)
+      parameter(tau0=3.000990745207882E-002)
+      !common/lh/dij(1002,100,2)
       real*8 b,b1,b2,d,diffusion
 !      real*8,dimension(:),allocatable:: diffusion
       integer i1,iunit6
@@ -504,31 +334,18 @@
 ! !     deallocate(diffusion)
       end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
       real*8 function d(x)
+      use maxwell
       implicit none
-      integer i0
-      parameter(i0=1002)
-      real*8 vij,fij0,fij,dfij,dij,enorm,fst
-      common/lh/vij(i0,100),fij0(i0,100,2),fij(i0,100,2),dfij(i0,100,2),dij(i0,100,2),enorm(100),fst(100)
+      !integer i0
+      !parameter(i0=1002)
+      !real*8 vij,fij0,fij,dfij,dij,enorm,fst
+      !common/lh/vij(i0,100),fij0(i0,100,2),fij(i0,100,2),dfij(i0,100,2),dij(i0,100,2),enorm(100),fst(100)
       real*8,dimension(:),allocatable:: vvj,ddj
       integer klo,khi,ierr
-      real*8 d0,zero,x
+      real*8 d0,x
       integer jindex,kindex,k,j,i
       common/dddql/ d0,jindex,kindex
-      parameter(zero=0.d0)
       d=zero
       if(d0.eq.zero) return
       j=jindex
@@ -558,31 +375,7 @@
 !
       deallocate(vvj,ddj)
       end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine tridag(a,b,c,r,u,n)
-      implicit none
-      integer n,nmax
-      double precision a(n),b(n),c(n),r(n),u(n)
-      parameter (nmax=1000000)
-      integer j
-      double precision bet,gam(nmax)
-      if(b(1).eq.0.d0)pause 'tridag: rewrite equations'
-      bet=b(1)
-      u(1)=r(1)/bet
-      do 11 j=2,n
-        gam(j)=c(j-1)/bet
-        bet=b(j)-a(j)*gam(j)
-        if(bet.eq.0.d0) then
-	write(*,*)'b(j)=',b(j),'a(j)=',a(j),'gam(j)=',gam(j)
-	pause 'tridag failed'
-	end if
-        u(j)=(r(j)-a(j)*u(j-1))/bet
-11    continue
-      do 12 j=n-1,1,-1
-        u(j)=u(j)-gam(j+1)*u(j+1)
-12    continue
-      return
-      end
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       
       subroutine qromb(func,a,b,ss)

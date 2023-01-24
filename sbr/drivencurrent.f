@@ -11,7 +11,12 @@
           include 'for/const.inc'
           include 'for/status.inc'
           real*8 outj(NRD),sigmaj(NRD)
-
+! RTOR    major radius
+! ROC     effective minor radius
+! UPL(*)  toroidal loop voltage
+! NRD     501 - Maximum size of the radial grid
+! NA1     Edge grid point number: ROC=RHO(NA1)
+! GP2     2*Pi
           call drivencurrent95(outj, sigmaj, UPL, NRD, NA1, TIME, TAU, 
      & ROC, RTOR, GP2)
              
@@ -26,6 +31,12 @@
         !    out_iint(cd,ro)    !toroidal driven current inside {0,ro}
         !    out_iint(cub)      !total toroidal current =iint(cu,roc); (=ipl)
         !			(pereverzev 23-oct-99)
+! NA        = NA1-1
+! RHO(*)    main magnetic surface label
+! IPOL(*)   normalized poloidal current
+! G33(*)
+! HRO       Radial grid step in the variable ro        
+! HROA      Edge step of the radial grid: RHO(NA1)-RHO(NA)
               implicit none
               integer j,jk
               double precision arr(*),yr,dr,ya

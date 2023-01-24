@@ -9,27 +9,20 @@ cc   djdt(i)  = dJr2/dt, time drivative of runaway current Jr2, MA/m^2/sec
 cc   outpa(i)  = LH power density deposited into alphas, MW/m^3
 cc   outda(i)  = (Na/Ne) relative density of alpha-particles
 cc******************************************************************
+      use approximation
+      use plasma
+      use rt_parameters
+      use spectrum1D      
+      use maxwell        
       implicit none
-      integer i,k,iview,ipsy,ipsy1,inpt,iunit
-      integer klo,khi,ierr,inpt2,ispectr
-      real*8 abtor,rm,x0,z0,rh1,zero,p_in,pe_p,pe_m,c_p,c_m
-      real*8 polin,polin1,vint,tcur
-      common/testf/ tcur
-      external polin,polin1
+      integer i
+      real*8 p_in,pe_p,pe_m,c_p,c_m
+      real*8 vint
       include 'for/parameter.inc'
       include 'for/const.inc'
       include 'for/status.inc'
       real*8 outpe(NRD)
       real*8,dimension(:),allocatable:: outpep,outpem
-      real*8,dimension(:),allocatable:: con,tem,temi,azef,afld
-      real*8,dimension(:),allocatable:: rh,rha,drhodr,delta,ell,gamm,amy
-      real*8,dimension(:),allocatable:: cdl,cly,cgm,cmy,coeffs
-      parameter(zero=0.d0,ipsy=5)
-!
-cc*********************************************************************
-cc   ipsy = number of polinomial decomposition coefficients
-cc           used for interpolation of Zakharov's moments.
-cc*********************************************************************
 
 cc*********************************************************************
 cc    Co-ordinates used in ray-tracing:
@@ -42,173 +35,99 @@ cc    r(rho_ASTRA),delta(r),gamma(r),ell(r) - dimensionless functions
 cc    rho_ASTRA=sqrt(Phi_tor/GP/BTOR)
 cc    Interval for r:  0.<= r <=1.
 cc*********************************************************************
-
+      print *, 'start start'
       tcur=time
-      inpt=NA1          ! ASTRA radial grid number
       outpe=zero
       p_in=dble(QLH)    ! input LH power, MW
-!!!      if(p_in.le.zero) return
 
-      allocate(rh(inpt),rha(inpt),drhodr(inpt),con(inpt),tem(inpt))
-      allocate(temi(inpt),azef(inpt))
-      allocate(delta(inpt),ell(inpt),gamm(inpt),amy(inpt))
-      allocate(cdl(ipsy),cly(ipsy),cgm(ipsy),cmy(ipsy),coeffs(ipsy))
+      call read_parameters('lhcd/ray_tracing.dat')
 
-      do i=1,inpt
-       rh(i)=AMETR(i)/ABC
-       rha(i)=RHO(i)/ABC  !/ABC instead of /ROC is not a mistake!
-       delta(i)=(SHIF(1)-SHIF(i))/ABC  !FRTC Shafr. shift. defin.
-       ell(i)=ELON(i)
-       gamm(i)=rh(i)*TRIA(i)
-       con(i)=dble(NE(i))
-       tem(i)=dble(TE(i))
-       temi(i)=dble(TI(i))
-       azef(i)=dble(ZEF(i))
-!!!variant       afld(i)=ULON(i)/RTOR/GP2
-!!!       afld(i)=UPL(i)/RTOR/GP2 !!variant
-      end do
+      call init_plasma(NA1,ABC,BTOR,RTOR,UPDWN,GP2,
+     & AMETR,RHO,SHIF,ELON,TRIA,MU,NE,TE,TI,ZEF,UPL)
 
-      rh1=rh(1)          !saving the first ASTRA radial grid element
-      rh(1)=zero         !shifting the first element to zero
-      rha(1)=zero        !shifting the first element to zero
-      delta(1)=zero      !putting delta(rh=0.)=0.
-      gamm(1)=zero       !putting gamm(rh=0.)=0.
-
-      abtor=1.d4*BTOR*RTOR/(RTOR+SHIF(1)) !B_tor_(magnetic axis), Gauss
-      rm=1.d2*ABC                       !minor radius in mid-plane, cm
-      x0=1.d2*(RTOR+SHIF(1))     !x-coordinate of the magnetic axis, cm
-      z0=1.d2*UPDWN              !z-coordinate of the magnetic axis, cm
-
-      ipsy1=ipsy-1
-
-cccc   shift as a function of "minor radius":
-       call approx(rh,delta,inpt,polin1,ipsy1,coeffs)
-       cdl(1)=zero
-       do k=2,ipsy
-        cdl(k)=coeffs(k-1)
-       end do
-
-cccc   triangularity as a function of "minor radius":
-       call approx(rh,gamm,inpt,polin1,ipsy1,coeffs)
-       cgm(1)=zero
-       do k=2,ipsy
-        cgm(k)=coeffs(k-1)
-       end do
-
-cccc   ellipticity as a function of "minor radius":
-       call approx(rh,ell,inpt,polin,ipsy,cly)
-
-cccc   "poloidal magnetic field":
-       call diff(rh,rha,inpt,drhodr)
-       do i=2,inpt
-        amy(i)=1.d4*BTOR*MU(i)*rha(i)*drhodr(i)
-       end do
-       amy(1)=zero
-!! amy=(btor/q)*rho*(drho/dr) is a function of "minor radius" r=rh(i).
-!! Poloidal magnetic field: B_pol=amy(r)*sqrt(g22/g), where g is
-!! determinant of 3D metric tensor and g22 is the (22) element of
-!! the tensor, normalized on ABC^4 and ABC^2, correspondingly.
-!!
-!!  Polinomial approximation of the amy(r):
-       inpt2=inpt-3
-       call approx(rh,amy,inpt2,polin1,ipsy1,coeffs)
-       cmy(1)=zero
-       do k=2,ipsy
-        cmy(k)=coeffs(k-1)
-       end do
 
 !!!!!!!!!!!!! starting ray-tracing !!!!!!!!!!!!!!!!!!!!!
-      allocate(outpep(inpt),outpem(inpt))
+      allocate(outpep(ngrid),outpem(ngrid))
 
 !!positive spectrum:
-      ispectr=1
+      print *, 'positive spectrum'
+      call read_positive_spectrum('lhcd/ray_tracing.dat', p_in)
       pe_p=zero
       outpep=zero
-      call ourlhcd2017(ispectr,p_in,inpt,ipsy,rm,x0,z0,abtor,
-     &  tem,con,temi,azef,rh,rh1,cdl,cly,cgm,cmy, !input
-     &  outpep,pe_p)     !output
-       if(pe_p.ne.zero) then
-        c_p=vint(outpep,roc)
-        if(c_p.ne.zero) then
-         do i=1,inpt
-          outpep(i)=pe_p*outpep(i)/c_p
-         end do
-        end if
-       end if
+      if(plaun.eq.zero) then
+            dij(:,:,1)=zero
+      else
+            call ourlhcd2017(+1,p_in, outpep,pe_p)
+      end if      
+      if(pe_p.ne.zero) then
+            c_p=vint(outpep,roc)
+            if(c_p.ne.zero) then
+                  do i=1,ngrid
+                        outpep(i)=pe_p*outpep(i)/c_p
+                  end do
+            end if
+      end if
 
 !!negative spectrum:
-      ispectr=-1
-      pe_m=zero
-      outpem=zero
-      call ourlhcd2017(ispectr,p_in,inpt,ipsy,rm,x0,z0,abtor,
-     &  tem,con,temi,azef,rh,rh1,cdl,cly,cgm,cmy, !input
-     &  outpem,pe_m)     !output
+       print *, 'negative spectrum'
+       call read_negative_spectrum('lhcd/ray_tracing.dat', p_in)
+       pe_m=zero
+       outpem=zero       
+       if(plaun.eq.zero) then
+            dij(:,:,2)=zero
+       else
+            call ourlhcd2017(-1,p_in, outpem,pe_m)  
+       endif     
        if(pe_m.ne.zero) then
-        c_m=vint(outpem,roc)
-        if(c_m.ne.zero) then
-         do i=1,inpt
-          outpem(i)=pe_m*outpem(i)/c_m
-         end do
-        end if
-       end if
-!
-      do i=1,inpt
+            c_m=vint(outpem,roc)
+            if(c_m.ne.zero) then
+                  do i=1,ngrid
+                        outpem(i)=pe_m*outpem(i)/c_m
+                  end do
+            end if
+      end if
+
+      do i=1,ngrid
        outpe(i)=outpep(i)+outpem(i)
       end do
-!
-      deallocate(outpep,outpem)
-      deallocate(rh,rha,drhodr,con,tem,temi,azef)
-      deallocate(delta,ell,gamm,amy,cdl,cly,cgm,cmy,coeffs)
- !!     pause
 
+      deallocate(outpep,outpem)
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-      subroutine ourlhcd2017(ispec,p_in,ngrid,ncoe,arm,ar0,az0,btt
-     & ,ate,xne,ati,azef,rhj,rh1,acdl,acly,acgm,acmy,  ! input data
-     & outpe,pe_out) ! output data
+      subroutine ourlhcd2017(ispectr,p_in, outpe,pe_out)      
+      use constants
+      use approximation
+      use spline
+      use chebyshev
+      use plasma
+      use rt_parameters
+      use spectrum1D
+      use maxwell      
       implicit real*8 (a-h,o-z)
-      real*8 outpe,pe_out !,outpec,outpef,outpa,outda
-      dimension outpe(*),rhj(*),ate(*),xne(*),azef(*),ati(*)
-      dimension acdl(ncoe),acly(ncoe),acgm(ncoe),acmy(ncoe)
+      real*8 outpe,pe_out 
+      dimension outpe(*)
 !!!!    maximum grid sizes:
 !!!!    rho=100, v_par_electrons=100, v_perp_ions=50
-      external obeom,ploshad,fn
+!      external obeom,ploshad
       dimension galfa(50,100),vpmin(100),vcva(100)
      &,pd2(100),pd2a(100),pd2b(100),pdprev1(100),pdprev2(100)
      &,source(100),sour(100)
      &,rxx(102),pwe(102),wrk(102)
-     &,ynzm0(1001),pm0(1001),yn2z(1001),powinp(1001)
+     &,yn2z(1001),powinp(1001)
       dimension vmid(100),vz1(100),vz2(100),ibeg(100),iend(100)
       parameter(mpnt=10000)
       common/refl/nrefj(mpnt)
-      common /a0a1/ ynzm(1001),pm(1001),nmaxm(4)
-      common /a0a2/ tet1,tet2
+      real*8 ynzm, pm
+      common /a0a1/ ynzm(1001),pm(1001) 
       common /a0a4/ plost,pnab
-      common /a0ab/ nr
-      common /a0abcd/ ipri
-      common /a0bcd/ eps
-      common /a0bcp/ tin
-      common /a0bd/ rrange,hdrob
-      common /a0befr/ pi,pi2
-      common /a0cd/ rbord,maxstep2,maxstep4
-      common /a0cdm/ hmin1
-      common /a0ef1/ r0,z0,rm,cltn
       common /bcef/ ynz,ynpopq
-      common /a0ef2/ btor,ww
-      common /a0ef3/ xmi,c0,c1,cnye,cnyi,xsz,vt0
       common /a0gh/ pabs
       common /a0ghp/ vlf,vrt,dflf,dfrt
-      common/plosh/ zv1(100,2),zv2(100,2),sk(100)
-      common /a0i2/ vk(100),pchm,pme
+      common/plosh/ zv1(100,2),zv2(100,2)!,sk(100)
+      !common /a0i2/ vk(100)
       common /a0i3/ dql(101,100),pdl(100),vzmin(100),vzmax(100)
       common /a0i4/ fcoll(100),dens(100),eta(100)
       common /asou/ rsou(102),sou(102),npta
-      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa,kv
-      common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
-      common /a0l3/ rh(501),y2dn(501),y2tm(501),y2tmi(501)
-      common /a0l4/ con(501),tem(501),temi(501),nspl
-      common /a0l5/ zeff(501),y2zeff(501)
       common/gridv/vgrid(101,100),dfundv(101,100),nvpt
       common/vvv1/dq1(101,100),dq2(101,100),pdc(100),pda(100),ppv1,ppv2
       common/findsigma/dncount(101,100)
@@ -216,322 +135,35 @@ cccc   "poloidal magnetic field":
       common /vvv3/ pdfast(100)
       common /arr/ dgdu(50,100),kzero(100)
       common /alph/ dqi0(50,100)
-      common/a00/ xlog,zalfa,xmalfa,dn1,dn2,factor
       common /ag/ inak,lenstor,lfree
-      common/b0/ itend0
       common /maxrho/ rmx_n,rmx_t,rmx_z,rmx_ti
-      common /cnew/ inew !est !sav2008
-      common/ne_cheb/chebne(50),chebdne(50),chebddne(50),ncheb
-      parameter(zero=0.d0, one=1.d0)
-      parameter(cnst1=0.2965924106d-6)  ! cnst1=(m_e/m_p)**2, CGS
-      parameter(cnst2=0.359680922d-35)  ! cnst2=(m_e/e)**2,  CGS
-      integer i0,ispectr
-      parameter(i0=1002)
-      real*8 vij,fij0,fij,dfij,dij,enorm,fst,kofpar,timecof
-      common/lh/vij(i0,100),fij0(i0,100,2),fij(i0,100,2),dfij(i0,100,2)
-     &,dij(i0,100,2),enorm(100),fst(100)
+
+      real*8 kofpar,timecof
       real*8,dimension(:),allocatable:: vvj,vdfj
       integer kpt1,kpt3
       parameter(kpt1=20,kpt3=20)
-      double precision vrj(101),dj(101),djnew(1001),vrjnew(1001)
+      double precision vrj(101),dj(101),djnew(1001)
       double precision dj2(101),d2j(101)
-      common/testf/ tcur
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!
+
+      integer iptnew
+      real*8 dijk, vrjnew
+      common/t01/dijk(101,100,2), vrjnew(101,100,2), iptnew
+
       if(p_in.eq.zero) then
-       do j=1,100
-        do k=1,2
-         do i=1,i0
-          dij(i,j,k)=zero
-         end do
-        end do
-       end do
-       return
+          dij(:,:,:)=zero
+          return
       end if
-      ispectr=ispec
-!
-      pi=4.d0*datan(1.d0)
-      pi2=2.d0*pi
-      pi4=4.d0*pi
-      piq=dsqrt(pi)
-
+ 
       lfree=1
-      ncoef=ncoe
-      nspl=ngrid
-      rm=arm
-      r0=ar0
-      z0=az0
-      btor=btt
-      do i=1,ncoef
-       cdl(i)=acdl(i)
-       cly(i)=acly(i)
-       cgm(i)=acgm(i)
-       cmy(i)=acmy(i)
-      end do
-!
-       call get_unit(iunit)
-       if(iunit.eq.0) then
-        write(*,*)'no free units up to 299'
-        pause
-        stop
-       end if
- !!!      open(iunit,file='lhcd/lhdataFT2_05m.dat')
- !!!      open(iunit,file='lhcd/gaus25.dat')
-       open(iunit,file='lhcd/ray_tracing.dat')
-!!!!!!!!!!!!!  read  physical parameters !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-       read(iunit,*)
-       read(iunit,*) freq
-       read(iunit,*) xmi1
-       read(iunit,*) zi1
-       read(iunit,*) xmi2
-       read(iunit,*) zi2
-       read(iunit,*) dni2
-       read(iunit,*) xmi3
-       read(iunit,*) zi3
-       read(iunit,*) dni3
-!!!!!!!!!!!!!  read parameters for alphas calculation !!!!!!!!!!!!!!!!!!!
-       read(iunit,*)
-       read(iunit,*) itend0
-       read(iunit,*) energy
-       read(iunit,*) factor
-       read(iunit,*) dra
-       read(iunit,*) kv
-
-!!!!!!!!!!!!!  read  numerical parameters !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-       read(iunit,*)
-       read(iunit,*) nr
-       read(iunit,*) hmin1
-       read(iunit,*) rrange
-       read(iunit,*) eps
-       read(iunit,*) hdrob
-       read(iunit,*) cleft
-       read(iunit,*) cright
-       read(iunit,*) cdel
-       read(iunit,*) rbord
-       read(iunit,*) pchm
-       read(iunit,*) pabs0
-       read(iunit,*) pgiter
-       read(iunit,*) ni1
-       read(iunit,*) ni2
-       read(iunit,*) niterat
-       read(iunit,*) nmaxm(1)
-       read(iunit,*) nmaxm(2)
-       read(iunit,*) nmaxm(3)
-       read(iunit,*) nmaxm(4)
-       read(iunit,*) maxstep2
-       read(iunit,*) maxstep4
-
-!!!!!!!!!!!!!  read  options !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-       read(iunit,*)
-       read(iunit,*) ipri
-       read(iunit,*) iw
-       read(iunit,*) ismth
-       read(iunit,*) ismthalf
-       read(iunit,*) ismthout
-       read(iunit,*) inew
-
-       read(iunit,*) itor     !Btor direction in right-hand {drho,dteta,dfi}
-       read(iunit,*) ipol     !Bpol direction in right-hand {drho,dteta,dfi}
-
-       znak_tor=dsign(1.d0,dble(itor))
-       btor=znak_tor*dabs(btor)
-       fpol=fdf(1.d0,cmy,ncoef,dfmy)
-       znak_pol=dsign(1.d0,dble(ipol))*dsign(1.d0,fpol)
-       do i=1,ncoef
-        cmy(i)=znak_pol*cmy(i)
-       end do
-
-!!!!!!!!!!!!!  read grill parameters and input LH spectrum !!!!!!!!!!!!
-       read(iunit,*)
-       read(iunit,*) zplus
-       read(iunit,*) zminus
-       read(iunit,*) ntet
-       read(iunit,*) nnz
-       read(iunit,*)
-!
-       if(ispectr.eq.1) then !read positive spectrum
-        do i=1,10000
-         read (iunit,*) anz,apz
-         if(apz.eq.-88888.d0) then
-          plaun=p_in*anz !input power in positive spectrum
-          if(plaun.eq.zero) then
-           dij(:,:,1)=zero
-           close(iunit)
-           return
-          end if
-          go to 10
-         end if
-         ynzm0(i)=anz
-         pm0(i)=apz
-         i1=i
-        end do
-       else if(ispectr.eq.-1) then !read negative spectrum
-        apz=zero
-        do while(apz.ne.-88888.d0)
-         read (iunit,*) anz,apz
-        end do
-        read(iunit,*)
-        plaun=p_in*(1.d0-anz) !input power in negative spectrum
-        if(plaun.eq.zero) then
-         dij(:,:,2)=zero
-         close(iunit)
-         return
-        end if
-        do i=1,10000
-         read (iunit,*,end=10) ynzm0(i),pm0(i)
-         i1=i
-        end do
-       else
-        write(*,*)'wrong ispectr=',ispectr
-        pause
-        stop
-       end if
-10     ispl=i1
-      close(iunit)
-      if(ispl.gt.4001) stop 'too many points in spectrum'
-
-!!!!!!!!!!!!! test !!!!!
-      write(*,*)'time=',tcur
-      if((tcur-0.030d0)*(tcur-0.036d0).lt.zero) then
-       call get_unit(iunit)
-       if(iunit.eq.0) then
-        write(*,*)'#test: no free units up to 299'
-        pause
-        stop
-       end if
-       if(ispectr.eq.1) then
-        open(iunit,file='test/fundfunp.dat')
-         write(iunit,*)'time=',tcur
-         write(iunit,*)
-       else
-        open(iunit,file='test/fundfunm.dat')
-         write(iunit,*)'time=',tcur
-         write(iunit,*)
-       end if
-       k=(3-ispectr)/2
-       do j=1,nr
-        do i=1,i0
-         write(iunit,88) vij(i,j),fij(i,j,k),dfij(i,j,k)
-     &                  ,fij0(i,j,k),dble(j)
-        end do
-        write(iunit,*)
-       end do
-       close(iunit)
-      end if
-88    format(1x,10(e14.7,1x))
-
-
-!!!!!!!!!!!!! checking initial parameters !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      if(kv.gt.50) kv=50
-      if(nr.gt.100) nr=100
-      if(ni1.eq.0) ni1=20
-      if(ni2.eq.0) ni2=20
-      if(ni1+ni2.gt.100) then
-       ni1=60
-       ni2=40
-      end if
-      if(nnz*ntet.gt.10000) then
-       nnz=250
-       ntet=40
-       pause 'nnz and ntet changed, because nnz*ntet>10000'
-      end if
-!!!!!!!!!!!!!!! spline approximation of plasma profiles !!!!!!!!!!!!!!!!
-      rhj(nspl)=1.d0
-      do j=1,nspl
-       rh(j)=rhj(j)
-       con(j)=xne(j)
-       tem(j)=ate(j)
-       zeff(j)=azef(j)
-       if(itend0.gt.0) then
-        temi(j)=ati(j)
-       end if
-      end do
-
-      call splne(rh,con,nspl,y2dn)
-      call splne(rh,tem,nspl,y2tm)
-      call splne(rh,zeff,nspl,y2zeff)
-      if(itend0.gt.0) then
-       call splne(rh,temi,nspl,y2tmi)
-      end if
-!
-      if(inew.ne.0) then
-       ncheb=20
-       call chebft1(zero,1.d0,chebne,ncheb,fn)
-       call chder(zero,1.d0,chebne,chebdne,ncheb)
-       call chder(zero,1.d0,chebdne,chebddne,ncheb)
-      end if
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      hr=1.d0/dble(nr+1)
-      xly=fdf(one,cly,ncoef,xlyp)
-      arg1=(zplus-z0)/(xly*rm)
-      arg2=(zminus-z0)/(xly*rm)
-      if(dabs(arg1).lt.1.d0) then
-       tet1=dasin(arg1)      ! upper grill corner poloidal coordinate
-      else
-       tet1=0.5d0*pi         ! upper grill corner poloidal coordinate
-      end if
-      if(dabs(arg2).lt.1.d0) then
-       tet2=dasin(arg2)      ! lower grill corner poloidal coordinate
-      else
-       tet2=-0.5d0*pi        ! lower grill corner poloidal coordinate
-      end if
-c---------------------------------------------------
-c initial constants
-c---------------------------------------------------
-      talfa=3.5d0    ! alpha particles' birth energy, MeV
-      zalfa=2.d0     ! alpha particles' electrical charge
-      xmalfa=4.d0    ! alpha particles' atomic mass
-      tin=1d-7
-      clt=3.0d+10
-      pme=9.11e-28
-      pqe=4.803e-10
-      xlog=16.d0+dlog(16.d0)
-      c0=dsqrt(pi4*pqe**2/pme)
-      c1=pqe/pme/clt
-      xsgs=1d+13
-      xwtt=1d-7
-c------------------------------------------------------------
-c calculate constants
-c---------------------------------------
-      dn1=1d0/(zi1+dni2*zi2+dni3*zi3)
-      dn2=dni2*dn1
-      dn3=dni3*dn1
-      sss=zi1**2*dn1/xmi1+zi2**2*dn2/xmi2+zi3**2*dn3/xmi3
-      xmi=1836.d0/sss
-      cnstvc=(.75d0*piq*sss/1836.d0)**(1.d0/3.d0)
-      ww=freq*pi2*1.0d+09
-      cnye=xlog/pi4
-      cnyi=dsqrt(2d0)/(3d0*piq) !%for Vt=sqrt(Te/m)
-      vt0=fvt(zero)
-!!!!!!!!      ptkev=ft(zero)/0.16d-8  !Te in keV
-      cltn=clt/vt0
-      xsz=clt/ww/rm
-      ccur=pqe*vt0*0.333d-9
-!!      ccurnr=pqe*pqe*0.333d-9/pme
-      rrange=rrange*hr
+      hr = 1.d0/dble(nr+1)
       iw0=iw
-
-      valfa=1.d9*dsqrt(1.91582d0*talfa/xmalfa)
-cccc  valfa (cgs units) = birth velocity
-      zza=cnst1*(zalfa/xmalfa/valfa)**2*(clt/valfa)**3/pi
-      zze=cnst2*2.d9*freq
-      cnstal=(dsqrt(cnst1)/xmalfa/pi)
-     &        *(zalfa*vt0/valfa)**2*clt/valfa
-      vpmax=dsqrt(energy/talfa)
-cccc  "vpmax" in valfa velocity units !
-c--------------------------------------------------------
-c find volums and surfaces
-c--------------------------------------------------------
-      vk0=pi2*hr*rm**3
-      sk0=hr*rm**2
       nrr=nr+2
       rxx(1)=zero
       rxx(nrr)=one
       do j=1,nr
-       rxx(j+1)=hr*dble(j)
-       vk(j)=vk0*gaussint(obeom,zero,pi2,rxx(j+1),eps)
-       sk(j)=sk0*gaussint(ploshad,zero,pi2,rxx(j+1),eps)
+            rxx(j+1)=hr*dble(j)
       end do
 !!!!!!!!!!!!!!!!!!!!!!!!
 c--------------------------------------------------------
@@ -543,14 +175,14 @@ c--------------------------------------------------------
       xx2=ynzm0(1)
       yy2=pm0(1)
       pinp=0d0
-       do i=1,innz
-        xx1=xx2
-        yy1=yy2
-        xx2=xx1+dxx
-        call splnt(ynzm0,pm0,yn2z,ispl,xx2,yy2,dynn)
-        dpw=.5d0*(yy2+yy1)*(xx2-xx1)
-        pinp=pinp+dpw
-       end do
+      do i=1,innz
+            xx1=xx2
+            yy1=yy2
+            xx2=xx1+dxx
+            call splnt(ynzm0,pm0,yn2z,ispl,xx2,yy2,dynn)
+            dpw=.5d0*(yy2+yy1)*(xx2-xx1)
+            pinp=pinp+dpw
+      end do
 
       dpower=pinp/dble(nnz)
       xx2=ynzm0(1)
@@ -558,36 +190,36 @@ c--------------------------------------------------------
       pwcurr=zero
       ptot=zero
       do i=1,nnz-1
-       xx0=xx2
-11     continue
-        xx1=xx2
-        yy1=yy2
-        xx2=xx1+dxx
-        call splnt(ynzm0,pm0,yn2z,ispl,xx2,yy2,dynn)
-        dpw=.5d0*(yy2+yy1)*(xx2-xx1)
-         if(pwcurr+dpw.gt.dpower) then
-          xx2=xx1+dxx*(dpower-pwcurr)/dpw
-          call splnt(ynzm0,pm0,yn2z,ispl,xx2,yy2,dynn)
-          dpw=.5d0*(yy2+yy1)*(xx2-xx1)
-          pwcurr=pwcurr+dpw
-         else
-          pwcurr=pwcurr+dpw
-          go to 11
-         end if
-       ynzm(i)=.5d0*(xx2+xx0)
-       pm(i)=pwcurr
-       ptot=ptot+pwcurr
-       pwcurr=zero
+            xx0=xx2
+11          continue
+            xx1=xx2
+            yy1=yy2
+            xx2=xx1+dxx
+            call splnt(ynzm0,pm0,yn2z,ispl,xx2,yy2,dynn)
+            dpw=.5d0*(yy2+yy1)*(xx2-xx1)
+            if(pwcurr+dpw.gt.dpower) then
+                  xx2=xx1+dxx*(dpower-pwcurr)/dpw
+                  call splnt(ynzm0,pm0,yn2z,ispl,xx2,yy2,dynn)
+                  dpw=.5d0*(yy2+yy1)*(xx2-xx1)
+                  pwcurr=pwcurr+dpw
+            else
+                  pwcurr=pwcurr+dpw
+                  go to 11
+            end if
+            ynzm(i)=.5d0*(xx2+xx0)
+            pm(i)=pwcurr
+            ptot=ptot+pwcurr
+            pwcurr=zero
       end do
       ynzm(nnz)=.5d0*(ynzm0(ispl)+xx2)
       pm(nnz)=pinp-ptot
       pnorm=plaun*xsgs/(pinp*ntet)
       pmax=-1d+10
       do i=1,nnz
-       call splnt(ynzm0,pm0,yn2z,ispl,ynzm(i),powinp(i),dynn)
-       pm(i)=pm(i)*pnorm
-       if (pm(i).gt.pmax) pmax=pm(i)
-       ynzm(i)=dble(ispectr)*ynzm(i) !sav2009
+            call splnt(ynzm0,pm0,yn2z,ispl,ynzm(i),powinp(i),dynn)
+            pm(i)=pm(i)*pnorm
+            if (pm(i).gt.pmax) pmax=pm(i)
+            ynzm(i)=dble(ispectr)*ynzm(i) !sav2009
       end do
 c       call get_unit(iunit)
 c       if(iunit.eq.0) then
@@ -623,140 +255,137 @@ c--------------------------------------------
       ipt2=ni1+ni2
       ipt=ipt1+ni1+ni2+kpt3
       if(ipt.gt.101) then
-       write(*,*)'ipt >101'
-       pause'stop program'
-       stop
+            write(*,*)'ipt >101'
+            pause'stop program'
+            stop
       end if
       nvpt=ipt
 
       do j=1,nr                  ! begin 'rho' cycle
-       r=hr*dble(j)
+            r=hr*dble(j)
 !!!!sav2008       pn=fn(r)
 !!       pn=fn1(r,fnr)
 !!       pn=fn2(r,fnr,fnrr) !sav2008
-       if(inew.eq.0) then !vardens
-        pn=fn1(r,fnr)
-       else
-        pn=fn2(r,fnr,fnrr)
-       end if
-       dens(j)=pn
-       vt=fvt(r)
-       vto=vt/vt0
-       wpq=c0**2*pn
-       whe=dabs(btor)*c1
-       v=wpq/ww**2
-       u1=whe/ww
-       u=u1**2
-       e1=1d0-v*(1d0/xmi-1d0/u)
-       e2=v/u1
-       e3=v
-       tmp=ft(r)/0.16d-8 !Te, keV
-       cn1=dsqrt(50d0/tmp)  !sav2008
-        if(itend0.gt.0) then
-         eta(j)=1d0-v
-         vcva(j)=cnstvc*vt*dsqrt(2d0)/valfa
-         vpmin(j)=2.0d0*dsqrt(tmp/(-eta(j)))
-222      continue
-         dvperp=(vpmax-vpmin(j))/dble(kv-1)
-            if(dvperp.le.zero) then
-             vpmax=1.3d0*vpmax
-             go to 222
+            if(inew.eq.0) then !vardens
+                  pn=fn1(r,fnr)
+            else
+                  pn=fn2(r,fnr,fnrr)
             end if
-         do k=1,kv
-          vperp(k,j)=vpmin(j)+dble(k-1)*dvperp
-         end do
-         fcoll(j)=.5d-13*dens(j)*zalfa**2*xlog/xmalfa/tmp**1.5d0
-         ddens=dn1*dens(j)
-         tdens=dn2*dens(j)
-         tt=fti(r)**0.33333d0    ! (ti, keV)^1/3
-         source(j)=4d-12*factor*ddens*tdens*dexp(-20d0/tt)/tt**2
-         anb=anb+source(j)*vk(j)
-        end if
-       cn2=dsqrt(dabs(e1))+e2/dsqrt(e3) !sav2008
+            dens(j)=pn
+            vt=fvt(r)
+            vto=vt/vt0
+            wpq=c0**2*pn
+            whe=dabs(b_tor)*c1
+            v=wpq/ww**2
+            u1=whe/ww
+            u=u1**2
+            e1=1d0-v*(1d0/xmi-1d0/u)
+            e2=v/u1
+            e3=v
+            tmp=ft(r)/0.16d-8 !Te, keV
+            cn1=dsqrt(50d0/tmp)  !sav2008
+            if(itend0.gt.0) then
+                  eta(j)=1d0-v
+                  vcva(j)=cnstvc*vt*dsqrt(2d0)/valfa
+                  vpmin(j)=2.0d0*dsqrt(tmp/(-eta(j)))
+222               continue
+                  dvperp=(vpmax-vpmin(j))/dble(kv-1)
+                  if(dvperp.le.zero) then
+                        vpmax=1.3d0*vpmax
+                        go to 222
+                  end if
+            do k=1,kv
+                  vperp(k,j)=vpmin(j)+dble(k-1)*dvperp
+            end do
+            fcoll(j)=.5d-13*dens(j)*zalfa**2*xlog/xmalfa/tmp**1.5d0
+            ddens=dn1*dens(j)
+            tdens=dn2*dens(j)
+            tt=fti(r)**0.33333d0    ! (ti, keV)^1/3
+            source(j)=4d-12*factor*ddens*tdens*dexp(-20d0/tt)/tt**2
+            anb=anb+source(j)*vk(j)
+            end if
+            cn2=dsqrt(dabs(e1))+e2/dsqrt(e3) !sav2008
 c       vz1(j)=cleft*cltn/cn1  !Vpar/Vt0
 c       vz2(j)=cright*cltn/cn2  !Vpar/Vt0
 c       if(vz2(j).gt.0.9d0*cltn) vz2(j)=0.9d0*cltn
 c       v1=vz1(j)/vto !Vpar/Vt(rho)
 c       v2=vz2(j)/vto !Vpar/Vt(rho)
+            vmax=cltn/vto
+            v1=4.d0  !Vpar/Vt(rho)
+            v2=10.d0 !cright*cltn/cn2 !10.d0 !Vpar/Vt(rho)
+            if(v2.ge.vmax) v2=0.5d0*vmax
+            if(v1.ge.v2) v1=v2-2.d0
+            call gridvel(v1,v2,vmax,0.5d0,ni1,ni2,ipt1,kpt3,vrj)
+            vz1(j)=v1*vto !Vpar/Vt0
+            vz2(j)=v2*vto !Vpar/Vt0
+            if(vz2(j).gt.0.9d0*cltn) vz2(j)=0.9d0*cltn
+            do i=1,ipt
+                  vgrid(i,j)=vrj(i)*vto
+            end do
+      end do                     ! end 'rho' cycle 
 
-       vmax=cltn/vto
-       v1=4.d0  !Vpar/Vt(rho)
-       v2=10.d0 !cright*cltn/cn2 !10.d0 !Vpar/Vt(rho)
-       if(v2.ge.vmax) v2=0.5d0*vmax
-       if(v1.ge.v2) v1=v2-2.d0
-       call gridvel(v1,v2,vmax,0.5d0,ni1,ni2,ipt1,kpt3,vrj)
-       vz1(j)=v1*vto !Vpar/Vt0
-       vz2(j)=v2*vto !Vpar/Vt0
-       if(vz2(j).gt.0.9d0*cltn) vz2(j)=0.9d0*cltn
-       do i=1,ipt
-        vgrid(i,j)=vrj(i)*vto
-       end do
-      end do                     ! end 'rho' cycle
-
-!!!!!!!!!read data !!!!!!!!!!!!
-       allocate(vvj(i0),vdfj(i0))
-       k=(3-ispectr)/2
-       do j=1,nr
-        r=hr*dble(j)
-        vt=fvt(r)
-        vto=vt/vt0
-        do i=1,i0
-         vvj(i)=vij(i,j)
-         vdfj(i)=dfij(i,j,k) !=dfundv(i,j)*vto**2
-        end do
-        do i=1,ipt
-         vrj(i)=vgrid(i,j)/vto   !Vpar/Vt
-         call lock(vvj,i0,vrj(i),klo,khi,ierr)
-         if(ierr.eq.1) then
-          write(*,*)'lock error in read distribution function'
-          write(*,*)'j=',j,'i0=',i0
-          write(*,*)'vvj(1)=',vvj(1),' vvj(i0)=',vvj(i0)
-          write(*,*)'i=',i,' vrj(i)=',vrj(i),' vmax=',cltn/vto
-          write(*,*)
-          pause'next key = stop'
-          stop
-         end if
-         call linf(vvj,vdfj,vrj(i),dfout,klo,khi)
-         dfundv(i,j)=dfout/vto**2
-         if(dfundv(i,j).gt.zero) dfundv(i,j)=zero
-        end do
-       end do
-
+!!!!!!!!!read data !!!!!!!!!!!!       
+      allocate(vvj(i0),vdfj(i0))
+      k=(3-ispectr)/2
+      do j=1,nr
+            r=hr*dble(j)
+            vt=fvt(r)
+            vto=vt/vt0
+            do i=1,i0
+                  vvj(i)=vij(i,j)
+                  vdfj(i)=dfij(i,j,k) !=dfundv(i,j)*vto**2
+            end do
+            do i=1,ipt
+                  vrj(i)=vgrid(i,j)/vto   !Vpar/Vt
+                  call lock(vvj,i0,vrj(i),klo,khi,ierr)
+            if(ierr.eq.1) then
+                  write(*,*)'lock error in read distribution function'
+                  write(*,*)'j=',j,'i0=',i0
+                  write(*,*)'vvj(1)=',vvj(1),' vvj(i0)=',vvj(i0)
+                  write(*,*)'i=',i,' vrj(i)=',vrj(i),' vmax=',cltn/vto
+                  write(*,*)
+                  pause'next key = stop'
+                  stop
+            end if
+            call linf(vvj,vdfj,vrj(i),dfout,klo,khi)
+            dfundv(i,j)=dfout/vto**2
+            if(dfundv(i,j).gt.zero) dfundv(i,j)=zero
+            end do
+      end do
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       if(itend0.gt.0) then  ! begin alpha-source renormalisation
-       fuspow=anb*talfa*1.6022d-19
-       anb0=anb
-       anb=zero
-       do j=1,nr
-        r=hr*dble(j)
-        if(r.le.dra) then
-         tt=fti(zero)**0.33333d0
-        else
-         tt=fti(r-dra)**0.33333d0    ! (shifted ti, kev)^1/3
-        end if
-        ddens=dn1*dens(j)
-        tdens=dn2*dens(j)
-        sour(j)=4d-12*factor*ddens*tdens*dexp(-20d0/tt)/tt**2
-        anb=anb+sour(j)*vk(j)
-       end do
-       aratio=anb0/anb
-       rsou(1)=zero
-       sou(1)=aratio*sour(1)
-       do j=1,nr
-        r=hr*dble(j)
-        rsou(j+1)=r
-        sou(j+1)=aratio*sour(j)
-        if(j.eq.nr) sssour=source(j)
-        source(j)=sou(j+1)
-       end do
-       npta=nr+2
-       rsou(npta)=1.d0
-       sou(npta)=aratio*sour(nr)
+            fuspow=anb*talfa*1.6022d-19
+            anb0=anb
+            anb=zero
+            do j=1,nr
+                  r=hr*dble(j)
+                  if(r.le.dra) then
+                        tt=fti(zero)**0.33333d0
+                  else
+                  tt=fti(r-dra)**0.33333d0    ! (shifted ti, kev)^1/3
+                  end if
+                  ddens=dn1*dens(j)
+                  tdens=dn2*dens(j)
+                  sour(j)=4d-12*factor*ddens*tdens*dexp(-20d0/tt)/tt**2
+                  anb=anb+sour(j)*vk(j)
+            end do
+            aratio=anb0/anb
+            rsou(1)=zero
+            sou(1)=aratio*sour(1)
+            do j=1,nr
+                  r=hr*dble(j)
+                  rsou(j+1)=r
+                  sou(j+1)=aratio*sour(j)
+                  if(j.eq.nr) sssour=source(j)
+                  source(j)=sou(j+1)
+            end do
+            npta=nr+2
+            rsou(npta)=1.d0
+            sou(npta)=aratio*sour(nr)
       end if
 c------------------------------------
 c set initial values of arrays
 c------------------------------------
-!
       dland=zero
       dcoll=zero
       perpn=zero
@@ -789,12 +418,12 @@ c------------------------------------
       nrefj=0
 
       if(itend0.gt.0) then
-        do j=1,nr           ! begin 'rho' cycle
-          do i=1,50
-           dqi0(i,j)=zero
-          end do
-         call alphas(dqi0,vperp,j,kv,galfa)
-        end do              ! end 'rho' cycle
+            do j=1,nr           ! begin 'rho' cycle
+                  do i=1,50
+                        dqi0(i,j)=zero
+                  end do
+                  call alphas(dqi0,vperp,j,kv,galfa)
+            end do              ! end 'rho' cycle
       end if
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -816,28 +445,28 @@ c----------------------------------------------
       jbeg=1
       jend=0
       do j=1,nr
-       nvach=0
-       do i=1,nvpt
-        nvach=nvach+dncount(i,j)
-       end do
-       if(nvach.lt.nvmin) then
-        if(jend.eq.0) jbeg=jbeg+1
-       else
-        jend=j
-       end if
+            nvach=0
+            do i=1,nvpt
+                  nvach=nvach+dncount(i,j)
+            end do
+            if(nvach.lt.nvmin) then
+                  if(jend.eq.0) jbeg=jbeg+1
+            else
+            jend=j
+            end if
       end do
       if(jend.eq.0.or.jbeg.ge.jend) then
-       write(*,*)'failure: jbeg=',jbeg,' jend=',jend 
-       pause
-       stop
+            write(*,*)'failure: jbeg=',jbeg,' jend=',jend 
+            pause
+            stop
       end if
 
       do j=1,nr
-       pdl(j)=pdl(j)*xwtt
-       pdc(j)=pdc(j)*xwtt
-       pda(j)=pda(j)*xwtt
-       pdfast(j)=pdfast(j)*xwtt
-       pwe(j+1)=(pdl(j)+pdc(j))/vk(j)
+            pdl(j)=pdl(j)*xwtt
+            pdc(j)=pdc(j)*xwtt
+            pda(j)=pda(j)*xwtt
+            pdfast(j)=pdfast(j)*xwtt
+            pwe(j+1)=(pdl(j)+pdc(j))/vk(j)
       end do
       pwe(1)=pwe(2)
       pwe(nr+2)=zero
@@ -849,16 +478,16 @@ c----------------------------------------------
       pchg=zero
       pchg1=zero
       pchg2=zero
-       do j=1,nr
-        dpw1=pdl(j)+pdc(j)
-        dpw2=pda(j)
-        psum1=psum1+dpw1**2
-        psum2=psum2+dpw2**2
-        pchg1=pchg1+(dpw1-pdprev1(j))**2
-        pchg2=pchg2+(dpw2-pdprev2(j))**2
-        pdprev1(j)=dpw1
-        pdprev2(j)=dpw2
-       end do
+      do j=1,nr
+            dpw1=pdl(j)+pdc(j)
+            dpw2=pda(j)
+            psum1=psum1+dpw1**2
+            psum2=psum2+dpw2**2
+            pchg1=pchg1+(dpw1-pdprev1(j))**2
+            pchg2=pchg2+(dpw2-pdprev2(j))**2
+            pdprev1(j)=dpw1
+            pdprev2(j)=dpw2
+      end do
       if(psum1.ne.zero) pchg=pchg1/psum1 !sav2008
       if(psum2.ne.zero) pchg=pchg+pchg2/psum2
 c----------------------------------------
@@ -869,10 +498,10 @@ c----------------------------------------
       cppa=zero
       cppf=zero
       do j=1,nr
-       cppl=cppl+pdl(j)
-       cppc=cppc+pdc(j)
-       cppa=cppa+pda(j)
-       cppf=cppf+pdfast(j)
+            cppl=cppl+pdl(j)
+            cppc=cppc+pdc(j)
+            cppa=cppa+pda(j)
+            cppf=cppf+pdfast(j)
       end do
       ol=cppl*1d-6
       oc=cppc*1d-6
@@ -917,43 +546,43 @@ c   recalculate f' for a new mesh
 c-------------------------------------------
       k=(3-ispectr)/2
       do j=1,nr
-       r=hr*dble(j)
-       vt=fvt(r)
-       vto=vt/vt0
-       if(iterat.gt.0) then
-        v1=dmin1(vzmin(j),vz1(j))
-        v2=dmax1(vzmax(j),vz2(j))
-       else
-        v1=vzmin(j)
-        v2=vzmax(j)
-       end if
-       vmax=cltn/vto
-       vp1=v1/vto
-       vp2=v2/vto
-       call gridvel(vp1,vp2,vmax,cdel,ni1,ni2,ipt1,kpt3,vrj)
-       do i=1,i0
-        vvj(i)=vij(i,j)
-        vdfj(i)=dfij(i,j,k) !=dfundv(i,j)*vto**2
-       end do
-       do i=1,ipt
+            r=hr*dble(j)
+            vt=fvt(r)
+            vto=vt/vt0
+            if(iterat.gt.0) then
+                  v1=dmin1(vzmin(j),vz1(j))
+                  v2=dmax1(vzmax(j),vz2(j))
+            else
+                  v1=vzmin(j)
+                  v2=vzmax(j)
+            end if
+            vmax=cltn/vto
+            vp1=v1/vto
+            vp2=v2/vto
+            call gridvel(vp1,vp2,vmax,cdel,ni1,ni2,ipt1,kpt3,vrj)
+            do i=1,i0
+                  vvj(i)=vij(i,j)
+                  vdfj(i)=dfij(i,j,k) !=dfundv(i,j)*vto**2
+            end do
+      do i=1,ipt
         call lock(vvj,i0,vrj(i),klo,khi,ierr)
         if(ierr.eq.1) then
 !!!         if(vrj(i).gt.vvj(i0)) exit
-         write(*,*)'lock error in new v-mesh'
-         write(*,*)'j=',j,' i0=',i0
-         write(*,*)'vvj(1)=',vvj(1),' vvj(i0)=',vvj(i0)
-         write(*,*)'i=',i,' vrj(i)=',vrj(i)
-         write(*,*)
-         pause'next key = stop'
-         stop
+            write(*,*)'lock error in new v-mesh'
+            write(*,*)'j=',j,' i0=',i0
+            write(*,*)'vvj(1)=',vvj(1),' vvj(i0)=',vvj(i0)
+            write(*,*)'i=',i,' vrj(i)=',vrj(i)
+            write(*,*)
+            pause'next key = stop'
+            stop
         end if
         call linf(vvj,vdfj,vrj(i),dfout,klo,khi)
         vgrid(i,j)=vrj(i)*vto
         dfundv(i,j)=dfout/vto**2
         if(dfundv(i,j).gt.zero) dfundv(i,j)=zero
-       end do
-       vz1(j)=v1
-       vz2(j)=v2
+      end do
+      vz1(j)=v1
+      vz2(j)=v2
       end do
 !!----------------------------
         ppv1=zero
@@ -971,10 +600,10 @@ c-------------------------------------------
         pdc=zero
         pda=zero
         pdfast=zero
-        if(itend0.gt.0) then
-         dqi0=zero
-        end if
-       goto 80
+      if(itend0.gt.0) then
+            dqi0=zero
+      end if
+      goto 80
       end if
 c------------------------------------------
 c save results
@@ -1029,6 +658,8 @@ c------------------------------------------
        do i=1,ipt
         vrj(i)=vgrid(i,j)/vto      !Vpar/Vt
         dj(i)=dql(i,j)*dconst*vto  !D_normir
+        vrjnew(i,j,k)=vrj(i)
+        dijk(i,j,k)=dj(i)
        end do
        do i=1,i0
         if(vij(i,j).ge.vmax) then
@@ -1081,7 +712,10 @@ c------------------------------------------
       deallocate(vvj,vdfj)
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine manager(iterat,iw0,nnz,ntet)
+      subroutine manager(iterat,iw0,nnz ,ntet)
+      use constants            
+      use plasma
+      use rt_parameters, only : nr, ipri, iw, nmaxm            
       implicit real*8 (a-h,o-z)
       parameter(length=5000000, mpnt=10000)
       dimension dland(length),dcoll(length),perpn(length),dalf(length)
@@ -1093,23 +727,19 @@ c------------------------------------------
       common/viewdat/mbeg,mend,mbad,rbeg,tetbeg,xnrbeg,xmbeg,yn3beg
       dimension iznzap(mpnt),iwzap(mpnt),irszap(mpnt)
       dimension rzap(mpnt),tetzap(mpnt),xmzap(mpnt),yn3zap(mpnt)
-      common /a0a1/ ynzm(1001),pm(1001),nmaxm(4)
-      common /a0a2/ tet1,tet2
+      common /a0a1/ ynzm(1001),pm(1001) 
+      !common /a0a2/ tet1,tet2
       common /a0a4/ plost,pnab
-      common /a0ab/ nr
-      common /a0abcd/ ipri
       common /abc/ rzz,tetzz,xmzz,iznzz,iwzz,irszz
       common /abcd/ irs
-      common /abcde/ izn,iw
+      common /abcde/ izn
       common /abcdg/ iabsorp
       common /abefo/ yn3
-      common /a0befr/ pi,pi2
       common /acg/ pow
       common /a0gh/ pabs
       common /aef2/ icall1,icall2
       common /ag/ inak,lenstor,lfree
       common/refl/nrefj(mpnt)
-      parameter(zero=0.d0)
       data mbad /mpnt*0/
       lenstor=length
       htet=zero
@@ -1302,9 +932,11 @@ c---------------------------------------
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine dql1 !sav2008
+      use rt_parameters
+      use plasma, only : fvt
       implicit real*8 (a-h,o-z)
       parameter(length=5000000)
-      real*8 radth,fvt
+      real*8 radth
       dimension dland(length),dcoll(length),perpn(length),dalf(length)
       dimension vel(length),jrad(length),iww(length),tetai(length)
       dimension xnpar(length),izz(length)
@@ -1320,13 +952,13 @@ c---------------------------------------
       common /bcg/ hrad
       common /bg/ im4
       common /ceg/ ipow,jfoundr
-      common /a0ab/ nr
+      !common /a0ab/ nr
       common /eg1/ vfound,ifound
       common /eg2/ pdec1,pdec2,pdec3,pdecv,pdecal,dfdv,icf1,icf2
       common /eg3/ cf1,cf2,cf3,cf4,cf5,cf6
       common /dg/ pintld4,pintcl4,pintal4
-      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa,kv
-      common/b0/ itend0
+      !common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
+      !common/b0/ itend0
       parameter(clt=3.d10,zero=0.d0)
       powpr=pow
       iabsorp=0
@@ -1415,6 +1047,7 @@ c----------------------------------
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine dqliter(dltpow,ib,ie,h,powexit,iout) !sav2008
+      use rt_parameters
       implicit real*8 (a-h,o-z)
       parameter(length=5000000)
       dimension dland(length),dcoll(length),perpn(length),dalf(length)
@@ -1424,9 +1057,9 @@ c----------------------------------
       dimension an1(length),an2(length)
       common /xn1xn2/ an1,an2
       common /a0ghp/ vlf,vrt,dflf,dfrt
-      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa,kv
+      !common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
       common /vvv2/ psum4
-      common/b0/ itend0
+      !common/b0/ itend0
       parameter(clt=3.d10,zero=0.d0)
       pow=powexit
       pdec1=zero
@@ -1517,19 +1150,22 @@ c---------------------------------------------
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine dfind(j,i,v,powpr,pil,pic,pia,df,decv
      &                             ,refr,vlf,vrt,ifast)
+      use constants
+      use plasma
+      use rt_parameters
       implicit real*8 (a-h,o-z)
-      common /a0i2/ vk(100),pchm,pme
+      !common /a0i2/ vk(100) !,pme !pchm
       common /a0i3/ dql(101,100),pdl(100),vzmin(100),vzmax(100)
       common /a0i4/ fcoll(100),dens(100),eta(100)
-      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa,kv
+      !common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
       common/vvv1/dq1(101,100),dq2(101,100),pdc(100),pda(100),ppv1,ppv2
       common /vvv3/ pdfast(100)
       common /alph/ dqi0(50,100)
-      common/b0/ itend0
-      common /a0ef1/ r0,z0,rm,cltn
-      common /a0befr/ pi,pi2
+      !common/b0/ itend0
+      !common /a0ef1/ cltn
+      !common /a0befr/ pi,pi2
       common/findsigma/dncount(101,100)
-      parameter(zero=0.d0,clt=3.0d10,tiny=1.d-100)
+      !parameter(zero=0.d0, tiny=1.d-100)
 
       if(v.gt.cltn) return
       if(pil.gt.zero) then
@@ -1598,20 +1234,24 @@ c---------------------------------------------
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine traj(xm0,tet0,xbeg,nmax,nb1,nb2,nomth,nomnz) !sav2009
+      use constants
+      use approximation
+      use plasma
+      use rt_parameters
       implicit real*8 (a-h,o-z)
       external extd4
       dimension ystart(2),yy(4)
-      common /a0ab/ nr
-      common /a0abcd/ ipri
-      common /a0bcd/ eps
-      common /a0bcp/ tin
-      common /a0bd/ rrange,hdrob
-      common /a0befr/ pi,pi2
-      common /a0ef1/ r0,z0,rm,cltn
+      !common /a0ab/ nr
+      !common /a0abcd/ ipri
+      !common /a0bcd/ eps
+      !common /a0bcp/ tin
+      !common /a0bd/ rrange,hdrob
+      !common /a0befr/ pi,pi2
+      !common /a0ef1/ cltn
  !!     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       common /abc/ rzz,tetzz,xmzz,iznzz,iwzz,irszz
       common /abcd/ irs
-      common /abcde/ izn,iw
+      common /abcde/ izn!,iw
       common /abcdg/ iabsorp
       common /bcg/ hrad
       common /bcef/ ynz,ynpopq
@@ -1620,7 +1260,7 @@ c---------------------------------------------
       common /be2/ ider
       common /beo/ iroot
       common /bg/ im4
-      common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
+ !     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       integer nomth,nomnz
       parameter (pgdop=0.02d0,hmin=0.d-7) !sav2008, old hmin=1.d-7
       eps0=eps
@@ -1666,9 +1306,9 @@ c---------------------------------------
          rnew2=ystart(3)
          cotet=dcos(tet)
          sitet=dsin(tet)
-         xdl=fdf(rnew2,cdl,ncoef,xdlp)
-         xly=fdf(rnew2,cly,ncoef,xlyp)
-         xgm=fdf(rnew2,cgm,ncoef,xgmp)
+         xdl = fdf(rnew2,cdl,ncoef,xdlp)
+         xly = fdf(rnew2,cly,ncoef,xlyp)
+         xgm = fdf(rnew2,cgm,ncoef,xgmp)
          xx=-xdl+rnew2*cotet-xgm*sitet**2
          zz=rnew2*xly*sitet
          xxx=(r0+rm*xx)/1d2
@@ -1786,19 +1426,22 @@ c-------------------------------------
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine driver2(ystart,x1,x2,xsav,hmin,h1) !sav2008
+      use constants
+      use plasma
+      use rt_parameters
       implicit real*8 (a-h,o-z)
       external extd2
-      common /a0abcd/ ipri
-      common /a0ab/ nr
-      common /a0bcd/ eps
-      common /a0bcp/ tin
-      common /a0befr/ pi,pi2
-      common /a0cd/ rbord,maxstep2,maxstep4
-      common /a0cdm/ hmin1
-      common /a0ef1/ r0,z0,rm,cltn
+      !common /a0abcd/ ipri
+      !common /a0ab/ nr
+      !common /a0bcd/ eps
+      !common /a0bcp/ tin
+      !common /a0befr/ pi,pi2
+      !common /a0cd/ rbord,maxstep2,maxstep4
+      !common /a0cdm/ hmin1
+      !common /a0ef1/ cltn
       common /abc/ rzz,tetzz,xmzz,iznzz,iwzz,irszz
       common /abcd/ irs
-      common /abcde/ izn,iw
+      common /abcde/ izn!,iw
       common /abcdg/ iabsorp
       common /bcef/ ynz,ynpopq
       common /bcg/ hrad
@@ -1806,7 +1449,7 @@ c-------------------------------------
       common /ceg/ ipow,jfoundr
       common /cmn/ ind
       dimension ystart(2)
-      parameter(zero=0.d0,nvar=2)
+      parameter(nvar=2)
       dimension yscal(nvar),y(nvar),dydx(nvar),yold(nvar),dyold(nvar)
       x=x1
       h=dsign(h1,x2-x1)
@@ -1931,23 +1574,26 @@ c---------------------------------------
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine driver4(ystart,x1,x2,rexi,hmin,derivs)
+      use constants
+      use plasma
+      use rt_parameters
       implicit real*8 (a-h,o-z)
       external derivs
-      common /a0befr/ pi,pi2
-      common /a0abcd/ ipri
-      common /a0bcd/ eps
-      common /a0cdm/ hmin1
-      common /a0bd/ rrange,hdrob
-      common /a0cd/ rbord,maxstep2,maxstep4
+      !common /a0befr/ pi,pi2
+      !common /a0abcd/ ipri
+      !common /a0bcd/ eps
+      !common /a0cdm/ hmin1
+      !common /a0bd/ rrange,hdrob
+      !common /a0cd/ rbord,maxstep2,maxstep4
       common /abcd/ irs
-      common /abcde/ izn,iw
+      common /abcde/ izn!,iw
       common /abcdg/ iabsorp
       common /bdeo/ ivar
-      common /a0ef1/ r0,z0,rm,cltn
+      !common /a0ef1/ cltn
       common /bcef/ ynz,ynpopq
       common /df/ pdec14,pdec24,pdec34,idec
       common /dg/ pintld4,pintcl4,pintal4
-      parameter(zero=0.d0,hbeg=1.d-4,iturns=1,maxat=3,nvar=4) !sav2008
+      parameter(hbeg=1.d-4,iturns=1,maxat=3,nvar=4) !sav2008
       dimension ystart(4),yscal(nvar),y(nvar),dydx(nvar),yold(nvar)
       ipr1=0
       iat=0
@@ -2082,12 +1728,16 @@ c---------------------------------------
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine disp2(pa,yn2,ptet,xnro,prt,prm)
+      use constants
+      use approximation
+      use plasma
+      use rt_parameters
       implicit real*8 (a-h,o-z)
-      common /a0befr/ pi,pi2
-      common /a0ef1/ r0,z0,rm,cltn
-      common /a0ef2/ btor,ww
-      common /a0ef3/ xmi,c0,c1,cnye,cnyi,xsz,vt0
-      common /abcde/ izn,iw
+      !common /a0befr/ pi,pi2
+      !common /a0ef1/ cltn
+      !common /a0ef2/ ww
+      !common /a0ef3/ xmi,cnye,cnyi,xsz,vt0
+      common /abcde/ izn!,iw
       common /bcef/ ynz,ynpopq
       common /abefo/ yn3
       common /aef2/ icall1,icall2
@@ -2100,17 +1750,16 @@ c---------------------------------------
       common /eg1/ vfound,ifound
       common /eg2/ pdec1,pdec2,pdec3,pdecv,pdecal,dfdv,icf1,icf2
       common /eg3/ cf1,cf2,cf3,cf4,cf5,cf6
-      common/a00/ xlog,zalfa,xmalfa,dn1,dn2,factor
-      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa,kv
-      common/b0/ itend0
-      common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
-      common /cnew/ inew !est !sav2008
+      !common/a00/ xlog,zalfa,xmalfa,dn1,dn2 !,factor
+      !common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
+      !common/b0/ itend0
+!     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
+      !common /cnew/ inew !est !sav2008
       common/fj/dhdm,dhdnr,dhdtet,dhdr,ddn,dhdn3,dhdv2v,dhdu2u
       common/direct/znakstart
       common/metrika/g11,g12,g22,g33,gg,g,si,co
       common/fjham/ham
-      parameter(zero=0.d0,one=1.d0,two=2.d0)
-      parameter(clt=3.d10)
+      !parameter(clt=3.d10)
       iconv=0
       irefl=0
       if(pa.ge.one.or.pa.le.zero) goto70
@@ -2148,7 +1797,7 @@ c--------------------------------------
 c--------------------------------------
 c  magnetic field
 c--------------------------------------
-      bt=btor*(r0/rm)/x0
+      bt=b_tor*(r0/rm)/x0
       bp=g2jq*g3v*xmy
       b=dsqrt(bp*bp+bt*bt)
       si=bp/b
@@ -2324,7 +1973,7 @@ c--------------------------------------
       g33t=two*x0*(-pa*sitet-two*xgm*sitet*cotet)
       g12t=dxdrdt*dxdt+dxdr*dxdtdt+dzdrdt*dzdt+dzdr*dzdtdt
       xjt=g11t*g22+g22t*g11-two*g12*g12t
-      btt=-btor*(r0/rm)/x0**2*x0t
+      btt=-b_tor*(r0/rm)/x0**2*x0t
       g2jqt=(g22t/xj-g22/xj**2*xjt)/(g2jq*two)
       bpt=xmy*(g2jqt*g3v-.5d0*g2jq*g3v/g33*g33t)
       bat=one/b*(bp*bpt+bt*btt)
@@ -2450,26 +2099,29 @@ c    reflection
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine disp4(pa,ptet,xnr,yn2)
+      use constants
+      use approximation
+      use plasma
+      use rt_parameters            
       implicit real*8 (a-h,o-z)
-      common /a0befr/ pi,pi2
-      common /a0ef1/ r0,z0,rm,cltn
-      common /a0ef2/ btor,ww
-      common /a0ef3/ xmi,c0,c1,cnye,cnyi,xsz,vt0
+      !common /a0befr/ pi,pi2
+      !common /a0ef1/ cltn
+      !common /a0ef2/ ww
+      !common /a0ef3/ xmi,cnye,cnyi,xsz,vt0
       common /bcef/ ynz,ynpopq
       common /abefo/ yn3
       common /aef2/ icall1,icall2
       common /cefn/ iconv,irefl
       common /df/ pdec14,pdec24,pdec34,idec
-      common/a00/ xlog,zalfa,xmalfa,dn1,dn2,factor
-      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa,kv
-      common/b0/ itend0
-      common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
-      common /cnew/ inew !est !sav2008
-      common/plasma/v,u,e1,e2,e3,dvdr,dudr,dudt
+      !common/a00/ xlog,zalfa,xmalfa,dn1,dn2!,factor
+      !common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
+      !common/b0/ itend0
+!     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
+      !common /cnew/ inew !est !sav2008
+      !common/plasma/v,u,e1,e2,e3,dvdr,dudr,dudt
       common/metrika/g11,g12,g22,g33,gg,g,si,co
       common/fj/dhdm,dhdnr,dhdtet,dhdr,ddn,dhdn3,dhdv2v,dhdu2u
       common/fjham/ham
-      parameter(zero=0d0, one=1d0, two=2d0)
       irefl=0
       iconv=0
       if(pa.eq.zero) pa=1.d-7
@@ -2539,7 +2191,7 @@ c--------------------------------------
 c--------------------------------------
 c  magnetic field
 c--------------------------------------
-      bt=btor*(r0/rm)/x0
+      bt=b_tor*(r0/rm)/x0
       bp=g2gq*xmy
       b=dsqrt(bp*bp+bt*bt)
       whe=b*c1
@@ -2625,8 +2277,8 @@ c--------------------------------------
       g2gqr=(g22r/g-g22/g**2*gr)/(g2gq*two)
       bpt=xmy*g2gqt
       bpr=g2gqr*xmy+g2gq*xmyp
-      btr=-btor*(r0/rm)/x0**2*x0r
-      btt=-btor*(r0/rm)/x0**2*x0t
+      btr=-b_tor*(r0/rm)/x0**2*x0r
+      btt=-b_tor*(r0/rm)/x0**2*x0t
       bat=one/b*(bp*bpt+bt*btt)
       bar=one/b*(bp*bpr+bt*btr)
       sit=bpt/b-bp/b**2*bat
@@ -2783,7 +2435,7 @@ c      dydx(5)=znak*dhdn3/ddn
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine dhdomega(rho,theta,yn1,yn2)
       implicit real*8 (a-h,o-z)
-      common /a0ef2/ btor,ww
+      !common /a0ef2/ ww
       common /abefo/ yn3
       common/fj/dhdm,dhdnr,dhdtet,dhdr,ddn,dhdn3,dhdv2v,dhdu2u
       common/direct/znakstart
@@ -2809,6 +2461,7 @@ cc      pause
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine difeq(y,dydx,nv,x,htry,eps,yscal,hdid,hnext,derivs)
+      use rt_parameters, only : hmin1
       implicit none
       external derivs
       integer nv,nmax,kmaxx,imax
@@ -2824,9 +2477,9 @@ cu    uses derivs,mmid,pzextr
      *,yerr(nmax),ysav(nmax),yseq(nmax)
       logical first,reduct
       save a,alf,epsold,first,kmax,kopt,nseq,xnew
-      double precision hmin1,dyd
+      double precision dyd
       integer ii,ind
-      common /a0cdm/ hmin1
+      !common /a0cdm/ hmin1
       common /cmn/ ind
       data first/.true./,epsold/-1.d0/
       data nseq /2,4,6,8,10,12,14,16,18/
@@ -2862,7 +2515,10 @@ cu    uses derivs,mmid,pzextr
       reduct=.false.
 2     do 17 k=1,kmax
         xnew=x+h
-        if(xnew.eq.x) write(*,*) 'step size underflow in difeq'
+        if(xnew.eq.x) then
+            write(*,*) 'step size underflow in difeq'
+            pause
+        end if
         call mmid(ysav,dydx,nv,x,h,nseq(k),yseq,derivs)
  !sav#
       if(ind.eq.1) then
@@ -3074,13 +2730,14 @@ cu    uses derivs,mmid,pzextr
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
       real*8 function rini(xm,tet,xnr,yn,hr,ifail) !sav2009
+      use rt_parameters
       implicit real*8 (a-h,o-z)
       dimension vgrp(3),vph(3)
       common /bcef/ ynz,ynpopq
       common /abefo/ yn3
       common /beo/ iroot
       common /bdeo/ ivar
-      common /cnew/ inew !est !sav2008
+      !common /cnew/ inew !est !sav2008
       common/metrika/g11,g12,g22,g33,gg,g,si,co !sav2009
       parameter(zero=0.d0,rhostart=1.d0,ntry_max=5)
 
@@ -3152,102 +2809,15 @@ cu    uses derivs,mmid,pzextr
       end if
       deallocate(vzj,dfdvj)
       end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-      double precision  function obeom(ptet,pa)
-      implicit real*8 (a-h,o-z)
-      common /a0befr/ pi,pi2
-      common /a0ef1/ r0,z0,rm,cltn
-      common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
-      parameter(two=2.d0, pa0=0.d0)
-      xdl=fdf(pa,cdl,ncoef,xdlp)
-      xly=fdf(pa,cly,ncoef,xlyp)
-      xgm=fdf(pa,cgm,ncoef,xgmp)
-      xlyv=xlyp*pa+xly
-      cotet=dcos(ptet)
-      sitet=dsin(ptet)
-      dxdr=-xdlp+cotet-xgmp*sitet**2
-      dxdt=-(pa+two*xgm*cotet)*sitet
-      dzdr=xlyv*sitet
-      dzdt=xly*pa*cotet
-      x0=r0/rm-xdl+pa*cotet-xgm*sitet**2
-      dxdrdt=-sitet-two*xgmp*sitet*cotet
-      dzdrdt=xlyv*cotet
-      dxdtdt=-pa*cotet-two*xgm*(cotet**2-sitet**2)
-      dzdtdt=-xly*pa*sitet
-      x0t=dxdt
-c--------------------------------------
-c components of metric tensor
-c--------------------------------------
-      g11=dxdr**2+dzdr**2
-      g22=dxdt**2+dzdt**2
-      g12=dxdr*dxdt+dzdr*dzdt
-      g33=x0**2
-      xj=(dzdr*dxdt-dxdr*dzdt)**2  !gg=g11*g22-g12*g12
-      g=xj*g33
-      obeom=dsqrt(g)
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      double precision  function ploshad(ptet,pa)
-      implicit real*8 (a-h,o-z)
-      common /a0befr/ pi,pi2
-      common /a0ef1/ r0,z0,rm,cltn
-      common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
-      parameter(two=2.d0, pa0=0.d0)
-      xdl=fdf(pa,cdl,ncoef,xdlp)
-      xly=fdf(pa,cly,ncoef,xlyp)
-      xgm=fdf(pa,cgm,ncoef,xgmp)
-      xlyv=xlyp*pa+xly
-      cotet=dcos(ptet)
-      sitet=dsin(ptet)
-      dxdr=-xdlp+cotet-xgmp*sitet**2
-      dxdt=-(pa+two*xgm*cotet)*sitet
-      dzdr=xlyv*sitet
-      dzdt=xly*pa*cotet
-      x0=r0/rm-xdl+pa*cotet-xgm*sitet**2
-      dxdrdt=-sitet-two*xgmp*sitet*cotet
-      dzdrdt=xlyv*cotet
-      dxdtdt=-pa*cotet-two*xgm*(cotet**2-sitet**2)
-      dzdtdt=-xly*pa*sitet
-      x0t=dxdt
-c--------------------------------------
-c components of metric tensor
-c--------------------------------------
-      g11=dxdr**2+dzdr**2
-      g22=dxdt**2+dzdt**2
-      g12=dxdr*dxdt+dzdr*dzdt
-      xj=(dzdr*dxdt-dxdr*dzdt)**2  !gg=g11*g22-g12*g12
-      ploshad=dsqrt(xj)
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      double precision  function fvt(r)
-      implicit real*8 (a-h,o-z)
-      pt=ft(r)
-      fvt=dsqrt(pt/9.11d-28)
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      double precision  function ft(x)
-! electron temperature, erg
-      implicit real*8 (a-h,o-z)
-      common /a0l3/ rh(501),y2dn(501),y2tm(501),y2tmi(501)
-      common /a0l4/ con(501),tem(501),temi(501),nspl
-      parameter(zero=0.d0,alfa=4.d0,dr=.02d0)
-      pa=dabs(x) !#@sav
-      if(pa.le.rh(nspl)) then
-       call splnt(rh,tem,y2tm,nspl,pa,y,dy)
-      else
-       r=pa-rh(nspl)
-       y=tem(nspl)*dexp(-alfa*(r/dr)**2)
-      end if
-!!      ft=y            ! kev
-      ft=y*0.16d-8      ! erg
-      end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       double precision  function fti(x)
 ! ion temperature, kev
+      use spline      
+      use plasma
       implicit real*8 (a-h,o-z)
-      common /a0l3/ rh(501),y2dn(501),y2tm(501),y2tmi(501)
-      common /a0l4/ con(501),tem(501),temi(501),nspl
+      !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
+      !common /a0l4/ con(501),tem(501),temi(501),nspl
       parameter(zero=0.d0,alfa=4.d0,dr=.02d0)
       pa=dabs(x) !#@sav
       if(pa.le.rh(nspl)) then
@@ -3261,10 +2831,12 @@ c--------------------------------------
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       double precision  function zefff(x)
 ! z_effective profile
+      use spline      
+      use plasma
       implicit real*8 (a-h,o-z)
-      common /a0l3/ rh(501),y2dn(501),y2tm(501),y2tmi(501)
-      common /a0l4/ con(501),tem(501),temi(501),nspl
-      common /a0l5/ zeff(501),y2zeff(501)
+      !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
+      !common /a0l4/ con(501),tem(501),temi(501),nspl
+      !common /a0l5/ y2zeff(501)
       parameter(zero=0.d0,alfa=4.d0,dr=.02d0)
       pa=dabs(x) !#@sav
       if(pa.le.rh(nspl)) then
@@ -3276,27 +2848,15 @@ c--------------------------------------
       zefff=y
       end
 c----------------------------------------------------------------
-      double precision  function fn(x)
-! plasma  density,  cm^-3
-      implicit real*8 (a-h,o-z)
-      common /a0l3/ rh(501),y2dn(501),y2tm(501),y2tmi(501)
-      common /a0l4/ con(501),tem(501),temi(501),nspl
-      parameter(zero=0.d0,alfa=4.d0,dr=.02d0)
-      pa=dabs(x)
-      if(pa.le.rh(nspl)) then
-       call splnt(rh,con,y2dn,nspl,pa,y,dy)
-      else
-       r=pa-rh(nspl)
-       y=con(nspl)*dexp(-alfa*(r/dr)**2)
-      end if
-      fn=y*1.d+13    !cm^-3
-      end
+
 c----------------------------------------------------------------
       double precision  function fn1(x,fnp)
 ! plasma density and its derivative
+      use spline      
+      use plasma      
       implicit real*8 (a-h,o-z)
-      common /a0l3/ rh(501),y2dn(501),y2tm(501),y2tmi(501)
-      common /a0l4/ con(501),tem(501),temi(501),nspl
+      !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
+      !common /a0l4/ con(501),tem(501),temi(501),nspl
       parameter(zero=0.d0,alfa=4.d0,dr=.02d0)
       pa=dabs(x)
       if(pa.le.rh(nspl)) then
@@ -3314,6 +2874,7 @@ c----------------------------------------------------------------
 
       double precision  function fn2(r,fnp,fnpp)
 ! plasma density and its first and second derivatives
+      use chebyshev
       implicit real*8 (a-h,o-z)
       common/ne_cheb/chebne(50),chebdne(50),chebddne(50),ncheb
       parameter(zero=0.d0,alfa=4.d0,dr=.02d0)
@@ -3415,51 +2976,7 @@ c----------------------------------------------------------------
 14    continue
       return
       end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      double precision  function gaussint(f,a,b,r,eps)
-      implicit real*8 (a-h,o-z)
-      dimension w(12),x(12)
-!!      save w,x,const !sav#
-      data const /1.0d-12/
-      data w
-     1/0.10122 85362 90376, 0.22238 10344 53374, 0.31370 66458 77887,
-     2 0.36268 37833 78362, 0.02715 24594 11754, 0.06225 35239 38648,
-     3 0.09515 85116 82493, 0.12462 89712 55534, 0.14959 59888 16577,
-     4 0.16915 65193 95003, 0.18260 34150 44924, 0.18945 06104 55069/
-      data x
-     1/0.96028 98564 97536, 0.79666 64774 13627, 0.52553 24099 16329,
-     2 0.18343 46424 95650, 0.98940 09349 91650, 0.94457 50230 73233,
-     3 0.86563 12023 87832, 0.75540 44083 55003, 0.61787 62444 02644,
-     4 0.45801 67776 57227, 0.28160 35507 79259, 0.09501 25098 37637/
-      delta=const*dabs(a-b)
-      gaussint=0d0
-      aa=a
-    5 y=b-aa
-      if(dabs(y) .le. delta) return
-    2 bb=aa+y
-      c1=0.5d0*(aa+bb)
-      c2=c1-aa
-      s8=0d0
-      s16=0d0
-      do 1 i = 1,4
-      u=x(i)*c2
-    1 s8=s8+w(i)*(f(c1+u,r)+f(c1-u,r))
-      do 3 i = 5,12
-      u=x(i)*c2
-    3 s16=s16+w(i)*(f(c1+u,r)+f(c1-u,r))
-      s8=s8*c2
-      s16=s16*c2
-      if(dabs(s16-s8) .gt. eps*(1d0+dabs(s16))) go to 4
-      gaussint=gaussint+s16
-      aa=bb
-      go to 5
-    4 y=0.5d0*y
-      if(dabs(y) .gt. delta) go to 2
-      write(*,7)
-      gaussint=0d0
-      return
-    7 format(1x,'gaussint ... too high accuracy required')
-      end
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine alphas(d,u,j,kmax,g)
       implicit real*8 (a-h,o-z)
@@ -3515,12 +3032,12 @@ c----------------------------------------------------------------
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       double precision function zatukh(psy,j,u,n)
+      use constants
       implicit real*8 (a-h,o-z)
       dimension u(50,100)
       dimension x(50),y(50),a(50),b(50)
-      common /a0befr/ pi,pi2
+      !common /a0befr/ pi,pi2
       common /arr/ dgdu(50,100),kzero(100)
-      parameter(zero=0.d0,one=1.d0)
       km=kzero(j)
       um=u(km,j)
       if(um.ge.one) then
@@ -3558,124 +3075,7 @@ c----------------------------------------------------------------
        return
        end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      double precision function fdf(x,c,n,df)
-      implicit real*8 (a-h,o-z)
-      dimension c(n)
-      p=c(n)
-      dp=0.d0
-      do j=n-1,1,-1
-        dp=dp*x+p
-        p=p*x+c(j)
-      end do
-      fdf=p
-      df=dp
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      double precision function fdfddf(x,c,n,df,ddf)
-      implicit real*8 (a-h,o-z)
-      dimension c(n)
-      p=c(n)
-      dp=0d0
-      ddp=0d0
-      do j=n-1,1,-1
-        ddp=ddp*x+2d0*dp
-        dp=dp*x+p
-        p=p*x+c(j)
-      end do
-      fdfddf=p
-      df=dp
-      ddf=ddp
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine splne(x,y,n,y2)
-      implicit real*8 (a-h,o-z)
-      parameter(nn=1001, zero=0d0)
-      dimension x(n),y(n),y2(n),u(nn)
-      if(n.gt.nn) stop 'n>nn in splne!'
-      y2(1)=zero
-      u(1)=zero
-      do i=2,n-1
-       sig=(x(i)-x(i-1))/(x(i+1)-x(i-1))
-       p=sig*y2(i-1)+2.d0
-       y2(i)=(sig-1.d0)/p
-       u(i)=(6.d0*((y(i+1)-y(i))/(x(i+1)-x(i))-(y(i)-y(i-1))
-     *     /(x(i)-x(i-1)))/(x(i+1)-x(i-1))-sig*u(i-1))/p
-      end do
-       qn=zero
-       un=zero
-       y2(n)=(un-qn*u(n-1))/(qn*y2(n-1)+1.d0)
-         do k=n-1,1,-1
-          y2(k)=y2(k)*y2(k+1)+u(k)
-         end do
-      return
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine splnt(xa,ya,y2a,n,x,y,dy)
-      implicit real*8 (a-h,o-z)
-      parameter(zero=0.d0)
-      dimension xa(n),ya(n),y2a(n)
-      klo=1
-      khi=n
-      do while(khi-klo.gt.1)
-       k=(khi+klo)/2
-       if(xa(k).gt.x)then
-        khi=k
-       else
-        klo=k
-       endif
-      end do
-      h=xa(khi)-xa(klo)
-      if(h.eq.zero) then
-       write(*,*)'bad x input in splnt(), x=',x
-       write(*,*)'klo=',klo,' kho=',khi
-       stop
-      end if
-      a=(xa(khi)-x)/h
-      b=(x-xa(klo))/h
-      aa=a**2
-      bb=b**2
-      hh=h**2/6d0
-      ax=-1d0/h
-      bx=-ax
-      y=a*ya(klo)+b*ya(khi)+
-     *  (a*(aa-1d0)*y2a(klo)+b*(bb-1d0)*y2a(khi))*hh
-      dy=ax*ya(klo)+bx*ya(khi)+
-     *  ax*((3.d0*aa-1d0)*y2a(klo)-(3.d0*bb-1d0)*y2a(khi))*hh
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine dsplnt(xa,ya,y2a,n,x,y,dy,ddy)
-      implicit real*8 (a-h,o-z)
-      parameter(zero=0.d0)
-      dimension xa(n),ya(n),y2a(n)
-      klo=1
-      khi=n
-      do while(khi-klo.gt.1)
-       k=(khi+klo)/2
-       if(xa(k).gt.x)then
-        khi=k
-       else
-        klo=k
-       endif
-      end do
-      h=xa(khi)-xa(klo)
-      if(h.eq.zero) then
-       write(*,*)'bad x input in splnt(), x=',x
-       write(*,*)'klo=',klo,' kho=',khi
-       stop
-      end if
-      a=(xa(khi)-x)/h
-      b=(x-xa(klo))/h
-      aa=a**2
-      bb=b**2
-      hh=h**2/6d0
-      ax=-1d0/h
-      bx=-ax
-      y=a*ya(klo)+b*ya(khi)+
-     *  (a*(aa-1d0)*y2a(klo)+b*(bb-1d0)*y2a(khi))*hh
-      dy=ax*ya(klo)+bx*ya(khi)+
-     *  ax*((3.d0*aa-1d0)*y2a(klo)-(3.d0*bb-1d0)*y2a(khi))*hh
-      ddy=6.d0*ax*ax*(a*y2a(klo)+b*y2a(khi))*hh
-      end
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine diff(x,y,n,dy)
       implicit real*8 (a-h,o-z)
@@ -3687,161 +3087,7 @@ c----------------------------------------------------------------
         dy(n)=(y(n)-y(n-1))/(x(n)-x(n-1))
       return
       end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      double precision function polin(k,x)
-      implicit real*8 (a-h,o-z)
-       polin=1d0
-       if(k.gt.1) polin=x**(k-1)
-      return
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      double precision function polin1(k,x)
-      implicit real*8 (a-h,o-z)
-       polin1=x**k
-      return
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      double precision function polin2(k,x)
-      implicit real*8 (a-h,o-z)
-       polin2=x**(k+1)
-      return
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine approx(x,y,n,f,m,b)
-c
-c     y(i)=y(x(i))  the data to be approximated
-c     n             number of points in the input data
-c     m             number of coefficients of decomposition
-c                   over base functions "f(k,x)" :
-c                          y(x)=sum_1^m [b(k)*f(k,x)]
-c     b(i)          found decomposition coefficients
-c
-      implicit real*8 (a-h,o-z)
-      parameter(zero=0.d0, np=20)
-      dimension a(np,np),indx(np)
-      dimension y(n),x(n),b(*)
 
-       if(m.gt.np) then
-         write(*,*)'index error subroutine "approx"'
-         return
-       end if
-
-         do j=1,m
-          do k=1,j
-           a(k,j)=zero
-            do i=1,n
-             a(k,j)=a(k,j)+f(j,x(i))*f(k,x(i))
-            end do
-          end do
-         end do
-                 do k=2,m
-                  do j=1,k-1
-                    a(k,j)=a(j,k)
-                  end do
-                 end do
-
-          do k=1,m
-           b(k)=zero
-            do i=1,n
-             b(k)=b(k)+y(i)*f(k,x(i))
-            end do
-          end do
-
-        call ludcmp(a,m,np,indx,d)
-        call lubksb(a,m,np,indx,b)
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine ludcmp(a,n,np,indx,d)
-      implicit real*8 (a-h,o-z)
-      parameter (nmax=501, tiny=1.d-20, zero=0.d0)
-      dimension a(np,np),indx(n),vv(nmax)
-      d=1.d0
-      do 12 i=1,n
-        aamax=zero
-        do 11 j=1,n
-          if (dabs(a(i,j)).gt.aamax) aamax=dabs(a(i,j))
-11      continue
-        if (aamax.eq.zero) pause 'singular matrix.'
-        vv(i)=1.d0/aamax
-12    continue
-      do 19 j=1,n
-        if (j.gt.1) then
-          do 14 i=1,j-1
-            sum=a(i,j)
-            if (i.gt.1)then
-              do 13 k=1,i-1
-                sum=sum-a(i,k)*a(k,j)
-13            continue
-              a(i,j)=sum
-            endif
-14        continue
-        endif
-        aamax=zero
-        do 16 i=j,n
-          sum=a(i,j)
-          if (j.gt.1)then
-            do 15 k=1,j-1
-              sum=sum-a(i,k)*a(k,j)
-15          continue
-            a(i,j)=sum
-          endif
-          dum=vv(i)*dabs(sum)
-          if (dum.ge.aamax) then
-            imax=i
-            aamax=dum
-          endif
-16      continue
-        if (j.ne.imax)then
-          do 17 k=1,n
-            dum=a(imax,k)
-            a(imax,k)=a(j,k)
-            a(j,k)=dum
-17        continue
-          d=-d
-          vv(imax)=vv(j)
-        endif
-        indx(j)=imax
-        if(j.ne.n) then
-          if(a(j,j).eq.zero) a(j,j)=tiny
-          dum=1.d0/a(j,j)
-          do 18 i=j+1,n
-            a(i,j)=a(i,j)*dum
-18        continue
-        endif
-19    continue
-      if(a(n,n).eq.zero) a(n,n)=tiny
-      return
-      end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine lubksb(a,n,np,indx,b)
-      implicit real*8 (a-h,o-z)
-      parameter(zero=0.d0)
-      dimension a(np,np),indx(n),b(n)
-      ii=0
-      do 12 i=1,n
-        ll=indx(i)
-        sum=b(ll)
-        b(ll)=b(i)
-        if (ii.ne.0)then
-          do 11 j=ii,i-1
-            sum=sum-a(i,j)*b(j)
-11        continue
-        else if (sum.ne.zero) then
-          ii=i
-        endif
-        b(i)=sum
-12    continue
-      do 14 i=n,1,-1
-        sum=b(i)
-        if(i.lt.n)then
-          do 13 j=i+1,n
-            sum=sum-a(i,j)*b(j)
-13        continue
-        endif
-        b(i)=sum/a(i,i)
-14    continue
-      return
-      end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine source_new(r,out)
       implicit real*8 (a-h,o-z)
@@ -3929,87 +3175,7 @@ c
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !sav2008: below this line there are new subroutins and functions
-      SUBROUTINE chebft1(a,b,c,n,func)
-! Chebyshev fit: Given a function func, lower and upper limits
-! of the interval [a,b], and a maximum degree n, this routine 
-! computes the n coefficients c(k) such that func(x) approximately =
-! SUMM_(k=1)^(k=n)[c(k)*T(k-1)(y)]-c(1)/2, where y and x are related by
-! (5.8.10). This routine is to be used with moderately large n 
-! (e.g., 30 or 50), the array of cs subsequently to be truncated
-! at the smaller value m such that c(m+1) and subsequent elements 
-! are negligible. Parameters: Maximum expected value of n, and ð. 
-      implicit none
-      INTEGER n,NMAX
-      DOUBLE PRECISION a,b,c(n),func,PI
-      EXTERNAL func
-      PARAMETER (NMAX=50, PI=3.141592653589793d0)
-      INTEGER j,k
-      DOUBLE PRECISION bma,bpa,fac,y,f(NMAX)
-      DOUBLE PRECISION sum
-      bma=0.5d0*(b-a)
-      bpa=0.5d0*(b+a)
-      do 11 k=1,n
-        y=cos(PI*(k-0.5d0)/n)
-        f(k)=func(y*bma+bpa)
-11    continue
-      fac=2.d0/n
-      do 13 j=1,n
-        sum=0.d0
-        do 12 k=1,n
-          sum=sum+f(k)*cos((PI*(j-1))*((k-0.5d0)/n))
-12      continue
-        c(j)=fac*sum
-13    continue
-      return
-      END
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      FUNCTION chebev(a,b,c,m,x)
-! Chebyshev evaluation: All arguments are input. 
-! c(1:m) is an array of Chebyshev coefficients, the first m elements 
-! of c output from chebft (which must have been called with
-! the same a and b). The Chebyshev polynomial evaluated
-! and the result is returned as the function value.
-      implicit none
-      INTEGER m
-      DOUBLE PRECISION chebev,a,b,x,c(m)
-      INTEGER j
-      DOUBLE PRECISION d,dd,sv,y,y2
-      if ((x-a)*(x-b).gt.0.d0) pause 'x not in range in chebev'
-      d=0.d0
-      dd=0.d0
-      y=(2.d0*x-a-b)/(b-a)
-      y2=2.d0*y
-      do 11 j=m,2,-1
-        sv=d
-        d=y2*d-dd+c(j)
-        dd=sv
-11    continue
-      chebev=y*d-dd+0.5d0*c(1)
-      return
-      END
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      SUBROUTINE chder(a,b,c,cder,n)
-! Given a,b,c(1:n), as output from routine chebft(), and given n, 
-! the desired degree of approximation (length of c to be used), 
-! this routine returns the array cder(1:n), the Chebyshev 
-! coefficients of the derivative of the function whose coefficients 
-! are c(1:n).
-      implicit none
-      INTEGER n
-      DOUBLE PRECISION a,b,c(n),cder(n)
-      INTEGER j
-      DOUBLE PRECISION con
-      cder(n)=0.d0
-      cder(n-1)=2*(n-1)*c(n)
-      do 11 j=n-2,1,-1
-        cder(j)=cder(j+2)+2*j*c(j+1)
-11    continue
-      con=2.d0/(b-a)
-      do 12 j=1,n
-        cder(j)=cder(j)*con
-12    continue
-      return
-      END
+ 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine rkqs(y,dydx,n,x,htry,eps,yscal,hdid,hnext,derivs)
       integer n,nmax
@@ -4213,8 +3379,9 @@ cu    uses derivs
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine fsmoth4(x,y,n,ys)
+      use approximation
       implicit real*8 (a-h,o-z)
-      external polin2
+      !external polin2
       parameter(zero=0.d0,np=10,imax=601)
       parameter(m0=1,ndp=1)
       ! m0,ndp - parameters of smoothing procedure
@@ -4298,6 +3465,10 @@ cu    uses derivs
       end
  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine view(tview,iview,nnz,ntet) !sav2008
+      use constants
+      use approximation
+      use plasma
+      use rt_parameters, only :  nr, itend0, kv, nmaxm           
       implicit real*8 (a-h,o-z)
       integer iview  !sav#
       parameter(length=5000000, mpnt=10000)
@@ -4310,16 +3481,16 @@ cc      common /xn1xn2/ an1,an2
       dimension mbeg(mpnt),mend(mpnt),mbad(mpnt),rbeg(mpnt) !sav2008
       dimension tetbeg(mpnt),xnrbeg(mpnt),xmbeg(mpnt),yn3beg(mpnt)
       common/viewdat/mbeg,mend,mbad,rbeg,tetbeg,xnrbeg,xmbeg,yn3beg
-      common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
-      common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa,kv
-      common /a0ef1/ r0,z0,rm,cltn
+!     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
+      !common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
+      !common /a0ef1/ cltn
       common /bcef/ ynz,ynpopq
-      common /a0befr/ pi,pi2
-      common /a0a1/ ynzm(1001),pm(1001),nmaxm(4)
-      common /a0a2/ tet1,tet2
-      common /a0ab/ nr
+      !common /a0befr/ pi,pi2
+      common /a0a1/ ynzm(1001),pm(1001) !,nmaxm(4)
+      !common /a0a2/ tet1,tet2
+      !common /a0ab/ nr
       common /vth/ vthc(length),poloidn(length)
-      common/b0/ itend0
+      !common/b0/ itend0
       real*8 vthcg,npoli
       common /a0ghp/ vlf,vrt,dflf,dfrt
       integer unit_bias
@@ -4333,7 +3504,6 @@ cc      common /xn1xn2/ an1,an2
       data name/'lhcd/out/1.dat','lhcd/out/2.dat','lhcd/out/3.dat'
      &,'lhcd/out/4.dat','lhcd/out/5.dat'
      &,'lhcd/out/rest.dat','lhcd/out/traj.dat'/
-      parameter(zero=0.d0, clt=3.d10)
       if(iview.eq.0) return
       print *, 'view_time=',tview
       print *, name(m)
