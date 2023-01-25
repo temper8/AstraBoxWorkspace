@@ -113,15 +113,14 @@ cc*********************************************************************
      &,pd2(100),pd2a(100),pd2b(100),pdprev1(100),pdprev2(100)
      &,source(100),sour(100)
      &,rxx(102),pwe(102),wrk(102)
-     &,yn2z(1001),powinp(1001)
       dimension vmid(100),vz1(100),vz2(100),ibeg(100),iend(100)
       parameter(mpnt=10000)
       common/refl/nrefj(mpnt)
-      real*8 ynzm, pm
-      common /a0a1/ ynzm(1001),pm(1001) 
+!      real*8 ynzm, pm
+!      common /a0a1/ ynzm(1001),pm(1001) 
       common /a0a4/ plost,pnab
       common /bcef/ ynz,ynpopq
-      common /a0gh/ pabs
+      !common /a0gh/ pabs
       common /a0ghp/ vlf,vrt,dflf,dfrt
       common/plosh/ zv1(100,2),zv2(100,2)!,sk(100)
       !common /a0i2/ vk(100)
@@ -166,61 +165,10 @@ cc*********************************************************************
             rxx(j+1)=hr*dble(j)
       end do
 !!!!!!!!!!!!!!!!!!!!!!!!
-c--------------------------------------------------------
-c  approximation of input LH spectrum
-c--------------------------------------------------------
-      call splne(ynzm0,pm0,ispl,yn2z)
-      innz=100*ispl
-      dxx=(ynzm0(ispl)-ynzm0(1))/innz
-      xx2=ynzm0(1)
-      yy2=pm0(1)
-      pinp=0d0
-      do i=1,innz
-            xx1=xx2
-            yy1=yy2
-            xx2=xx1+dxx
-            call splnt(ynzm0,pm0,yn2z,ispl,xx2,yy2,dynn)
-            dpw=.5d0*(yy2+yy1)*(xx2-xx1)
-            pinp=pinp+dpw
-      end do
-
-      dpower=pinp/dble(nnz)
-      xx2=ynzm0(1)
-      yy2=pm0(1)
-      pwcurr=zero
-      ptot=zero
-      do i=1,nnz-1
-            xx0=xx2
-11          continue
-            xx1=xx2
-            yy1=yy2
-            xx2=xx1+dxx
-            call splnt(ynzm0,pm0,yn2z,ispl,xx2,yy2,dynn)
-            dpw=.5d0*(yy2+yy1)*(xx2-xx1)
-            if(pwcurr+dpw.gt.dpower) then
-                  xx2=xx1+dxx*(dpower-pwcurr)/dpw
-                  call splnt(ynzm0,pm0,yn2z,ispl,xx2,yy2,dynn)
-                  dpw=.5d0*(yy2+yy1)*(xx2-xx1)
-                  pwcurr=pwcurr+dpw
-            else
-                  pwcurr=pwcurr+dpw
-                  go to 11
-            end if
-            ynzm(i)=.5d0*(xx2+xx0)
-            pm(i)=pwcurr
-            ptot=ptot+pwcurr
-            pwcurr=zero
-      end do
-      ynzm(nnz)=.5d0*(ynzm0(ispl)+xx2)
-      pm(nnz)=pinp-ptot
-      pnorm=plaun*xsgs/(pinp*ntet)
-      pmax=-1d+10
-      do i=1,nnz
-            call splnt(ynzm0,pm0,yn2z,ispl,ynzm(i),powinp(i),dynn)
-            pm(i)=pm(i)*pnorm
-            if (pm(i).gt.pmax) pmax=pm(i)
-            ynzm(i)=dble(ispectr)*ynzm(i) !sav2009
-      end do
+!--------------------------------------------------------
+!  approximation of input LH spectrum
+!--------------------------------------------------------
+      call spectrum_approximation(ispectr)
 c       call get_unit(iunit)
 c       if(iunit.eq.0) then
 c        write(*,*)'no free units up to 299'
@@ -237,9 +185,8 @@ c        write(iunit,1008) ynzm(i),powinp(i)
 c       end do
 c       write(iunit,*)
 c       close(iunit)
-1008   format (1x,10(e14.7,3x))
+!1008   format (1x,10(e14.7,3x))
 
-      pabs=pabs0*pmax/1.d2
       ppv1=zero
       ppv2=zero
       pnab=zero
@@ -716,6 +663,7 @@ c------------------------------------------
       use constants            
       use plasma
       use rt_parameters, only : nr, ipri, iw, nmaxm            
+      use spectrum1D, only: ynzm, pm, pabs
       implicit real*8 (a-h,o-z)
       parameter(length=5000000, mpnt=10000)
       dimension dland(length),dcoll(length),perpn(length),dalf(length)
@@ -727,7 +675,7 @@ c------------------------------------------
       common/viewdat/mbeg,mend,mbad,rbeg,tetbeg,xnrbeg,xmbeg,yn3beg
       dimension iznzap(mpnt),iwzap(mpnt),irszap(mpnt)
       dimension rzap(mpnt),tetzap(mpnt),xmzap(mpnt),yn3zap(mpnt)
-      common /a0a1/ ynzm(1001),pm(1001) 
+      !common /a0a1/ ynzm(1001),pm(1001) 
       !common /a0a2/ tet1,tet2
       common /a0a4/ plost,pnab
       common /abc/ rzz,tetzz,xmzz,iznzz,iwzz,irszz
@@ -736,7 +684,7 @@ c------------------------------------------
       common /abcdg/ iabsorp
       common /abefo/ yn3
       common /acg/ pow
-      common /a0gh/ pabs
+      !common /a0gh/ pabs
       common /aef2/ icall1,icall2
       common /ag/ inak,lenstor,lfree
       common/refl/nrefj(mpnt)
@@ -934,6 +882,7 @@ c---------------------------------------
       subroutine dql1 !sav2008
       use rt_parameters
       use plasma, only : fvt
+      use spectrum1D, only: pabs
       implicit real*8 (a-h,o-z)
       parameter(length=5000000)
       real*8 radth
@@ -943,7 +892,7 @@ c---------------------------------------
       common/agh/xnpar,vel,dland,dcoll,dalf,perpn,tetai,jrad,iww,izz
       dimension an1(length),an2(length)
       common /xn1xn2/ an1,an2
-      common /a0gh/ pabs
+      !common /a0gh/ pabs
       common /vth/ vthc(length),poloidn(length)
       common /a0ghp/ vlf,vrt,dflf,dfrt
       common /abcdg/ iabsorp
@@ -3468,7 +3417,8 @@ cu    uses derivs
       use constants
       use approximation
       use plasma
-      use rt_parameters, only :  nr, itend0, kv, nmaxm           
+      use rt_parameters, only :  nr, itend0, kv, nmaxm    
+      use spectrum1D, only: ynzm, pm            
       implicit real*8 (a-h,o-z)
       integer iview  !sav#
       parameter(length=5000000, mpnt=10000)
@@ -3486,7 +3436,7 @@ cc      common /xn1xn2/ an1,an2
       !common /a0ef1/ cltn
       common /bcef/ ynz,ynpopq
       !common /a0befr/ pi,pi2
-      common /a0a1/ ynzm(1001),pm(1001) !,nmaxm(4)
+      !common /a0a1/ ynzm(1001),pm(1001) !,nmaxm(4)
       !common /a0a2/ tet1,tet2
       !common /a0ab/ nr
       common /vth/ vthc(length),poloidn(length)
