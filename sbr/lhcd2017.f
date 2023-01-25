@@ -221,22 +221,22 @@ c--------------------------------------------
                         vpmax=1.3d0*vpmax
                         go to 222
                   end if
-            do k=1,kv
-                  vperp(k,j)=vpmin(j)+dble(k-1)*dvperp
-            end do
-            fcoll(j)=.5d-13*dens(j)*zalfa**2*xlog/xmalfa/tmp**1.5d0
-            ddens=dn1*dens(j)
-            tdens=dn2*dens(j)
-            tt=fti(r)**0.33333d0    ! (ti, keV)^1/3
-            source(j)=4d-12*factor*ddens*tdens*dexp(-20d0/tt)/tt**2
-            anb=anb+source(j)*vk(j)
+                  do k=1,kv
+                        vperp(k,j)=vpmin(j)+dble(k-1)*dvperp
+                  end do
+                  fcoll(j)=.5d-13*dens(j)*zalfa**2*xlog/xmalfa/tmp**1.5d0
+                  ddens=dn1*dens(j)
+                  tdens=dn2*dens(j)
+                  tt=fti(r)**0.33333d0    ! (ti, keV)^1/3
+                  source(j)=4d-12*factor*ddens*tdens*dexp(-20d0/tt)/tt**2
+                  anb=anb+source(j)*vk(j)
             end if
             cn2=dsqrt(dabs(e1))+e2/dsqrt(e3) !sav2008
-c       vz1(j)=cleft*cltn/cn1  !Vpar/Vt0
-c       vz2(j)=cright*cltn/cn2  !Vpar/Vt0
-c       if(vz2(j).gt.0.9d0*cltn) vz2(j)=0.9d0*cltn
-c       v1=vz1(j)/vto !Vpar/Vt(rho)
-c       v2=vz2(j)/vto !Vpar/Vt(rho)
+            !vz1(j)=cleft*cltn/cn1  !Vpar/Vt0
+            !vz2(j)=cright*cltn/cn2  !Vpar/Vt0
+            !if(vz2(j).gt.0.9d0*cltn) vz2(j)=0.9d0*cltn
+            !v1=vz1(j)/vto !Vpar/Vt(rho)
+            !v2=vz2(j)/vto !Vpar/Vt(rho)
             vmax=cltn/vto
             v1=4.d0  !Vpar/Vt(rho)
             v2=10.d0 !cright*cltn/cn2 !10.d0 !Vpar/Vt(rho)
@@ -3406,23 +3406,15 @@ cu    uses derivs
       dimension vel(length),jrad(length),iww(length),tetai(length)
       dimension xnpar(length),izz(length)
       common/agh/xnpar,vel,dland,dcoll,dalf,perpn,tetai,jrad,iww,izz
-cc      dimension an1(length),an2(length)
-cc      common /xn1xn2/ an1,an2
+
       dimension mbeg(mpnt),mend(mpnt),mbad(mpnt),rbeg(mpnt) !sav2008
       dimension tetbeg(mpnt),xnrbeg(mpnt),xmbeg(mpnt),yn3beg(mpnt)
       common/viewdat/mbeg,mend,mbad,rbeg,tetbeg,xnrbeg,xmbeg,yn3beg
-!     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
-      !common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
-      !common /a0ef1/ cltn
       common /bcef/ ynz,ynpopq
-      !common /a0befr/ pi,pi2
-      !common /a0a1/ ynzm(1001),pm(1001) !,nmaxm(4)
-      !common /a0a2/ tet1,tet2
-      !common /a0ab/ nr
       common /vth/ vthc(length),poloidn(length)
-      !common/b0/ itend0
       real*8 vthcg,npoli
       common /a0ghp/ vlf,vrt,dflf,dfrt
+      
       integer unit_bias
       parameter (unit_bias = 10)
       parameter(m=7,pleft=1.d-10) !m may be chaged together with name(m)
