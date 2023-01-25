@@ -102,6 +102,7 @@ module rt_parameters
     integer ::   nnz
     !! nnz,      N_phi grid number    
 
+
     contains      
     subroutine show_parameters()          
       print*, "Freq = ", freq          
