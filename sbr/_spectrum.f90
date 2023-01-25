@@ -143,4 +143,26 @@ module spectrum1D
         end do
         pabs=pabs0*pmax/1.d2
     end subroutine
+
+    subroutine write_spectrum(ispectr)
+        implicit none
+        integer, intent(in) :: ispectr        
+        !       call get_unit(iunit)
+        !       if(iunit.eq.0) then
+        !        write(*,*)'no free units up to 299'
+        !        pause
+        !        stop
+        !       end if
+        !       if(ispectr.eq.1) then
+        !        open(iunit,file='lhcd/out/used_spectrP.dat')
+        !       else if(ispectr.eq.-1) then
+        !        open(iunit,file='lhcd/out/used_spectrM.dat')
+        !       end if
+        !       do i=1,nnz
+        !        write(iunit,1008) ynzm(i),powinp(i)
+        !       end do
+        !       write(iunit,*)
+        !      close(iunit)
+        !1008   format (1x,10(e14.7,3x))        
+    end subroutine
 end module spectrum1D
