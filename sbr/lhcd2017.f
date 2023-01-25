@@ -57,6 +57,7 @@ cc*********************************************************************
       if(plaun.eq.zero) then
             dij(:,:,1)=zero
       else
+            call spectrum_approximation(+1)
             call ourlhcd2017(+1,p_in, outpep,pe_p)
       end if      
       if(pe_p.ne.zero) then
@@ -76,6 +77,7 @@ cc*********************************************************************
        if(plaun.eq.zero) then
             dij(:,:,2)=zero
        else
+            call spectrum_approximation(-1)
             call ourlhcd2017(-1,p_in, outpem,pe_m)  
        endif     
        if(pe_m.ne.zero) then
@@ -164,28 +166,6 @@ cc*********************************************************************
       do j=1,nr
             rxx(j+1)=hr*dble(j)
       end do
-!!!!!!!!!!!!!!!!!!!!!!!!
-!--------------------------------------------------------
-!  approximation of input LH spectrum
-!--------------------------------------------------------
-      call spectrum_approximation(ispectr)
-c       call get_unit(iunit)
-c       if(iunit.eq.0) then
-c        write(*,*)'no free units up to 299'
-c        pause
-c        stop
-c       end if
-c       if(ispectr.eq.1) then
-c        open(iunit,file='lhcd/out/used_spectrP.dat')
-c       else if(ispectr.eq.-1) then
-c        open(iunit,file='lhcd/out/used_spectrM.dat')
-c       end if
-c       do i=1,nnz
-c        write(iunit,1008) ynzm(i),powinp(i)
-c       end do
-c       write(iunit,*)
-c       close(iunit)
-!1008   format (1x,10(e14.7,3x))
 
       ppv1=zero
       ppv2=zero
