@@ -2,13 +2,13 @@ module plasma
     use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64        
     implicit none
     integer ngrid, nspl
-    !+ ASTRA radial grid number
+    !! ASTRA radial grid number
     real(dp) tcur
-    !+ время (придумать название для переменной получше)
+    !! время (придумать название для переменной получше)
     real(dp) rm
-    !+ minor radius in mid-plane, cm
+    !! minor radius in mid-plane, cm
     real(dp) b_tor0, b_tor
-    !+ временно нужно две переменных, тоже нужно исправить
+    !! временно нужно две переменных, тоже нужно исправить
     real(dp) r0
     real(dp) z0
     real(dp) rh1
@@ -16,7 +16,7 @@ module plasma
     real(dp), dimension(:),allocatable:: rh,rha,drhodr,delta,ell,gamm,amy
 
     real(dp) tet1, tet2
-    !+ бывший common /a0a2/ 
+    !! бывший common /a0a2/ 
 
     real(dp) xmi,cnye,cnyi,xsz,vt0 
     ! common /a0ef3/ xmi,cnye,cnyi,xsz,vt0 
@@ -37,19 +37,19 @@ module plasma
     !common /a0i2/ vk(100)
 
     integer, parameter :: ipsy = 5, ncoef = 5
-    !+   ipsy = number of polinomial decomposition coefficients
-    !+   used for interpolation of Zakharov's moments.
+    !!   ipsy = number of polinomial decomposition coefficients
+    !!   used for interpolation of Zakharov's moments.
     real(dp), dimension(ipsy) :: cdl,cly,cgm,cmy,coeffs
 
 
     real(dp) y2dn(501),y2tm(501),y2tmi(501)
-    !+ бывший common /a0l3/
+    !! бывший common /a0l3/
     real(dp) y2zeff(501)
-    !+ бывший common /a0l5/ 
+    !! бывший common /a0l5/ 
 
     integer ncheb
     real(dp) chebne(50),chebdne(50),chebddne(50)    
-    !+ бывший common/ne_cheb
+    !! бывший common/ne_cheb
 
 contains
     subroutine init_plasma(NA1, ABC, BTOR, RTOR, UPDWN, GP2, AMETR, RHO, SHIF, ELON, TRIA,MU, NE, TE, TI, ZEF, UPL)

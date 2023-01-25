@@ -8,7 +8,7 @@
     <meta name="author" content="Me" >
     <link rel="icon" href="../favicon.png">
 
-    <title>_rt_parameters.f90 &ndash; My Fortran project</title>
+    <title>__rt_parameters.f90 &ndash; My Fortran project</title>
 
     <link href="../css/bootstrap.min.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
@@ -76,7 +76,7 @@
 
     <div class="container">
   <div class="row">
-    <h1>_rt_parameters.f90
+    <h1>__rt_parameters.f90
       <small>Source File</small>
       
     </h1>
@@ -93,11 +93,11 @@
 
             <li id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/_rt_parameters.f90"> Source File</a>
+              <a href="../src/__rt_parameters.f90"> Source File</a>
             </li>
         </ul>
         <ol class="breadcrumb in-well text-right">
-          <li class="active">_rt_parameters.f90</li>
+          <li class="active">__rt_parameters.f90</li>
         </ol>
       </div>
     </div>
@@ -147,7 +147,7 @@
     <div class="panel panel-primary">
       <div class="panel-heading text-left"><h3 class="panel-title">Source Code</h3></div>
       <div class="list-group">
-        <a class="list-group-item" href="../sourcefile/_rt_parameters.f90.html#src">_rt_parameters.f90</a>
+        <a class="list-group-item" href="../sourcefile/__rt_parameters.f90.html#src">__rt_parameters.f90</a>
       </div>
     </div>
 
@@ -195,7 +195,7 @@
     <div class="panel panel-primary">
       <div class="panel-heading text-left"><h3 class="panel-title">Source Code</h3></div>
       <div class="list-group">
-        <a class="list-group-item" href="../sourcefile/_rt_parameters.f90.html#src">_rt_parameters.f90</a>
+        <a class="list-group-item" href="../sourcefile/__rt_parameters.f90.html#src">__rt_parameters.f90</a>
       </div>
     </div>
 
@@ -210,104 +210,104 @@
 <a id="ln-3" name="ln-3" href="#ln-3"></a><span class="w">    </span><span class="k">implicit none</span><span class="w"></span>
 <a id="ln-4" name="ln-4" href="#ln-4"></a><span class="c">!   physical parameters </span>
 <a id="ln-5" name="ln-5" href="#ln-5"></a><span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">freq</span><span class="w"></span>
-<a id="ln-6" name="ln-6" href="#ln-6"></a><span class="w">    </span><span class="c">!+ Freq,     RF frequency, GHz</span>
+<a id="ln-6" name="ln-6" href="#ln-6"></a><span class="w">    </span><span class="c">!! Freq,     RF frequency, GHz</span>
 <a id="ln-7" name="ln-7" href="#ln-7"></a><span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">xmi1</span><span class="w"></span>
-<a id="ln-8" name="ln-8" href="#ln-8"></a><span class="w">    </span><span class="c">!+  Mi1/Mp,  relative mass of ions 1</span>
+<a id="ln-8" name="ln-8" href="#ln-8"></a><span class="w">    </span><span class="c">!!  Mi1/Mp,  relative mass of ions 1</span>
 <a id="ln-9" name="ln-9" href="#ln-9"></a><span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">zi1</span><span class="w"></span>
-<a id="ln-10" name="ln-10" href="#ln-10"></a><span class="w">    </span><span class="c">!+ charge of ions 1</span>
+<a id="ln-10" name="ln-10" href="#ln-10"></a><span class="w">    </span><span class="c">!! charge of ions 1</span>
 <a id="ln-11" name="ln-11" href="#ln-11"></a><span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">xmi2</span><span class="w"></span>
-<a id="ln-12" name="ln-12" href="#ln-12"></a><span class="w">    </span><span class="c">!+ Mi2/Mp,  relative mass of ions 2</span>
+<a id="ln-12" name="ln-12" href="#ln-12"></a><span class="w">    </span><span class="c">!! Mi2/Mp,  relative mass of ions 2</span>
 <a id="ln-13" name="ln-13" href="#ln-13"></a><span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">zi2</span><span class="w"></span>
-<a id="ln-14" name="ln-14" href="#ln-14"></a><span class="w">    </span><span class="c">!+ charge of ions 2</span>
+<a id="ln-14" name="ln-14" href="#ln-14"></a><span class="w">    </span><span class="c">!! charge of ions 2</span>
 <a id="ln-15" name="ln-15" href="#ln-15"></a><span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">dni2</span><span class="w"> </span>
-<a id="ln-16" name="ln-16" href="#ln-16"></a><span class="w">    </span><span class="c">!+  0.03   Ni2/Ni1, relative density of ions 2</span>
+<a id="ln-16" name="ln-16" href="#ln-16"></a><span class="w">    </span><span class="c">!!  0.03   Ni2/Ni1, relative density of ions 2</span>
 <a id="ln-17" name="ln-17" href="#ln-17"></a><span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">xmi3</span><span class="w"></span>
-<a id="ln-18" name="ln-18" href="#ln-18"></a><span class="w">    </span><span class="c">!+  Mi3/Mp,  relative mass of ions 3</span>
+<a id="ln-18" name="ln-18" href="#ln-18"></a><span class="w">    </span><span class="c">!!  Mi3/Mp,  relative mass of ions 3</span>
 <a id="ln-19" name="ln-19" href="#ln-19"></a><span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">zi3</span><span class="w"></span>
-<a id="ln-20" name="ln-20" href="#ln-20"></a><span class="w">    </span><span class="c">!+  charge of ions 3</span>
+<a id="ln-20" name="ln-20" href="#ln-20"></a><span class="w">    </span><span class="c">!!  charge of ions 3</span>
 <a id="ln-21" name="ln-21" href="#ln-21"></a><span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">dni3</span><span class="w"></span>
-<a id="ln-22" name="ln-22" href="#ln-22"></a><span class="w">    </span><span class="c">!+  Ni3/Ni1, relative density of ions 3</span>
+<a id="ln-22" name="ln-22" href="#ln-22"></a><span class="w">    </span><span class="c">!!  Ni3/Ni1, relative density of ions 3</span>
 <a id="ln-23" name="ln-23" href="#ln-23"></a>
 <a id="ln-24" name="ln-24" href="#ln-24"></a><span class="c">!!!!!!!!!!!!!  parameters for alphas calculations !!!</span>
 <a id="ln-25" name="ln-25" href="#ln-25"></a><span class="w">    </span><span class="kt">integer</span><span class="w">  </span><span class="kd">::</span><span class="w">  </span><span class="n">itend0</span><span class="w"></span>
-<a id="ln-26" name="ln-26" href="#ln-26"></a><span class="w">    </span><span class="c">!+ itend0,   if = 0, no alphas</span>
+<a id="ln-26" name="ln-26" href="#ln-26"></a><span class="w">    </span><span class="c">!! itend0,   if = 0, no alphas</span>
 <a id="ln-27" name="ln-27" href="#ln-27"></a><span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w">  </span><span class="n">energy</span><span class="w"></span>
-<a id="ln-28" name="ln-28" href="#ln-28"></a><span class="w">    </span><span class="c">!+ energy,   max. perp. energy of alphas (MeV)</span>
+<a id="ln-28" name="ln-28" href="#ln-28"></a><span class="w">    </span><span class="c">!! energy,   max. perp. energy of alphas (MeV)</span>
 <a id="ln-29" name="ln-29" href="#ln-29"></a><span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w">  </span><span class="n">factor</span><span class="w">   </span>
-<a id="ln-30" name="ln-30" href="#ln-30"></a><span class="w">    </span><span class="c">!+ factor,   factor in alpha source</span>
+<a id="ln-30" name="ln-30" href="#ln-30"></a><span class="w">    </span><span class="c">!! factor,   factor in alpha source</span>
 <a id="ln-31" name="ln-31" href="#ln-31"></a><span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w">  </span><span class="n">dra</span><span class="w">   </span>
-<a id="ln-32" name="ln-32" href="#ln-32"></a><span class="w">    </span><span class="c">!+ dra,      relative alpha source broadening (dr/a)</span>
+<a id="ln-32" name="ln-32" href="#ln-32"></a><span class="w">    </span><span class="c">!! dra,      relative alpha source broadening (dr/a)</span>
 <a id="ln-33" name="ln-33" href="#ln-33"></a><span class="w">    </span><span class="kt">integer</span><span class="w">  </span><span class="kd">::</span><span class="w">  </span><span class="n">kv</span><span class="w">    </span>
-<a id="ln-34" name="ln-34" href="#ln-34"></a><span class="w">    </span><span class="c">!+ kv,       V_perp  greed number    </span>
+<a id="ln-34" name="ln-34" href="#ln-34"></a><span class="w">    </span><span class="c">!! kv,       V_perp  greed number    </span>
 <a id="ln-35" name="ln-35" href="#ln-35"></a>
 <a id="ln-36" name="ln-36" href="#ln-36"></a><span class="c">!!!!!!!!!!!!! numerical parameters !!!!!!!!!!!!!!!!!!!!!!!!!!!!!</span>
 <a id="ln-37" name="ln-37" href="#ln-37"></a><span class="w">    </span><span class="kt">integer</span><span class="w">  </span><span class="kd">::</span><span class="w">  </span><span class="n">nr</span><span class="w">     </span>
-<a id="ln-38" name="ln-38" href="#ln-38"></a><span class="w">    </span><span class="c">!+ nr,  radial grid number  &lt;= 505</span>
+<a id="ln-38" name="ln-38" href="#ln-38"></a><span class="w">    </span><span class="c">!! nr,  radial grid number  &lt;= 505</span>
 <a id="ln-39" name="ln-39" href="#ln-39"></a><span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w">  </span><span class="n">hmin1</span><span class="w"></span>
-<a id="ln-40" name="ln-40" href="#ln-40"></a><span class="w">    </span><span class="c">!+ hmin1, rel.(hr) min. step in the Fast comp. mode, &lt;1.d0</span>
+<a id="ln-40" name="ln-40" href="#ln-40"></a><span class="w">    </span><span class="c">!! hmin1, rel.(hr) min. step in the Fast comp. mode, &lt;1.d0</span>
 <a id="ln-41" name="ln-41" href="#ln-41"></a><span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w">  </span><span class="n">rrange</span><span class="w"></span>
-<a id="ln-42" name="ln-42" href="#ln-42"></a><span class="w">    </span><span class="c">!+ rrange,   rel.(hr) size of a &#39;turning&#39; point region, &lt;1.d0</span>
+<a id="ln-42" name="ln-42" href="#ln-42"></a><span class="w">    </span><span class="c">!! rrange,   rel.(hr) size of a &#39;turning&#39; point region, &lt;1.d0</span>
 <a id="ln-43" name="ln-43" href="#ln-43"></a><span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w">  </span><span class="n">eps</span><span class="w"></span>
-<a id="ln-44" name="ln-44" href="#ln-44"></a><span class="w">    </span><span class="c">!+ eps,      accuracy</span>
+<a id="ln-44" name="ln-44" href="#ln-44"></a><span class="w">    </span><span class="c">!! eps,      accuracy</span>
 <a id="ln-45" name="ln-45" href="#ln-45"></a><span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w">  </span><span class="n">hdrob</span><span class="w"></span>
-<a id="ln-46" name="ln-46" href="#ln-46"></a><span class="w">    </span><span class="c">!+ hdrob,    h4 correction,</span>
+<a id="ln-46" name="ln-46" href="#ln-46"></a><span class="w">    </span><span class="c">!! hdrob,    h4 correction,</span>
 <a id="ln-47" name="ln-47" href="#ln-47"></a><span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w">  </span><span class="n">cleft</span><span class="w"></span>
-<a id="ln-48" name="ln-48" href="#ln-48"></a><span class="w">    </span><span class="c">!+ cleft,    left Vz plato border shift (&lt;1)</span>
+<a id="ln-48" name="ln-48" href="#ln-48"></a><span class="w">    </span><span class="c">!! cleft,    left Vz plato border shift (&lt;1)</span>
 <a id="ln-49" name="ln-49" href="#ln-49"></a><span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w">  </span><span class="n">cright</span><span class="w"></span>
-<a id="ln-50" name="ln-50" href="#ln-50"></a><span class="w">    </span><span class="c">!+ cright,   right Vz plato border shift (&gt;1)</span>
+<a id="ln-50" name="ln-50" href="#ln-50"></a><span class="w">    </span><span class="c">!! cright,   right Vz plato border shift (&gt;1)</span>
 <a id="ln-51" name="ln-51" href="#ln-51"></a><span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w">  </span><span class="n">cdel</span><span class="w"></span>
-<a id="ln-52" name="ln-52" href="#ln-52"></a><span class="w">    </span><span class="c">!+ cdel,     (left part)/(Vz plato size)</span>
+<a id="ln-52" name="ln-52" href="#ln-52"></a><span class="w">    </span><span class="c">!! cdel,     (left part)/(Vz plato size)</span>
 <a id="ln-53" name="ln-53" href="#ln-53"></a><span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w">  </span><span class="n">rbord</span><span class="w"> </span>
-<a id="ln-54" name="ln-54" href="#ln-54"></a><span class="w">    </span><span class="c">!+ rbord,    relative radius of reflection, &lt;1.</span>
+<a id="ln-54" name="ln-54" href="#ln-54"></a><span class="w">    </span><span class="c">!! rbord,    relative radius of reflection, &lt;1.</span>
 <a id="ln-55" name="ln-55" href="#ln-55"></a><span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w">  </span><span class="n">pchm</span><span class="w"></span>
-<a id="ln-56" name="ln-56" href="#ln-56"></a><span class="w">    </span><span class="c">!+ pchm,     threshold between &#39;strong&#39; and weak&#39; absorption, &lt;1.</span>
+<a id="ln-56" name="ln-56" href="#ln-56"></a><span class="w">    </span><span class="c">!! pchm,     threshold between &#39;strong&#39; and weak&#39; absorption, &lt;1.</span>
 <a id="ln-57" name="ln-57" href="#ln-57"></a><span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w">  </span><span class="n">pabs0</span><span class="w"></span>
-<a id="ln-58" name="ln-58" href="#ln-58"></a><span class="w">    </span><span class="c">!+ pabs,     part of remaining power interp. as absorption</span>
+<a id="ln-58" name="ln-58" href="#ln-58"></a><span class="w">    </span><span class="c">!! pabs,     part of remaining power interp. as absorption</span>
 <a id="ln-59" name="ln-59" href="#ln-59"></a><span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w">  </span><span class="n">pgiter</span><span class="w"></span>
-<a id="ln-60" name="ln-60" href="#ln-60"></a><span class="w">    </span><span class="c">!+ pgiter,   relative accuracy to stop iterations</span>
+<a id="ln-60" name="ln-60" href="#ln-60"></a><span class="w">    </span><span class="c">!! pgiter,   relative accuracy to stop iterations</span>
 <a id="ln-61" name="ln-61" href="#ln-61"></a><span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w">   </span><span class="n">ni1</span><span class="w">     </span>
-<a id="ln-62" name="ln-62" href="#ln-62"></a><span class="w">    </span><span class="c">!+ ni1,      grid number in the left part of Vz plato</span>
+<a id="ln-62" name="ln-62" href="#ln-62"></a><span class="w">    </span><span class="c">!! ni1,      grid number in the left part of Vz plato</span>
 <a id="ln-63" name="ln-63" href="#ln-63"></a><span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w">   </span><span class="n">ni2</span><span class="w">     </span>
-<a id="ln-64" name="ln-64" href="#ln-64"></a><span class="w">    </span><span class="c">!+ ni2,      grid number in the right part of Vz plato</span>
+<a id="ln-64" name="ln-64" href="#ln-64"></a><span class="w">    </span><span class="c">!! ni2,      grid number in the right part of Vz plato</span>
 <a id="ln-65" name="ln-65" href="#ln-65"></a><span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w">   </span><span class="n">niterat</span><span class="w">     </span>
-<a id="ln-66" name="ln-66" href="#ln-66"></a><span class="w">    </span><span class="c">!+ niterat,  maximal number of iterations</span>
+<a id="ln-66" name="ln-66" href="#ln-66"></a><span class="w">    </span><span class="c">!! niterat,  maximal number of iterations</span>
 <a id="ln-67" name="ln-67" href="#ln-67"></a><span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w">   </span><span class="n">nmaxm</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="w"></span>
-<a id="ln-68" name="ln-68" href="#ln-68"></a><span class="w">    </span><span class="c">!+ nmaxm(1), permitted reflections at 0 iteration</span>
-<a id="ln-69" name="ln-69" href="#ln-69"></a><span class="w">    </span><span class="c">!+ nmaxm(2), permitted reflections at 1 iteration</span>
-<a id="ln-70" name="ln-70" href="#ln-70"></a><span class="w">    </span><span class="c">!+ nmaxm(3), permitted reflections at 2 iteration</span>
-<a id="ln-71" name="ln-71" href="#ln-71"></a><span class="w">    </span><span class="c">!+ nmaxm(4), permitted reflections at 3 iteration</span>
+<a id="ln-68" name="ln-68" href="#ln-68"></a><span class="w">    </span><span class="c">!! nmaxm(1), permitted reflections at 0 iteration</span>
+<a id="ln-69" name="ln-69" href="#ln-69"></a><span class="w">    </span><span class="c">!! nmaxm(2), permitted reflections at 1 iteration</span>
+<a id="ln-70" name="ln-70" href="#ln-70"></a><span class="w">    </span><span class="c">!! nmaxm(3), permitted reflections at 2 iteration</span>
+<a id="ln-71" name="ln-71" href="#ln-71"></a><span class="w">    </span><span class="c">!! nmaxm(4), permitted reflections at 3 iteration</span>
 <a id="ln-72" name="ln-72" href="#ln-72"></a><span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w">   </span><span class="n">maxstep2</span><span class="w">  </span>
-<a id="ln-73" name="ln-73" href="#ln-73"></a><span class="w">    </span><span class="c">!+ maxstep2, maximal steps&#39; number in Fast comp. mode</span>
+<a id="ln-73" name="ln-73" href="#ln-73"></a><span class="w">    </span><span class="c">!! maxstep2, maximal steps&#39; number in Fast comp. mode</span>
 <a id="ln-74" name="ln-74" href="#ln-74"></a><span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w">   </span><span class="n">maxstep4</span><span class="w">    </span>
-<a id="ln-75" name="ln-75" href="#ln-75"></a><span class="w">    </span><span class="c">!+ maxstep4, maximal steps&#39; number in Slow comp. mode    </span>
+<a id="ln-75" name="ln-75" href="#ln-75"></a><span class="w">    </span><span class="c">!! maxstep4, maximal steps&#39; number in Slow comp. mode    </span>
 <a id="ln-76" name="ln-76" href="#ln-76"></a>
 <a id="ln-77" name="ln-77" href="#ln-77"></a><span class="c">!!!!!!!!!!!!!  options !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</span>
 <a id="ln-78" name="ln-78" href="#ln-78"></a><span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w">  </span><span class="n">ipri</span><span class="w"></span>
-<a id="ln-79" name="ln-79" href="#ln-79"></a><span class="w">    </span><span class="c">!+ ipri, printing output monitoring: 0,1,2,3,4</span>
+<a id="ln-79" name="ln-79" href="#ln-79"></a><span class="w">    </span><span class="c">!! ipri, printing output monitoring: 0,1,2,3,4</span>
 <a id="ln-80" name="ln-80" href="#ln-80"></a><span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w">  </span><span class="n">iw</span><span class="w"></span>
-<a id="ln-81" name="ln-81" href="#ln-81"></a><span class="w">    </span><span class="c">!+ iw, initial mode (slow=1, fast=-1)</span>
+<a id="ln-81" name="ln-81" href="#ln-81"></a><span class="w">    </span><span class="c">!! iw, initial mode (slow=1, fast=-1)</span>
 <a id="ln-82" name="ln-82" href="#ln-82"></a><span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w">  </span><span class="n">ismth</span><span class="w"></span>
-<a id="ln-83" name="ln-83" href="#ln-83"></a><span class="w">    </span><span class="c">!+ ismth, if=0, no smoothing in Ne(rho),Te(rho),Ti(rho)</span>
+<a id="ln-83" name="ln-83" href="#ln-83"></a><span class="w">    </span><span class="c">!! ismth, if=0, no smoothing in Ne(rho),Te(rho),Ti(rho)</span>
 <a id="ln-84" name="ln-84" href="#ln-84"></a><span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w">  </span><span class="n">ismthalf</span><span class="w"></span>
-<a id="ln-85" name="ln-85" href="#ln-85"></a><span class="w">    </span><span class="c">!+ ismthalf,  if=0, no smoothing in D_alpha(vperp)</span>
+<a id="ln-85" name="ln-85" href="#ln-85"></a><span class="w">    </span><span class="c">!! ismthalf,  if=0, no smoothing in D_alpha(vperp)</span>
 <a id="ln-86" name="ln-86" href="#ln-86"></a><span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w">  </span><span class="n">ismthout</span><span class="w"></span>
-<a id="ln-87" name="ln-87" href="#ln-87"></a><span class="w">    </span><span class="c">!+ ismthout,  if=0, no smoothing in output profiles</span>
+<a id="ln-87" name="ln-87" href="#ln-87"></a><span class="w">    </span><span class="c">!! ismthout,  if=0, no smoothing in output profiles</span>
 <a id="ln-88" name="ln-88" href="#ln-88"></a><span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w">  </span><span class="n">inew</span><span class="w"></span>
-<a id="ln-89" name="ln-89" href="#ln-89"></a><span class="w">    </span><span class="c">!+ inew=0 for usual tokamak&amp;Ntor_grill; 1 or 2 for g&#39; in ST&amp;Npol_grill</span>
+<a id="ln-89" name="ln-89" href="#ln-89"></a><span class="w">    </span><span class="c">!! inew=0 for usual tokamak&amp;Ntor_grill; 1 or 2 for g&#39; in ST&amp;Npol_grill</span>
 <a id="ln-90" name="ln-90" href="#ln-90"></a><span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w">  </span><span class="n">itor</span><span class="w"></span>
-<a id="ln-91" name="ln-91" href="#ln-91"></a><span class="w">    </span><span class="c">!+ itor,      +-1, Btor direction in right coord{drho,dteta,dfi}</span>
+<a id="ln-91" name="ln-91" href="#ln-91"></a><span class="w">    </span><span class="c">!! itor,      +-1, Btor direction in right coord{drho,dteta,dfi}</span>
 <a id="ln-92" name="ln-92" href="#ln-92"></a><span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w">  </span><span class="n">i_pol</span><span class="w"></span>
-<a id="ln-93" name="ln-93" href="#ln-93"></a><span class="w">    </span><span class="c">!+ ipol,      +-1, Bpol direction in right coord{drho,dteta,dfi}</span>
+<a id="ln-93" name="ln-93" href="#ln-93"></a><span class="w">    </span><span class="c">!! ipol,      +-1, Bpol direction in right coord{drho,dteta,dfi}</span>
 <a id="ln-94" name="ln-94" href="#ln-94"></a>
 <a id="ln-95" name="ln-95" href="#ln-95"></a><span class="w">  </span><span class="c">!!!!!!!!!!!!!  grill parameters and input LH spectrum !!!!!!!!!!!!</span>
 <a id="ln-96" name="ln-96" href="#ln-96"></a><span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w">  </span><span class="n">zplus</span><span class="w"> </span>
-<a id="ln-97" name="ln-97" href="#ln-97"></a><span class="w">    </span><span class="c">!+ Zplus,    upper grill corner in centimeters</span>
+<a id="ln-97" name="ln-97" href="#ln-97"></a><span class="w">    </span><span class="c">!! Zplus,    upper grill corner in centimeters</span>
 <a id="ln-98" name="ln-98" href="#ln-98"></a><span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w">  </span><span class="n">zminus</span><span class="w"></span>
-<a id="ln-99" name="ln-99" href="#ln-99"></a><span class="w">    </span><span class="c">!+ Zminus,   lower grill corner in centimeters</span>
+<a id="ln-99" name="ln-99" href="#ln-99"></a><span class="w">    </span><span class="c">!! Zminus,   lower grill corner in centimeters</span>
 <a id="ln-100" name="ln-100" href="#ln-100"></a><span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w">   </span><span class="n">ntet</span><span class="w"></span>
-<a id="ln-101" name="ln-101" href="#ln-101"></a><span class="w">    </span><span class="c">!+ ntet,     theta grid number</span>
+<a id="ln-101" name="ln-101" href="#ln-101"></a><span class="w">    </span><span class="c">!! ntet,     theta grid number</span>
 <a id="ln-102" name="ln-102" href="#ln-102"></a><span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w">   </span><span class="n">nnz</span><span class="w"></span>
-<a id="ln-103" name="ln-103" href="#ln-103"></a><span class="w">    </span><span class="c">!+ nnz,      N_phi grid number    </span>
+<a id="ln-103" name="ln-103" href="#ln-103"></a><span class="w">    </span><span class="c">!! nnz,      N_phi grid number    </span>
 <a id="ln-104" name="ln-104" href="#ln-104"></a>
 <a id="ln-105" name="ln-105" href="#ln-105"></a><span class="w">    </span><span class="k">contains      </span>
 <a id="ln-106" name="ln-106" href="#ln-106"></a><span class="k">    subroutine </span><span class="n">show_parameters</span><span class="p">()</span><span class="w">          </span>
