@@ -1,24 +1,24 @@
 module FluxSurface_mod
-    !! все что связанно с магнитными поверхностями
+    !+ все что связанно с магнитными поверхностями
     use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64
     type FluxSurface 
-    !! класс магнитной поверхности
+    !+ класс магнитной поверхности
         integer       :: index
-        !! номер магнитной поверхности
+        !+ номер магнитной поверхности
         real(dp) :: r
-        !! радиус
+        !+ радиус
         real(dp) :: vmax
-        !! vmax=cltn/vto
+        !+ vmax=cltn/vto
         real(dp) :: vt
-        !! наверно тепловая скорость электронов????? vt=fvt(r)
+        !+ наверно тепловая скорость электронов????? vt=fvt(r)
         integer       :: ipt
-        !! размер vgrid
+        !+ размер vgrid
         real(dp), allocatable :: vgrid(:)
-        !! 
+        !+ 
         real(dp), allocatable :: vr_grid(:)
-        !! бываший vrj
+        !+ бываший vrj
         real(dp), allocatable :: diffusion(:)
-        !! бывший dijk(i,j,k) или dj(i)
+        !+ бывший dijk(i,j,k) или dj(i)
         !   complex         :: inst_field1
         contains
         !procedure :: set   => set_e
