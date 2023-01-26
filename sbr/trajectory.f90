@@ -15,6 +15,7 @@ module trajectory
 contains
  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine view(tview,iview,nnz,ntet) !sav2008
+!!!writing trajectories into a file
     use constants
     use approximation
     use plasma
