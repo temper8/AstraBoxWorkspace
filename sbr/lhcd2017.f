@@ -224,11 +224,11 @@ c--------------------------------------------
                   do k=1,kv
                         vperp(k,j)=vpmin(j)+dble(k-1)*dvperp
                   end do
-                  fcoll(j)=.5d-13*dens(j)*zalfa**2*xlog/xmalfa/tmp**1.5d0
+               fcoll(j)=.5d-13*dens(j)*zalfa**2*xlog/xmalfa/tmp**1.5d0
                   ddens=dn1*dens(j)
                   tdens=dn2*dens(j)
                   tt=fti(r)**0.33333d0    ! (ti, keV)^1/3
-                  source(j)=4d-12*factor*ddens*tdens*dexp(-20d0/tt)/tt**2
+               source(j)=4d-12*factor*ddens*tdens*dexp(-20d0/tt)/tt**2
                   anb=anb+source(j)*vk(j)
             end if
             cn2=dsqrt(dabs(e1))+e2/dsqrt(e3) !sav2008
@@ -644,15 +644,8 @@ c------------------------------------------
       use plasma
       use rt_parameters, only : nr, ipri, iw, nmaxm            
       use spectrum1D, only: ynzm, pm, pabs
+      use trajectory
       implicit real*8 (a-h,o-z)
-      parameter(length=5000000, mpnt=10000)
-      dimension dland(length),dcoll(length),perpn(length),dalf(length)
-      dimension vel(length),jrad(length),iww(length),tetai(length)
-      dimension xnpar(length),izz(length)
-      common/agh/xnpar,vel,dland,dcoll,dalf,perpn,tetai,jrad,iww,izz
-      dimension mbeg(mpnt),mend(mpnt),mbad(mpnt),rbeg(mpnt) !sav2008
-      dimension tetbeg(mpnt),xnrbeg(mpnt),xmbeg(mpnt),yn3beg(mpnt)
-      common/viewdat/mbeg,mend,mbad,rbeg,tetbeg,xnrbeg,xmbeg,yn3beg
       dimension iznzap(mpnt),iwzap(mpnt),irszap(mpnt)
       dimension rzap(mpnt),tetzap(mpnt),xmzap(mpnt),yn3zap(mpnt)
       !common /a0a1/ ynzm(1001),pm(1001) 
@@ -668,7 +661,7 @@ c------------------------------------------
       common /aef2/ icall1,icall2
       common /ag/ inak,lenstor,lfree
       common/refl/nrefj(mpnt)
-      data mbad /mpnt*0/
+
       lenstor=length
       htet=zero
       hr=1.d0/dble(nr+1) !sav2008
@@ -863,13 +856,14 @@ c---------------------------------------
       use rt_parameters
       use plasma, only : fvt
       use spectrum1D, only: pabs
+      use trajectory
       implicit real*8 (a-h,o-z)
-      parameter(length=5000000)
+      !parameter(length=5000000)
       real*8 radth
-      dimension dland(length),dcoll(length),perpn(length),dalf(length)
-      dimension vel(length),jrad(length),iww(length),tetai(length)
-      dimension xnpar(length),izz(length)
-      common/agh/xnpar,vel,dland,dcoll,dalf,perpn,tetai,jrad,iww,izz
+      !dimension dland(length),dcoll(length),perpn(length),dalf(length)
+      !dimension vel(length),jrad(length),iww(length),tetai(length)
+      !dimension xnpar(length),izz(length)
+      !common/agh/xnpar,vel,dland,dcoll,dalf,perpn,tetai,jrad,iww,izz
       dimension an1(length),an2(length)
       common /xn1xn2/ an1,an2
       !common /a0gh/ pabs
@@ -977,12 +971,13 @@ c----------------------------------
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine dqliter(dltpow,ib,ie,h,powexit,iout) !sav2008
       use rt_parameters
+      use trajectory
       implicit real*8 (a-h,o-z)
-      parameter(length=5000000)
-      dimension dland(length),dcoll(length),perpn(length),dalf(length)
-      dimension vel(length),jrad(length),iww(length),tetai(length)
-      dimension xnpar(length),izz(length)
-      common/agh/xnpar,vel,dland,dcoll,dalf,perpn,tetai,jrad,iww,izz
+      !parameter(length=5000000)
+      !dimension dland(length),dcoll(length),perpn(length),dalf(length)
+      !dimension vel(length),jrad(length),iww(length),tetai(length)
+      !dimension xnpar(length),izz(length)
+      !common/agh/xnpar,vel,dland,dcoll,dalf,perpn,tetai,jrad,iww,izz
       dimension an1(length),an2(length)
       common /xn1xn2/ an1,an2
       common /a0ghp/ vlf,vrt,dflf,dfrt
@@ -3398,18 +3393,19 @@ cu    uses derivs
       use approximation
       use plasma
       use rt_parameters, only :  nr, itend0, kv, nmaxm    
-      use spectrum1D, only: ynzm, pm            
+      use spectrum1D, only: ynzm, pm      
+      use trajectory      
       implicit real*8 (a-h,o-z)
       integer iview  !sav#
-      parameter(length=5000000, mpnt=10000)
-      dimension dland(length),dcoll(length),perpn(length),dalf(length)
-      dimension vel(length),jrad(length),iww(length),tetai(length)
-      dimension xnpar(length),izz(length)
-      common/agh/xnpar,vel,dland,dcoll,dalf,perpn,tetai,jrad,iww,izz
+      !parameter(length=5000000, mpnt=10000)
+      !dimension dland(length),dcoll(length),perpn(length),dalf(length)
+      !dimension vel(length),jrad(length),iww(length),tetai(length)
+      !dimension xnpar(length),izz(length)
+      !common/agh/xnpar,vel,dland,dcoll,dalf,perpn,tetai,jrad,iww,izz
 
-      dimension mbeg(mpnt),mend(mpnt),mbad(mpnt),rbeg(mpnt) !sav2008
-      dimension tetbeg(mpnt),xnrbeg(mpnt),xmbeg(mpnt),yn3beg(mpnt)
-      common/viewdat/mbeg,mend,mbad,rbeg,tetbeg,xnrbeg,xmbeg,yn3beg
+      !dimension mbeg(mpnt),mend(mpnt),mbad(mpnt),rbeg(mpnt) !sav2008
+      !dimension tetbeg(mpnt),xnrbeg(mpnt),xmbeg(mpnt),yn3beg(mpnt)
+      !common/viewdat/mbeg,mend,mbad,rbeg,tetbeg,xnrbeg,xmbeg,yn3beg
       common /bcef/ ynz,ynpopq
       common /vth/ vthc(length),poloidn(length)
       real*8 vthcg,npoli
