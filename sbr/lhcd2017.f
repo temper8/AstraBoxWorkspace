@@ -612,8 +612,9 @@ c------------------------------------------
        zv1(j,k)=vrj(ipt1)
        zv2(j,k)=vrj(ni1+ni2+ipt1)
       end do
-        call view(tcur,1,nnz,ntet)  !writing trajectories into a file
-!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+      if (ispectr == -1) call view(tcur,1,nnz,ntet)  !writing trajectories into a file
+
       if(ismthout.ne.0) then
        do i=1,nrr
         wrk(i)=pwe(i)
