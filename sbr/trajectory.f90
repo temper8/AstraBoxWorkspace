@@ -4,6 +4,8 @@ module trajectory
     integer, parameter :: length = 5000000
     integer, parameter :: mpnt = 10000
 
+    integer nrefj(mpnt)
+    !! common/refl/nrefj(mpnt)
     real(dp) dland(length),dcoll(length),perpn(length),dalf(length)
     real(dp) vel(length),jrad(length),iww(length),tetai(length)
     real(dp) xnpar(length),izz(length)

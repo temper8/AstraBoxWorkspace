@@ -105,7 +105,7 @@ cc*********************************************************************
       use rt_parameters
       use spectrum1D
       use maxwell      
-      use trajectory, only: view
+      use trajectory, only: view, nrefj
       implicit real*8 (a-h,o-z)
       real*8 outpe,pe_out 
       dimension outpe(*)
@@ -118,7 +118,7 @@ cc*********************************************************************
      &,rxx(102),pwe(102),wrk(102)
       dimension vmid(100),vz1(100),vz2(100),ibeg(100),iend(100)
       parameter(mpnt=10000)
-      common/refl/nrefj(mpnt)
+!      common/refl/nrefj(mpnt)
 !      real*8 ynzm, pm
 !      common /a0a1/ ynzm(1001),pm(1001) 
       common /a0a4/ plost,pnab
@@ -662,7 +662,7 @@ c------------------------------------------
       !common /a0gh/ pabs
       common /aef2/ icall1,icall2
       common /ag/ inak,lenstor,lfree
-      common/refl/nrefj(mpnt)
+      !common/refl/nrefj(mpnt)
 
       lenstor=length
       htet=zero
