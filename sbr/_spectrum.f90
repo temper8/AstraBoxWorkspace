@@ -1,3 +1,44 @@
+module spectrum_mod
+    use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64
+    implicit none    
+    type spectrum_point
+        real(dp) nz
+        !! 
+        real(dp) ny
+        !!
+        real(dp) power
+        !! power
+    contains
+    end type spectrum_point
+
+    type spectrum
+        integer size
+        !!
+        real(dp) input_power
+        !!
+        real(dp) max_power
+        !!
+        type(spectrum_point), allocatable ::  data(:)
+        !! 
+    contains
+
+    end type spectrum
+
+    interface spectrum
+        module procedure :: spectrum_constructor
+    end interface spectrum    
+contains
+    function spectrum_constructor(size) result(this)
+        !- конструктор для spectrum
+        implicit none
+        type(spectrum) :: this
+        integer, value :: size
+        this%size = size
+        this%input_power = 0
+        allocate(this%data(size))
+    end function spectrum_constructor     
+end module spectrum_mod
+
 module spectrum1D
     use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64
     implicit none    
@@ -143,6 +184,24 @@ module spectrum1D
         end do
         pabs=pabs0*pmax/1.d2
     end subroutine
+
+    function create_spectrum() result(spectr)
+        use spectrum_mod
+        use rt_parameters, only: nnz
+        implicit none
+        type(spectrum) :: spectr
+        type(spectrum_point) :: p
+        integer i 
+        real(dp) :: pmax
+        pmax = 0
+        spectr = spectrum(nnz)
+        do i= 1, nnz
+            p = spectrum_point(nz= ynzm(i), ny = 0, power = pm(i))
+            if (pm(i) > pmax) pmax=pm(i)
+            spectr%data(i) = p
+        end do
+        spectr%max_power = pmax
+    end function
 
     subroutine write_spectrum(ispectr)
         implicit none

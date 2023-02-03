@@ -13,7 +13,8 @@ cc******************************************************************
       use plasma
       use rt_parameters
       use spectrum1D      
-      use maxwell        
+      use maxwell  
+      use spectrum_mod      
       implicit none
       integer i
       real*8 p_in,pe_p,pe_m,c_p,c_m
@@ -23,6 +24,7 @@ cc******************************************************************
       include 'for/status.inc'
       real*8 outpe(NRD)
       real*8,dimension(:),allocatable:: outpep,outpem
+      type(spectrum) spectr
 
 cc*********************************************************************
 cc    Co-ordinates used in ray-tracing:
@@ -39,6 +41,11 @@ cc*********************************************************************
       tcur=time
       outpe=zero
       p_in=dble(QLH)    ! input LH power, MW
+
+      if(p_in.eq.zero) then
+            dij(:,:,:)=zero
+            return
+      end if
 
       call read_parameters('lhcd/ray_tracing.dat')
 
@@ -58,7 +65,8 @@ cc*********************************************************************
             dij(:,:,1)=zero
       else
             call spectrum_approximation(+1)
-            call ourlhcd2017(+1,p_in, outpep,pe_p)
+            spectr = create_spectrum()
+            call ourlhcd2017(+1,spectr, outpep,pe_p)
       end if      
       if(pe_p.ne.zero) then
             c_p=vint(outpep,roc)
@@ -78,7 +86,8 @@ cc*********************************************************************
             dij(:,:,2)=zero
        else
             call spectrum_approximation(-1)
-            call ourlhcd2017(-1,p_in, outpem,pe_m)  
+            spectr = create_spectrum()
+            call ourlhcd2017(-1,spectr, outpem,pe_m)  
        endif     
        if(pe_m.ne.zero) then
             c_m=vint(outpem,roc)
@@ -96,7 +105,7 @@ cc*********************************************************************
       deallocate(outpep,outpem)
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine ourlhcd2017(ispectr,p_in, outpe,pe_out)      
+      subroutine ourlhcd2017(ispectr,spectr, outpe,pe_out)      
       use constants
       use approximation
       use spline
@@ -106,7 +115,10 @@ cc*********************************************************************
       use spectrum1D
       use maxwell      
       use trajectory, only: view, nrefj
+      use spectrum_mod
+
       implicit real*8 (a-h,o-z)
+      type(spectrum) spectr
       real*8 outpe,pe_out 
       dimension outpe(*)
 !!!!    maximum grid sizes:
@@ -117,7 +129,7 @@ cc*********************************************************************
      &,source(100),sour(100)
      &,rxx(102),pwe(102),wrk(102)
       dimension vmid(100),vz1(100),vz2(100),ibeg(100),iend(100)
-      parameter(mpnt=10000)
+ !     parameter(mpnt=10000)
 !      common/refl/nrefj(mpnt)
 !      real*8 ynzm, pm
 !      common /a0a1/ ynzm(1001),pm(1001) 
@@ -151,11 +163,6 @@ cc*********************************************************************
       real*8 dijk, vrjnew
       common/t01/dijk(101,100,2), vrjnew(101,100,2), iptnew
 
-      if(p_in.eq.zero) then
-          dij(:,:,:)=zero
-          return
-      end if
- 
       lfree=1
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -366,7 +373,7 @@ c------------------------------------
       iterat=0
       nvmin=1 !minimum counted events at a given radius rho
 80    continue
-      call manager(iterat,iw0,nnz,ntet)
+      call manager(iterat,iw0,nnz,ntet, spectr)
 c-----------------------------------------------
 c  find achieved radial points jbeg-jend
 c----------------------------------------------
@@ -641,13 +648,16 @@ c------------------------------------------
       deallocate(vvj,vdfj)
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine manager(iterat,iw0,nnz ,ntet)
+      subroutine manager(iterat,iw0,nnz ,ntet, spectr)
       use constants            
       use plasma
       use rt_parameters, only : nr, ipri, iw, nmaxm            
       use spectrum1D, only: ynzm, pm, pabs
       use trajectory
+      use spectrum_mod
       implicit real*8 (a-h,o-z)
+      type (spectrum) spectr
+      type (spectrum_point) point
       dimension iznzap(mpnt),iwzap(mpnt),irszap(mpnt)
       dimension rzap(mpnt),tetzap(mpnt),xmzap(mpnt),yn3zap(mpnt)
       !common /a0a1/ ynzm(1001),pm(1001) 
@@ -706,8 +716,11 @@ c-----------------------------------------
 c    find initial radius for a trajectory
 c    on the 1th iteration
 c-----------------------------------------
-            yn=ynzm(inz) !sav2008, yn is introduced
-            pow=pm(inz)
+            point = spectr%data(inz)
+            yn = point%nz
+            pow = point%power
+            !yn=ynzm(inz) !sav2008, yn is introduced
+            !pow=pm(inz)
             irs=1
             iw=iw0
             rin=rini(xmin,tetin,xnr,yn,hr,ifail)
