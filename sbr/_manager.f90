@@ -1,6 +1,14 @@
 module manager_mod
+    use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64
     implicit none
-   
+
+    real(dp) :: yn3
+    !! common /abefo/ yn3
+    integer :: iroot
+    !!common /beo/ iroot
+    integer :: ivar
+    !!common /bdeo/ ivar    
+
 contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     subroutine manager(iterat,iw0, ntet, spectr)
@@ -23,7 +31,7 @@ contains
         common /abcd/ irs
         common /abcde/ izn
         common /abcdg/ iabsorp
-        common /abefo/ yn3
+        !common /abefo/ yn3
         common /acg/ pow
         !common /a0gh/ pabs
         common /aef2/ icall1,icall2
@@ -35,6 +43,7 @@ contains
         integer iw0, ifail, iabsirp, inak0,ib,ie,izn
         integer lfree, nmax, iabsorp, i, nb1,nb2
         integer iznzz, iwzz, irszz
+
         pabs = spectr%max_power*pabs0/1.d2
         print *, 'pabs =',pabs, spectr%max_power, pabs0
 
@@ -231,15 +240,12 @@ contains
 
 
     real*8 function rini(xm,tet,xnr,yn,hr,ifail) !sav2009
-        use rt_parameters
+        use rt_parameters, only : inew
         implicit real*8 (a-h,o-z)
-        integer ifail, ntry, ivar, iroot
+        integer ifail, ntry
         dimension vgrp(3),vph(3)
         common /bcef/ ynz,ynpopq
-        common /abefo/ yn3
-        common /beo/ iroot
-        common /bdeo/ ivar
-        !common /cnew/ inew !est !sav2008
+
         common/metrika/g11,g12,g22,g33,gg,g,si,co !sav2009
         real*8,  parameter :: zero=0.d0, rhostart=1.d0
         integer, parameter :: ntry_max=5

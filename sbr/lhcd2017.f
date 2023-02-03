@@ -960,6 +960,7 @@ c---------------------------------------------
       use approximation
       use plasma
       use rt_parameters
+      use manager_mod, only: ivar, iroot
       implicit real*8 (a-h,o-z)
       external extd4
       real*8 pabs
@@ -978,10 +979,10 @@ c---------------------------------------------
       common /abcdg/ iabsorp
       common /bcg/ hrad
       common /bcef/ ynz,ynpopq
-      common /bdeo/ ivar
+      !common /bdeo/ ivar
       common /be1/ xnr1,xnr2,xnr3,xnr4
       common /be2/ ider
-      common /beo/ iroot
+      !common /beo/ iroot
       common /bg/ im4
  !     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       integer nomth,nomnz
@@ -1456,6 +1457,7 @@ c---------------------------------------
       use approximation
       use plasma
       use rt_parameters
+      use manager_mod, only: ivar, iroot, yn3
       implicit real*8 (a-h,o-z)
       !common /a0befr/ pi,pi2
       !common /a0ef1/ cltn
@@ -1463,12 +1465,12 @@ c---------------------------------------
       !common /a0ef3/ xmi,cnye,cnyi,xsz,vt0
       common /abcde/ izn!,iw
       common /bcef/ ynz,ynpopq
-      common /abefo/ yn3
+      !common /abefo/ yn3
       common /aef2/ icall1,icall2
-      common /bdeo/ ivar
+      !common /bdeo/ ivar
       common /be1/ xnr1,xnr2,xnr3,xnr4
       common /be2/ ider
-      common /beo/ iroot
+      !common /beo/ iroot
       common /cefn/ iconv,irefl
       common /ceg/ ipow,jfoundr
       common /eg1/ vfound,ifound
@@ -1827,13 +1829,14 @@ c    reflection
       use approximation
       use plasma
       use rt_parameters            
+      use manager_mod, only: yn3
       implicit real*8 (a-h,o-z)
       !common /a0befr/ pi,pi2
       !common /a0ef1/ cltn
       !common /a0ef2/ ww
       !common /a0ef3/ xmi,cnye,cnyi,xsz,vt0
       common /bcef/ ynz,ynpopq
-      common /abefo/ yn3
+      !common /abefo/ yn3
       common /aef2/ icall1,icall2
       common /cefn/ iconv,irefl
       common /df/ pdec14,pdec24,pdec34,idec
@@ -2158,9 +2161,10 @@ c      dydx(5)=znak*dhdn3/ddn
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine dhdomega(rho,theta,yn1,yn2)
+      use manager_mod, only: yn3            
       implicit real*8 (a-h,o-z)
       !common /a0ef2/ ww
-      common /abefo/ yn3
+      !common /abefo/ yn3
       common/fj/dhdm,dhdnr,dhdtet,dhdr,ddn,dhdn3,dhdv2v,dhdu2u
       common/direct/znakstart
       parameter(zero=0.d0,h=1.d-6)
