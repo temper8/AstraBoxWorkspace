@@ -112,7 +112,7 @@ cc*********************************************************************
       use chebyshev
       use plasma
       use rt_parameters
-      use spectrum1D
+      !use spectrum1D
       use maxwell      
       use trajectory, only: view, nrefj
       use spectrum_mod
@@ -651,13 +651,14 @@ c------------------------------------------
       subroutine manager(iterat,iw0,nnz ,ntet, spectr)
       use constants            
       use plasma
-      use rt_parameters, only : nr, ipri, iw, nmaxm            
-      use spectrum1D, only: ynzm, pm, pabs
+      use rt_parameters, only : nr, ipri, iw, nmaxm, pabs0            
+      !use spectrum1D, only: ynzm, pm
       use trajectory
       use spectrum_mod
       implicit real*8 (a-h,o-z)
       type (spectrum) spectr
       type (spectrum_point) point
+      real*8 pabs
       dimension iznzap(mpnt),iwzap(mpnt),irszap(mpnt)
       dimension rzap(mpnt),tetzap(mpnt),xmzap(mpnt),yn3zap(mpnt)
       !common /a0a1/ ynzm(1001),pm(1001) 
@@ -673,7 +674,9 @@ c------------------------------------------
       common /aef2/ icall1,icall2
       common /ag/ inak,lenstor,lfree
       !common/refl/nrefj(mpnt)
-
+      pabs = spectr%max_power*pabs0/1.d2
+      print *, 'pabs =',pabs, spectr%max_power, pabs0
+      !pause
       lenstor=length
       htet=zero
       hr=1.d0/dble(nr+1) !sav2008
@@ -711,12 +714,12 @@ c--------------------------------------
         do inz=1,nnz
           itr=itr+1
 !ipri          if(ipri.eq.4)  write(23,*)
+          point = spectr%data(inz)
           if(iterat.eq.0) then
 c-----------------------------------------
 c    find initial radius for a trajectory
 c    on the 1th iteration
 c-----------------------------------------
-            point = spectr%data(inz)
             yn = point%nz
             pow = point%power
             !yn=ynzm(inz) !sav2008, yn is introduced
@@ -737,19 +740,19 @@ c-----------------------------------------
             yn3beg(itr)=yn3 !sav2008
           else
             if(mbad(itr).ne.0) then
-              plost=plost+pm(inz)
+              plost=plost+point%power
               go to 31
             end if
             ib=mbeg(itr)
             ie=mend(itr)
-            powexit=pm(inz)
+            powexit=point%power
             dltpow=pabs
             call dqliter(dltpow,ib,ie,hr,powexit,iout)
              if(nmax0.eq.0) then
               ib=mbeg(itr)
               ie=mend(itr)
               pow1=powexit
-              pgamma=1.d0-pow1/pm(inz)
+              pgamma=1.d0-pow1/point%power
               powexit=pow1/pgamma
               dltpow=powexit-pow1+pabs
               call dqliter(dltpow,ib,ie,hr,powexit,iout)
@@ -785,7 +788,7 @@ c---------------------------------------
 c-------------------------------------
 c call ray tracing
 c-------------------------------------
-          call traj(xm,tet,rstart,nmax,nb1,nb2,itet,inz) !sav2009
+          call traj(xm,tet,rstart,nmax,nb1,nb2,itet,inz, pabs) !sav2009
           nbad1=nbad1+nb1
           nbad2=nbad2+nb2
           nrefj(itr)=nrefj(itr)+nmax
@@ -806,7 +809,7 @@ c-------------------------------------
             end if
              if (ipri.gt.1) then
               tetin0=tet1+htet*(itet-1)
-              write (*,111) tetin0,ynzm(inz)
+              write (*,111) tetin0, point%nz
 111           format(1x,'traj. with tet0=',f10.5,1x
      &                            ,', Ninput=',f10.5,1x,'failed')
              end if
@@ -840,11 +843,11 @@ c---------------------------------------
            lfree=inak+2
           end if
           if(nrefj(itr).gt.maxref.and.pow.gt.pabs) then !forced absorp
-           if(pow.ge.pm(inz)) go to 30 !sav2008
+           if(pow.ge.point%power) go to 30 !sav2008
            ib=mbeg(itr)
            ie=mend(itr)
            pow1=pow
-           pgamma=1.d0-pow1/pm(inz)
+           pgamma=1.d0-pow1/point%power
            powexit=pow1/pgamma
            dltpow=powexit-pow1+pabs
            call dqliter(dltpow,ib,ie,hr,powexit,iout)
@@ -867,13 +870,14 @@ c---------------------------------------
 1006  format (e14.7)
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine dql1 !sav2008
+      subroutine dql1(pabs) !sav2008
       use rt_parameters
       use plasma, only : fvt
-      use spectrum1D, only: pabs
+      !use spectrum1D, only: pabs
       use trajectory
       implicit real*8 (a-h,o-z)
       !parameter(length=5000000)
+      real*8 pabs
       real*8 radth
       !dimension dland(length),dcoll(length),perpn(length),dalf(length)
       !dimension vel(length),jrad(length),iww(length),tetai(length)
@@ -1172,13 +1176,14 @@ c---------------------------------------------
       return
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine traj(xm0,tet0,xbeg,nmax,nb1,nb2,nomth,nomnz) !sav2009
+      subroutine traj(xm0,tet0,xbeg,nmax,nb1,nb2,nomth,nomnz, pabs) !sav2009
       use constants
       use approximation
       use plasma
       use rt_parameters
       implicit real*8 (a-h,o-z)
       external extd4
+      real*8 pabs
       dimension ystart(2),yy(4)
       !common /a0ab/ nr
       !common /a0abcd/ ipri
@@ -1238,7 +1243,7 @@ c solve eqs. starting from xbeg
 c---------------------------------------
       ystart(1)=tet
       ystart(2)=xm
-      call driver2(ystart,xbeg,xend,xsav,hmin,h1)
+      call driver2(ystart,xbeg,xend,xsav,hmin,h1, pabs)
       tet=ystart(1)
       xm=ystart(2)
       ib2=0
@@ -1364,12 +1369,13 @@ c-------------------------------------
       irszz=irs
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine driver2(ystart,x1,x2,xsav,hmin,h1) !sav2008
+      subroutine driver2(ystart,x1,x2,xsav,hmin,h1, pabs) !sav2008
       use constants
       use plasma
       use rt_parameters
       implicit real*8 (a-h,o-z)
       external extd2
+      real*8 pabs
       !common /a0abcd/ ipri
       !common /a0ab/ nr
       !common /a0bcd/ eps
@@ -1450,7 +1456,7 @@ c--------------------------------------
        end do
        ynz0=ynz
        if(ipow.gt.0) then !integrate power equation
-        call dql1
+        call dql1(pabs)
         if(iabsorp.eq.1) then !absorption
          rzz=x
          tetzz=y(1)
