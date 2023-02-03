@@ -240,14 +240,18 @@ contains
 
 
     real*8 function rini(xm,tet,xnr,yn,hr,ifail) !sav2009
+        use constants, only : zero
         use rt_parameters, only : inew
-        implicit real*8 (a-h,o-z)
+        implicit none
+        real(dp) xm, tet,xnr,yn,hr
         integer ifail, ntry
-        dimension vgrp(3),vph(3)
+        real(dp) :: vgrp(3),vph(3)
+        real(dp) :: ynz,ynpopq
         common /bcef/ ynz,ynpopq
-
+        real(dp) :: g11,g12,g22,g33,gg,g,si,co
         common/metrika/g11,g12,g22,g33,gg,g,si,co !sav2009
-        real*8,  parameter :: zero=0.d0, rhostart=1.d0
+        real(dp) :: pa, prt, prm, f1,f2
+        real(dp),  parameter :: rhostart=1.d0
         integer, parameter :: ntry_max=5
 
         ifail=1
