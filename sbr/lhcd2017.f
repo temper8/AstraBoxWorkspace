@@ -42,7 +42,7 @@ cc*********************************************************************
       outpe=zero
       p_in=dble(QLH)    ! input LH power, MW
 
-      if(p_in.eq.zero) then
+      if(p_in.eq.zero) then 
             dij(:,:,:)=zero
             return
       end if
@@ -52,7 +52,9 @@ cc*********************************************************************
       call init_plasma(NA1,ABC,BTOR,RTOR,UPDWN,GP2,
      & AMETR,RHO,SHIF,ELON,TRIA,MU,NE,TE,TI,ZEF,UPL)
 
-
+      full_spectrum = read_spectrum('lhcd/spectrum.dat')
+      call divide_spectrum(full_spectrum, pos_spectr, neg_spectr)
+      pause
 !!!!!!!!!!!!! starting ray-tracing !!!!!!!!!!!!!!!!!!!!!
       allocate(outpep(ngrid),outpem(ngrid))
 

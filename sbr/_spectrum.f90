@@ -1,6 +1,8 @@
 module spectrum_mod
     use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64
     implicit none    
+
+
     type spectrum_point
         real(dp) nz
         !! 
@@ -8,6 +10,7 @@ module spectrum_mod
         !!
         real(dp) power
         !! power
+
     contains
     end type spectrum_point
 
@@ -18,6 +21,8 @@ module spectrum_mod
         !!
         real(dp) max_power
         !!
+        real(dp) sum_power
+        !! суммарная power        
         type(spectrum_point), allocatable ::  data(:)
         !! 
     contains
@@ -26,6 +31,7 @@ module spectrum_mod
 
     interface spectrum
         module procedure :: spectrum_constructor
+        !module procedure :: read_spectrum
     end interface spectrum    
 contains
     function spectrum_constructor(size) result(this)
@@ -35,13 +41,91 @@ contains
         integer, value :: size
         this%size = size
         this%input_power = 0
+        this%sum_power = 0
         allocate(this%data(size))
     end function spectrum_constructor     
+
+    function read_spectrum(file_name) result(spectr)
+        !- чтение spectrum из файла
+        implicit none
+        type(spectrum) :: spectr
+        character (len = *), value :: file_name 
+        logical                     :: res
+        integer i,n,stat
+        real(dp) sum_power
+        !integer, value :: size
+        print *, file_name      
+        ! Check if the file exists
+        inquire( file=trim(file_name), exist=res )        
+        if (.not.res) then
+            print *, 'spectrum file not exists'
+            stop
+        end if
+
+        open(20,file=file_name)
+        n=-1
+        stat=0
+        do while(stat == 0)
+            n=n+1
+            read (20,*,iostat=stat)
+        enddo
+
+        spectr%size = n
+        spectr%input_power = 0
+        spectr%sum_power = 0
+        sum_power = 0
+        allocate(spectr%data(n))        
+        print *,'Spectrum size = ',  n
+        rewind(20)
+        do i=1,n
+            read (20,*) spectr%data(i)%nz, spectr%data(i)%ny, spectr%data(i)%power
+            sum_power = sum_power + spectr%data(i)%power
+        enddo
+        spectr%sum_power = sum_power
+        close(20)
+
+    end function read_spectrum         
+
+    subroutine divide_spectrum(spectr, pos_spectr, neg_spectr)
+        implicit none
+        type(spectrum), intent(in)  :: spectr
+        type(spectrum), intent(out) :: pos_spectr, neg_spectr
+        type(spectrum_point) :: p
+        integer i, pos_n, neg_n
+
+        pos_spectr = spectrum(spectr%size)
+        neg_spectr = spectrum(spectr%size)
+        pos_n = 0
+        neg_n = 0
+        do i= 1, spectr%size
+            p = spectr%data(i)
+
+            if (p%nz>0) then
+                pos_n = pos_n + 1                
+                pos_spectr%data(pos_n) = p
+                pos_spectr%sum_power = pos_spectr%sum_power + p%power
+            else
+                neg_n = neg_n + 1                
+                neg_spectr%data(neg_n) = p
+                neg_spectr%sum_power = neg_spectr%sum_power + p%power
+            endif
+        end do
+        pos_spectr%size = pos_n
+        neg_spectr%size = neg_n
+        print *, pos_n, neg_n
+        print *, 'power ', spectr%sum_power, pos_spectr%sum_power, neg_spectr%sum_power
+        print *, 'power ', pos_spectr%sum_power/spectr%sum_power, neg_spectr%sum_power/spectr%sum_power
+    end subroutine
+
 end module spectrum_mod
 
 module spectrum1D
     use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64
+    use spectrum_mod
     implicit none    
+
+    type(spectrum) :: full_spectrum
+    type(spectrum) :: pos_spectr, neg_spectr
     integer :: ispl
     !! size of spectrum
     real(dp) :: plaun
