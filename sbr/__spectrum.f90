@@ -16,9 +16,9 @@ module spectrum_mod
 
     type spectrum
         integer size
-        !!
+        !! size of spectrum
         real(dp) input_power
-        !!
+        !! power of spectrum
         real(dp) power_ratio
         !! доля входной мощности
         real(dp) max_power
