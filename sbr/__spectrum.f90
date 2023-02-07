@@ -20,11 +20,13 @@ module spectrum_mod
         real(dp) input_power
         !!
         real(dp) power_ratio
-        !!
+        !! доля входной мощности
         real(dp) max_power
         !!
         real(dp) sum_power
         !! суммарная power        
+        integer direction
+        !! направление спектра   +1 или -1 или 0 - полный
         type(spectrum_point), allocatable ::  data(:)
         !! 
     contains
@@ -75,6 +77,7 @@ contains
         spectr%size = n
         spectr%input_power = 0
         spectr%sum_power = 0
+        spectr%direction = 0
         spectr%power_ratio = 1
         sum_power = 0
         allocate(spectr%data(n))        
@@ -125,7 +128,8 @@ contains
             neg_spectr%data(i) = tmp_spectr%data(neg_n + 1 - i)
         end do
         neg_spectr%size = neg_n
-
+        pos_spectr%direction = +1
+        neg_spectr%direction = -1
         pos_spectr%power_ratio = pos_spectr%sum_power/spectr%sum_power
         neg_spectr%power_ratio = neg_spectr%sum_power/spectr%sum_power
         pos_spectr%input_power = pos_spectr%power_ratio * spectr%input_power
@@ -136,6 +140,95 @@ contains
         print *, 'input_power ', spectr%input_power, pos_spectr%input_power, neg_spectr%input_power
     end subroutine
 
+
+
+    function make_spline_approximation(spectr) result(appx_spectr)
+        !! approximation of input LH spectrum
+            use constants, only: zero, xsgs
+            use spline
+            use rt_parameters, only: nnz, ntet, pabs0
+            implicit none
+            type(spectrum), intent(in) :: spectr
+            type(spectrum) :: appx_spectr
+            integer :: ispectr, ispl
+            real(dp), allocatable :: ynzm0(:),pm0(:)
+            real(dp), allocatable :: ynzm(:),pm(:)
+            real(dp), allocatable :: yn2z(:),powinp(:)
+            integer innz, i
+            real(dp) dxx, xx0, xx1, xx2, yy1, yy2, pinp
+            real(dp) dpw, dpower, pwcurr, ptot, dynn
+            real(dp) pmax, pnorm, plaun
+            ispectr = spectr%direction
+            plaun = spectr%input_power
+            ispl = spectr%size
+            allocate(ynzm(nnz),pm(nnz))
+            allocate(ynzm0(ispl),pm0(ispl))
+            allocate(yn2z(ispl),powinp(ispl))
+            do i = 1, spectr%size
+                ynzm0(i) = spectr%data(i)%nz
+                pm0(i) = spectr%data(i)%power
+            end do
+
+            call splne(ynzm0,pm0,ispl,yn2z)
+            innz=100*ispl
+            dxx=(ynzm0(ispl)-ynzm0(1))/innz
+            xx2=ynzm0(1)
+            yy2=pm0(1)
+            pinp=0d0
+            do i=1,innz
+                  xx1=xx2
+                  yy1=yy2
+                  xx2=xx1+dxx
+                  call splnt(ynzm0,pm0,yn2z,ispl,xx2,yy2,dynn)
+                  dpw=.5d0*(yy2+yy1)*(xx2-xx1)
+                  pinp=pinp+dpw
+            end do
+      
+            dpower=pinp/dble(nnz)
+            xx2=ynzm0(1)
+            yy2=pm0(1)
+            pwcurr=zero
+            ptot=zero
+            do i=1,nnz-1
+                xx0=xx2
+      11        continue
+                xx1=xx2
+                yy1=yy2
+                xx2=xx1+dxx
+                call splnt(ynzm0,pm0,yn2z,ispl,xx2,yy2,dynn)
+                dpw=.5d0*(yy2+yy1)*(xx2-xx1)
+                if(pwcurr+dpw.gt.dpower) then
+                    xx2=xx1+dxx*(dpower-pwcurr)/dpw
+                    call splnt(ynzm0,pm0,yn2z,ispl,xx2,yy2,dynn)
+                    dpw=.5d0*(yy2+yy1)*(xx2-xx1)
+                    pwcurr=pwcurr+dpw
+                else
+                    pwcurr=pwcurr+dpw
+                    go to 11
+                end if
+                ynzm(i)=.5d0*(xx2+xx0)
+                pm(i)=pwcurr
+                ptot=ptot+pwcurr
+                pwcurr=zero
+            end do
+            ynzm(nnz)=.5d0*(ynzm0(ispl)+xx2)
+            pm(nnz)=pinp-ptot
+            pnorm=plaun*xsgs/(pinp*ntet)
+            pmax=-1d+10
+            do i=1,nnz
+                call splnt(ynzm0,pm0,yn2z,ispl,ynzm(i),powinp(i),dynn)
+                pm(i)=pm(i)*pnorm
+                if (pm(i).gt.pmax) pmax=pm(i)
+                ynzm(i)=dble(ispectr)*ynzm(i) !sav2009
+            end do
+            !pabs=pabs0*pmax/1.d2
+            appx_spectr = spectrum(nnz)
+            do i= 1, nnz
+                appx_spectr%data(i) = spectrum_point(nz= ynzm(i), ny = 0, power = pm(i))
+            end do
+            appx_spectr%max_power = pmax
+            appx_spectr%direction = ispectr
+        end function    
 end module spectrum_mod
 
 module spectrum1D

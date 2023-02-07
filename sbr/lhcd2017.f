@@ -62,14 +62,15 @@ cc*********************************************************************
 !!positive spectrum:
       print *, 'positive spectrum'
       !call read_positive_spectrum('lhcd/ray_tracing.dat', p_in)
-      call copy_to_spectrum_1D(pos_spectr)
+      !call copy_to_spectrum_1D(pos_spectr)
       pe_p=zero
       outpep=zero
-      if(plaun.eq.zero) then
+      if(pos_spectr%input_power.eq.zero) then
             dij(:,:,1)=zero
       else
-            call spectrum_approximation(+1)
-            spectr = create_spectrum()
+            !call spectrum_approximation(+1)
+            !spectr = create_spectrum()
+            spectr = make_spline_approximation(pos_spectr)
             call ourlhcd2017(+1,spectr, outpep,pe_p)
       end if      
       if(pe_p.ne.zero) then
@@ -84,14 +85,15 @@ cc*********************************************************************
 !!negative spectrum:
        print *, 'negative spectrum'
        !call read_negative_spectrum('lhcd/ray_tracing.dat', p_in)
-       call copy_to_spectrum_1D(neg_spectr)
+       !call copy_to_spectrum_1D(neg_spectr)
        pe_m=zero
        outpem=zero       
-       if(plaun.eq.zero) then
+       if(neg_spectr%input_power.eq.zero) then
             dij(:,:,2)=zero
        else
-            call spectrum_approximation(-1)
-            spectr = create_spectrum()
+            !call spectrum_approximation(-1)
+            !spectr = create_spectrum()
+            spectr = make_spline_approximation(neg_spectr)
             call ourlhcd2017(-1,spectr, outpem,pe_m)  
        endif     
        if(pe_m.ne.zero) then
