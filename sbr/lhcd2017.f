@@ -65,14 +65,15 @@ cc*********************************************************************
       !call copy_to_spectrum_1D(pos_spectr)
       pe_p=zero
       outpep=zero
-      if(pos_spectr%input_power.eq.zero) then
-            dij(:,:,1)=zero
-      else
+      if(pos_spectr%input_power > zero) then
             !call spectrum_approximation(+1)
             !spectr = create_spectrum()
             spectr = make_spline_approximation(pos_spectr)
             call ourlhcd2017(spectr, outpep,pe_p)
+      else
+            dij(:,:,1)=zero
       end if      
+
       if(pe_p.ne.zero) then
             c_p=vint(outpep,roc)
             if(c_p.ne.zero) then
@@ -88,14 +89,15 @@ cc*********************************************************************
        !call copy_to_spectrum_1D(neg_spectr)
        pe_m=zero
        outpem=zero       
-       if(neg_spectr%input_power.eq.zero) then
-            dij(:,:,2)=zero
-       else
+       if(neg_spectr%input_power > zero) then
             !call spectrum_approximation(-1)
             !spectr = create_spectrum()
             spectr = make_spline_approximation(neg_spectr)
-            call ourlhcd2017(spectr, outpem,pe_m)  
+            call ourlhcd2017(spectr, outpem,pe_m)              
+       else
+            dij(:,:,2)=zero
        endif     
+       
        if(pe_m.ne.zero) then
             c_m=vint(outpem,roc)
             if(c_m.ne.zero) then
