@@ -19,6 +19,8 @@ module spectrum_mod
         !!
         real(dp) input_power
         !!
+        real(dp) power_ratio
+        !!
         real(dp) max_power
         !!
         real(dp) sum_power
@@ -73,6 +75,7 @@ contains
         spectr%size = n
         spectr%input_power = 0
         spectr%sum_power = 0
+        spectr%power_ratio = 1
         sum_power = 0
         allocate(spectr%data(n))        
         print *,'Spectrum size = ',  n
@@ -87,34 +90,50 @@ contains
     end function read_spectrum         
 
     subroutine divide_spectrum(spectr, pos_spectr, neg_spectr)
+        !! деление спектра на две части
         implicit none
         type(spectrum), intent(in)  :: spectr
         type(spectrum), intent(out) :: pos_spectr, neg_spectr
+        type(spectrum):: tmp_spectr
         type(spectrum_point) :: p
         integer i, pos_n, neg_n
 
         pos_spectr = spectrum(spectr%size)
-        neg_spectr = spectrum(spectr%size)
+        tmp_spectr = spectrum(spectr%size)
         pos_n = 0
         neg_n = 0
-        do i= 1, spectr%size
+        do i = 1, spectr%size
             p = spectr%data(i)
 
             if (p%nz>0) then
                 pos_n = pos_n + 1                
                 pos_spectr%data(pos_n) = p
                 pos_spectr%sum_power = pos_spectr%sum_power + p%power
-            else
+            end if
+            if (p%nz<0) then
                 neg_n = neg_n + 1                
-                neg_spectr%data(neg_n) = p
-                neg_spectr%sum_power = neg_spectr%sum_power + p%power
+                p%nz = -p%nz
+                tmp_spectr%data(neg_n) = p
+                tmp_spectr%sum_power = tmp_spectr%sum_power + p%power
             endif
         end do
         pos_spectr%size = pos_n
+
+        neg_spectr = spectrum(neg_n)
+        neg_spectr%sum_power = tmp_spectr%sum_power
+        do i = 1, neg_n
+            neg_spectr%data(i) = tmp_spectr%data(neg_n + 1 - i)
+        end do
         neg_spectr%size = neg_n
-        print *, pos_n, neg_n
-        print *, 'power ', spectr%sum_power, pos_spectr%sum_power, neg_spectr%sum_power
-        print *, 'power ', pos_spectr%sum_power/spectr%sum_power, neg_spectr%sum_power/spectr%sum_power
+
+        pos_spectr%power_ratio = pos_spectr%sum_power/spectr%sum_power
+        neg_spectr%power_ratio = neg_spectr%sum_power/spectr%sum_power
+        pos_spectr%input_power = pos_spectr%power_ratio * spectr%input_power
+        neg_spectr%input_power = neg_spectr%power_ratio * spectr%input_power        
+        print *, pos_n, neg_n        
+        print *, 'sum_power ', spectr%sum_power, pos_spectr%sum_power, neg_spectr%sum_power
+        print *, 'power_ratio ', pos_spectr%power_ratio, neg_spectr%power_ratio
+        print *, 'input_power ', spectr%input_power, pos_spectr%input_power, neg_spectr%input_power
     end subroutine
 
 end module spectrum_mod
@@ -267,6 +286,21 @@ module spectrum1D
             ynzm(i)=dble(ispectr)*ynzm(i) !sav2009
         end do
         pabs=pabs0*pmax/1.d2
+    end subroutine
+
+    subroutine copy_to_spectrum_1D(spectr)
+        use spectrum_mod
+        implicit none
+        type(spectrum) :: spectr
+        type(spectrum_point) ::p
+        integer i
+        do i= 1, spectr%size
+            p = spectr%data(i)
+            ynzm0(i) = p%nz
+            pm0(i) = p%power
+        end do        
+        plaun = spectr%input_power
+        ispl = spectr%size
     end subroutine
 
     function create_spectrum() result(spectr)

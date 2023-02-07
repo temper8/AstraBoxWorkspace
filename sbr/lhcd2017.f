@@ -53,14 +53,16 @@ cc*********************************************************************
      & AMETR,RHO,SHIF,ELON,TRIA,MU,NE,TE,TI,ZEF,UPL)
 
       full_spectrum = read_spectrum('lhcd/spectrum.dat')
+      full_spectrum%input_power = p_in
       call divide_spectrum(full_spectrum, pos_spectr, neg_spectr)
-      pause
+      
 !!!!!!!!!!!!! starting ray-tracing !!!!!!!!!!!!!!!!!!!!!
       allocate(outpep(ngrid),outpem(ngrid))
 
 !!positive spectrum:
       print *, 'positive spectrum'
-      call read_positive_spectrum('lhcd/ray_tracing.dat', p_in)
+      !call read_positive_spectrum('lhcd/ray_tracing.dat', p_in)
+      call copy_to_spectrum_1D(pos_spectr)
       pe_p=zero
       outpep=zero
       if(plaun.eq.zero) then
@@ -81,7 +83,8 @@ cc*********************************************************************
 
 !!negative spectrum:
        print *, 'negative spectrum'
-       call read_negative_spectrum('lhcd/ray_tracing.dat', p_in)
+       !call read_negative_spectrum('lhcd/ray_tracing.dat', p_in)
+       call copy_to_spectrum_1D(neg_spectr)
        pe_m=zero
        outpem=zero       
        if(plaun.eq.zero) then
