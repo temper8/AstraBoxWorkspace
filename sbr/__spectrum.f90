@@ -30,7 +30,8 @@ module spectrum_mod
         type(spectrum_point), allocatable ::  data(:)
         !! 
     contains
-
+        procedure :: get_positive_part => get_positive_part_method
+        procedure :: get_negative_part => get_negative_part_method
     end type spectrum
 
     interface spectrum
@@ -47,7 +48,80 @@ contains
         this%input_power = 0
         this%sum_power = 0
         allocate(this%data(size))
-    end function spectrum_constructor     
+    end function spectrum_constructor 
+
+    function get_positive_part_method(this) result(spectr)
+        !! 
+        implicit none
+        class(spectrum), intent(in) :: this
+        type(spectrum) :: spectr, tmp_spectr
+        type(spectrum_point) :: p        
+        integer i, n
+        print *, 'read positive'
+        tmp_spectr = spectrum(this%size)
+        n = 0
+        do i = 1, this%size
+            p = this%data(i)
+            if (p%nz>0) then
+                n = n + 1                
+                tmp_spectr%data(n) = p
+                tmp_spectr%sum_power = tmp_spectr%sum_power + p%power
+            end if
+        end do
+        tmp_spectr%size = n
+
+        spectr = spectrum(n)
+        spectr%sum_power = tmp_spectr%sum_power
+        do i = 1, n
+            spectr%data(i) = tmp_spectr%data(i)
+        end do
+        spectr%size = n
+        spectr%direction = +1
+        spectr%power_ratio = spectr%sum_power/this%sum_power
+        spectr%input_power = spectr%power_ratio * this%input_power
+        print *, this%size, n        
+        print *, 'sum_power ', this%sum_power, spectr%sum_power
+        print *, 'power_ratio ', this%power_ratio, spectr%power_ratio
+        print *, 'input_power ', this%input_power, spectr%input_power
+
+    end function get_positive_part_method
+
+    function get_negative_part_method(this) result(spectr)
+        !! 
+        implicit none
+        class(spectrum), intent(in) :: this
+        type(spectrum) :: spectr, tmp_spectr
+        type(spectrum_point) :: p
+        integer i, n
+        print *, 'negative positive'
+        tmp_spectr = spectrum(this%size)
+        n = 0
+        do i = 1, this%size
+            p = this%data(i)
+            if (p%nz<0) then
+                n = n + 1                
+                p%nz = -p%nz
+                tmp_spectr%data(n) = p
+                tmp_spectr%sum_power = tmp_spectr%sum_power + p%power
+            end if
+        end do
+        tmp_spectr%size = n
+
+        spectr = spectrum(n)
+        spectr%sum_power = tmp_spectr%sum_power
+        do i = 1, n
+            spectr%data(i) = tmp_spectr%data(n + 1 - i)
+        end do
+        spectr%size = n
+        spectr%direction = -1
+        spectr%power_ratio = spectr%sum_power/this%sum_power
+        spectr%input_power = spectr%power_ratio * this%input_power
+        print *, this%size, n        
+        print *, 'sum_power ', this%sum_power, spectr%sum_power
+        print *, 'power_ratio ', this%power_ratio, spectr%power_ratio
+        print *, 'input_power ', this%input_power, spectr%input_power
+
+    end function get_negative_part_method
 
     function read_spectrum(file_name) result(spectr)
         !- чтение spectrum из файла

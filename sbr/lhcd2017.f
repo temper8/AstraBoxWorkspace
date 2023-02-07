@@ -54,20 +54,17 @@ cc*********************************************************************
 
       full_spectrum = read_spectrum('lhcd/spectrum.dat')
       full_spectrum%input_power = p_in
-      call divide_spectrum(full_spectrum, pos_spectr, neg_spectr)
-      
+      pos_spectr = full_spectrum%get_positive_part()
+      neg_spectr = full_spectrum%get_negative_part()
+
 !!!!!!!!!!!!! starting ray-tracing !!!!!!!!!!!!!!!!!!!!!
       allocate(outpep(ngrid),outpem(ngrid))
 
 !!positive spectrum:
       print *, 'positive spectrum'
-      !call read_positive_spectrum('lhcd/ray_tracing.dat', p_in)
-      !call copy_to_spectrum_1D(pos_spectr)
       pe_p=zero
       outpep=zero
       if(pos_spectr%input_power > zero) then
-            !call spectrum_approximation(+1)
-            !spectr = create_spectrum()
             spectr = make_spline_approximation(pos_spectr)
             call ourlhcd2017(spectr, outpep,pe_p)
       else
@@ -85,13 +82,9 @@ cc*********************************************************************
 
 !!negative spectrum:
        print *, 'negative spectrum'
-       !call read_negative_spectrum('lhcd/ray_tracing.dat', p_in)
-       !call copy_to_spectrum_1D(neg_spectr)
        pe_m=zero
        outpem=zero       
        if(neg_spectr%input_power > zero) then
-            !call spectrum_approximation(-1)
-            !spectr = create_spectrum()
             spectr = make_spline_approximation(neg_spectr)
             call ourlhcd2017(spectr, outpem,pe_m)              
        else
