@@ -71,7 +71,7 @@ cc*********************************************************************
             !call spectrum_approximation(+1)
             !spectr = create_spectrum()
             spectr = make_spline_approximation(pos_spectr)
-            call ourlhcd2017(+1,spectr, outpep,pe_p)
+            call ourlhcd2017(spectr, outpep,pe_p)
       end if      
       if(pe_p.ne.zero) then
             c_p=vint(outpep,roc)
@@ -94,7 +94,7 @@ cc*********************************************************************
             !call spectrum_approximation(-1)
             !spectr = create_spectrum()
             spectr = make_spline_approximation(neg_spectr)
-            call ourlhcd2017(-1,spectr, outpem,pe_m)  
+            call ourlhcd2017(spectr, outpem,pe_m)  
        endif     
        if(pe_m.ne.zero) then
             c_m=vint(outpem,roc)
@@ -112,7 +112,7 @@ cc*********************************************************************
       deallocate(outpep,outpem)
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine ourlhcd2017(ispectr,spectr, outpe,pe_out)      
+      subroutine ourlhcd2017(spectr, outpe,pe_out)      
       use constants
       use approximation
       use spline
@@ -169,7 +169,9 @@ cc*********************************************************************
       integer iptnew
       real*8 dijk, vrjnew
       common/t01/dijk(101,100,2), vrjnew(101,100,2), iptnew
+      integer ispectr
 
+      ispectr = spectr%direction
       lfree=1
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
