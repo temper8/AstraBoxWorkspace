@@ -124,63 +124,63 @@ contains
                     powexit=point%power
                     dltpow=pabs
                     call dqliter(dltpow,ib,ie,hr,powexit,iout)
-                    if(nmax0.eq.0) then
+                    if (nmax0.eq.0) then
                         ib=mbeg(itr)
                         ie=mend(itr)
-                        pow1=powexit
-                        pgamma=1.d0-pow1/point%power
-                        powexit=pow1/pgamma
-                        dltpow=powexit-pow1+pabs
+                        pow1 = powexit
+                        pgamma = 1.d0-pow1/point%power
+                        powexit = pow1/pgamma
+                        dltpow = powexit-pow1+pabs
                         call dqliter(dltpow,ib,ie,hr,powexit,iout)
-                        powexit=powexit-dltpow+pabs
-                        if(powexit.lt.zero) powexit=zero
+                        powexit = powexit-dltpow+pabs
+                        if (powexit.lt.zero) powexit=zero
                         go to 30
                     end if
-	                if(iout.eq.0) then
+	                if (iout.eq.0) then
                         go to 30
                     else
-                        tetin=tetzap(itr)
-                        xmin=xmzap(itr)
-                        rin=rzap(itr)
-                        yn3=yn3zap(itr)
-                        pow=powexit
-                        irs=irszap(itr)
-                        iw=iwzap(itr)
-                        izn=iznzap(itr)
-                        jrad(ie+1)=1
-                        dland(ie+1)=lfree
-                        inak=lfree-1
+                        tetin = tetzap(itr)
+                        xmin = xmzap(itr)
+                        rin = rzap(itr)
+                        yn3 = yn3zap(itr)
+                        pow = powexit
+                        irs = irszap(itr)
+                        iw = iwzap(itr)
+                        izn = iznzap(itr)
+                        jrad(ie+1) = 1
+                        dland(ie+1) = lfree
+                        inak = lfree-1
                     end if
                 end if
                 !---------------------------------------
                 ! initial parameters for a trajectory
                 !---------------------------------------
-                xm=xmin
-                rstart=rin !sav2008
-                tet=tetin
-                nmax=nmax0
-                iabsorp=0
-                inak0=inak
+                xm = xmin
+                rstart = rin !sav2008
+                tet = tetin
+                nmax = nmax0
+                iabsorp = 0
+                inak0 = inak
                 !-------------------------------------
                 ! call ray tracing
                 !-------------------------------------
                 call traj(xm,tet,rstart,nmax,nb1,nb2,itet,inz, pabs) !sav2009
-                nbad1=nbad1+nb1
-                nbad2=nbad2+nb2
-                nrefj(itr)=nrefj(itr)+nmax
-                powexit=pow
-                nref=nref+nmax
-10              if(iabsorp.lt.0) then
+                nbad1 = nbad1+nb1
+                nbad2 = nbad2+nb2
+                nrefj(itr) = nrefj(itr)+nmax
+                powexit = pow
+                nref = nref+nmax
+10              if (iabsorp.lt.0) then
                     !-------------------------------------
                     !    encounted problems
                     !-------------------------------------
                     if (inak.eq.lenstor-1) then
                         write (*,*) 'fix maximal length'
-                        nmax0=0
+                        nmax0 = 0
                         do i=1,4
-                            nmaxm(i)=0
+                            nmaxm(i) = 0
                         end do
-                        iout=1
+                        iout = 1
                         goto 20
                     end if
                     if (ipri.gt.1) then
@@ -189,49 +189,49 @@ contains
 
 111                     format(1x,'traj. with tet0=',f10.5,1x,', Ninput=',f10.5,1x,'failed')
                     end if
-                    mbad(itr)=1
-                    plost=plost+pow
-                    inak=inak0
-                    mend(itr)=inak-1
+                    mbad(itr) = 1
+                    plost= plost+pow
+                    inak = inak0
+                    mend(itr) = inak-1
                     goto 30
                 end if
                 !---------------------------------------
                 ! remember end point of trajectory
                 !---------------------------------------
-                rzap(itr)=rzz
-                tetzap(itr)=tetzz
-                xmzap(itr)=xmzz
-                yn3zap(itr)=yn3
-                iznzap(itr)=iznzz
-                iwzap(itr)=iwzz
-                irszap(itr)=irszz
-                if(iterat.eq.0) then
-                    if(itr.gt.1) mbeg(itr)=mend(itr-1)+2
-                    mend(itr)=inak
-                    jrad(mend(itr)+1)=0
-                    lfree=mend(itr)+2
-                    inak=lfree-1
+                rzap(itr) = rzz
+                tetzap(itr) = tetzz
+                xmzap(itr) = xmzz
+                yn3zap(itr) = yn3
+                iznzap(itr) = iznzz
+                iwzap(itr) = iwzz
+                irszap(itr) = irszz
+                if (iterat.eq.0) then
+                    if (itr.gt.1) mbeg(itr) = mend(itr-1)+2
+                    mend(itr) = inak
+                    jrad(mend(itr)+1) = 0
+                    lfree = mend(itr)+2
+                    inak = lfree-1
                 end if
 20              continue
                 if(iout.ne.0) then
-                    dcoll(ie+1)=inak
-                    jrad(inak+1)=0
-                    lfree=inak+2
+                    dcoll(ie+1) = inak
+                    jrad(inak+1) = 0
+                    lfree = inak+2
                 end if
                 if(nrefj(itr).gt.maxref.and.pow.gt.pabs) then !forced absorp
                     if(pow.ge.point%power) go to 30 !sav2008
-                    ib=mbeg(itr)
-                    ie=mend(itr)
-                    pow1=pow
-                    pgamma=1.d0-pow1/point%power
-                    powexit=pow1/pgamma
-                    dltpow=powexit-pow1+pabs
+                    ib = mbeg(itr)
+                    ie = mend(itr)
+                    pow1 = pow
+                    pgamma = 1.d0-pow1/point%power
+                    powexit = pow1/pgamma
+                    dltpow = powexit-pow1+pabs
                     call dqliter(dltpow,ib,ie,hr,powexit,iout)
-                    powexit=powexit-dltpow+pabs
+                    powexit = powexit-dltpow+pabs
                     if(powexit.lt.zero) powexit=zero
                 end if
 30              continue
-                pnab=pnab+powexit
+                pnab = pnab+powexit
 31              continue
             end do
             if(ipri.gt.1) write(*,1003)itet,icall1,icall2,nref,lfree-1,nbad1,nbad2
@@ -260,30 +260,30 @@ contains
         real(dp),  parameter :: rhostart=1.d0
         integer, parameter :: ntry_max=5
 
-        ifail=1
-        rini=zero
-        ntry=0
-        pa=rhostart
+        ifail = 1
+        rini = zero
+        ntry = 0
+        pa = rhostart
         do while(ntry.lt.ntry_max.and.pa.ge.2d0*hr)
-            pa=rhostart-hr*dble(ntry)-1.d-4
-            ntry=ntry+1
-            ivar=1
+            pa = rhostart-hr*dble(ntry)-1.d-4
+            ntry = ntry+1
+            ivar = 1
             call disp2(pa,xm,tet,xnr,prt,prm)
-            if(inew.gt.0) then !g' in ST and poloidal grill direction
-                yn3=zero                 !Nfi=0
-                xm=yn*dsqrt(g22)/si      !given Npar at Nfi=0
+            if (inew.gt.0) then !g' in ST and poloidal grill direction
+                yn3 = zero                 !Nfi=0
+                xm = yn*dsqrt(g22)/si      !given Npar at Nfi=0
 !!              xm=yn*dsqrt(g22)         !given yn=(N*jpol) at Nfi=0
             else !usual tokamak and toroidal grill direction
-                xm=zero               !N2=0
-                yn3=yn*dsqrt(g33)/co  !if given Npar at Nteta=0
+                xm = zero               !N2=0
+                yn3 = yn*dsqrt(g33)/co  !if given Npar at Nteta=0
 !!              yn3=yn*dsqrt(g33)       !if given Nfi at Nteta=0
             end if
-            ivar=0
-            iroot=2
+            ivar = 0
+            iroot = 2
             call disp2(pa,xm,tet,xnr,f1,f2)
-            if(f1.ge.zero.and.f2.ge.zero) then
-                rini=pa
-                ifail=0
+            if (f1.ge.zero.and.f2.ge.zero) then
+                rini = pa
+                ifail = 0
                 return
             end if
         end do
