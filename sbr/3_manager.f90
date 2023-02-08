@@ -18,7 +18,7 @@ contains
         !use spectrum1D, only: ynzm, pm
         use trajectory
         use spectrum_mod
-        implicit real*8 (a-h,o-z)
+        implicit none
         type (spectrum) spectr
         type (spectrum_point) point
         real*8 pabs
@@ -26,12 +26,15 @@ contains
         real*8 rzap(mpnt),tetzap(mpnt),xmzap(mpnt),yn3zap(mpnt)
         !common /a0a1/ ynzm(1001),pm(1001) 
         !common /a0a2/ tet1,tet2
+        real*8 plost,pnab
         common /a0a4/ plost,pnab
+        real*8 rzz,tetzz,xmzz
         common /abc/ rzz,tetzz,xmzz,iznzz,iwzz,irszz
         common /abcd/ irs
         common /abcde/ izn
         common /abcdg/ iabsorp
         !common /abefo/ yn3
+        real*8 pow
         common /acg/ pow
         !common /a0gh/ pabs
         common /aef2/ icall1,icall2
@@ -43,6 +46,9 @@ contains
         integer iw0, ifail, iabsirp, inak0,ib,ie,izn
         integer lfree, nmax, iabsorp, i, nb1,nb2
         integer iznzz, iwzz, irszz
+        real(dp) htet, hr, yn, rin, xmin, rstart
+        real(dp) xnr, powexit, dltpow,  pow1, pgamma, xm
+        real(dp) tetin0, tetin, tet
 
         pabs = spectr%max_power*pabs0/1.d2
         print *, 'pabs =',pabs, spectr%max_power, pabs0
