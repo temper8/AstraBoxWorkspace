@@ -51,44 +51,44 @@ contains
         real(dp) tetin0, tetin, tet
 
         pabs = spectr%max_power*pabs0/1.d2
-        print *, 'pabs =',pabs, spectr%max_power, pabs0
+        print *, 'pabs =', pabs, spectr%max_power, pabs0
 
-        lenstor=length
-        htet=zero
-        hr=1.d0/dble(nr+1) !sav2008
-        if(ntet.ne.1) htet=(tet2-tet1)/(ntet-1)
-        irs=1
-        iout=0
-        mbeg(1)=1
-        itr=0
-        inak=0
-        nnj=0
-        do n_it=0,3
-            nnj=nnj+nmaxm(n_it+1)
+        lenstor = length
+        htet = zero
+        hr = 1.d0/dble(nr+1) !sav2008
+        if (ntet.ne.1) htet = (tet2-tet1)/(ntet-1)
+        irs = 1
+        iout = 0
+        mbeg(1) = 1
+        itr = 0
+        inak = 0
+        nnj = 0
+        do n_it = 0,3
+            nnj = nnj+nmaxm(n_it+1)
         end do
-        maxref=nnj
-        if(iterat.lt.3) nmax0=nmaxm(iterat+1)
-        if(iterat.ge.3) nmax0=nmaxm(4)
-        if(ipri.gt.1) then
+        maxref = nnj
+        if (iterat.lt.3) nmax0=nmaxm(iterat+1)
+        if (iterat.ge.3) nmax0=nmaxm(4)
+        if (ipri.gt.1) then
             write(*,1001) iterat+1
             write(*,1002)
         end if
-        ibad=0
+        ibad = 0
         !--------------------------------------
         ! begin outer loop on teta
         !--------------------------------------
-        do itet=1,ntet
-            nref=0
-            nbad1=0
-            nbad2=0
-            icall1=0
-            icall2=0
-            tetin=tet1+htet*(itet-1)
+        do itet = 1,ntet
+            nref = 0
+            nbad1 = 0
+            nbad2 = 0
+            icall1 = 0
+            icall2 = 0
+            tetin = tet1+htet*(itet-1)
             !--------------------------------------
             ! begin inner loop on nz
             !--------------------------------------
-            do inz=1, spectr%size
-                itr=itr+1
+            do inz = 1, spectr%size
+                itr = itr+1
                 !ipri          if(ipri.eq.4)  write(23,*)
                 point = spectr%data(inz)
                 if(iterat.eq.0) then
@@ -100,33 +100,33 @@ contains
                     pow = point%power
                     !yn=ynzm(inz) !sav2008, yn is introduced
                     !pow=pm(inz)
-                    irs=1
-                    iw=iw0
-                    rin=rini(xmin,tetin,xnr,yn,hr,ifail)
-                    if(ifail.eq.1) then
-                        if(ipri.gt.1) write (*,*) 'error: no roots'
-                        iabsorp=-1
-                        inak0=inak
+                    irs = 1
+                    iw = iw0
+                    rin = rini(xmin,tetin,xnr,yn,hr,ifail)
+                    if (ifail.eq.1) then
+                        if (ipri.gt.1) write (*,*) 'error: no roots'
+                        iabsorp = -1
+                        inak0 = inak
                         go to 10
                     end if
-                    rbeg(itr)=rin !sav2008
-                    tetbeg(itr)=tetin !sav2008
-                    xnrbeg(itr)=xnr !sav2008
-                    xmbeg(itr)=xmin !sav2008
-                    yn3beg(itr)=yn3 !sav2008
+                    rbeg(itr) = rin !sav2008
+                    tetbeg(itr) = tetin !sav2008
+                    xnrbeg(itr) = xnr !sav2008
+                    xmbeg(itr) = xmin !sav2008
+                    yn3beg(itr) = yn3 !sav2008
                 else
-                    if(mbad(itr).ne.0) then
-                        plost=plost+point%power
+                    if (mbad(itr).ne.0) then
+                        plost = plost+point%power
                         go to 31
                     end if
-                    ib=mbeg(itr)
-                    ie=mend(itr)
-                    powexit=point%power
-                    dltpow=pabs
+                    ib = mbeg(itr)
+                    ie = mend(itr)
+                    powexit = point%power
+                    dltpow = pabs
                     call dqliter(dltpow,ib,ie,hr,powexit,iout)
                     if (nmax0.eq.0) then
-                        ib=mbeg(itr)
-                        ie=mend(itr)
+                        ib = mbeg(itr)
+                        ie = mend(itr)
                         pow1 = powexit
                         pgamma = 1.d0-pow1/point%power
                         powexit = pow1/pgamma
