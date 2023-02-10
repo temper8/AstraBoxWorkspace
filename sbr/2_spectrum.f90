@@ -7,6 +7,10 @@ module spectrum_mod
         !! 
         real(dp) ny
         !!
+        real(dp) Ntor   
+        !! Ntau=-Ntor   
+        real(dp) Npol
+        !! Ntet=Npol
         real(dp) power
         !! power
 
