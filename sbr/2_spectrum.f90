@@ -301,7 +301,7 @@ contains
             !pabs=pabs0*pmax/1.d2
             appx_spectr = spectrum(nnz)
             do i= 1, nnz
-                appx_spectr%data(i) = spectrum_point(nz= ynzm(i), ny = 0, power = pm(i))
+                appx_spectr%data(i) = spectrum_point(nz= ynzm(i), ny = 0, power = pm(i), Ntor = 0, Npol = 0)
             end do
             appx_spectr%max_power = pmax
             appx_spectr%direction = ispectr
@@ -484,7 +484,7 @@ module spectrum1D
         pmax = 0
         spectr = spectrum(nnz)
         do i= 1, nnz
-            p = spectrum_point(nz= ynzm(i), ny = 0, power = pm(i))
+            p = spectrum_point(nz= ynzm(i), ny = 0, power = pm(i), Ntor = 0, Npol = 0)
             if (pm(i) > pmax) pmax=pm(i)
             spectr%data(i) = p
         end do
