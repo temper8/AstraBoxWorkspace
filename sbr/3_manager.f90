@@ -52,7 +52,6 @@ contains
 
         pabs = spectr%max_power*pabs0/1.d2
         print *, 'pabs =', pabs, spectr%max_power, pabs0
-
         lenstor = length
         htet = zero
         hr = 1.d0/dble(nr+1) !sav2008
@@ -102,7 +101,7 @@ contains
                     !pow=pm(inz)
                     irs = 1
                     iw = iw0
-                    rin = rini(xmin,tetin,xnr,yn,hr,ifail)
+                    rin = rini(xmin,tetin,xnr,point,hr,ifail)
                     if (ifail.eq.1) then
                         if (ipri.gt.1) write (*,*) 'error: no roots'
                         iabsorp = -1
@@ -235,6 +234,7 @@ contains
 31              continue
             end do
             if(ipri.gt.1) write(*,1003)itet,icall1,icall2,nref,lfree-1,nbad1,nbad2
+            print *,'itr =', itr
         end do
 1001    format (30x,i4,' iteration')
 1002    format (6x,'n',5x,'call2',6x,'call4',6x,'nrefl',4x,'last',5x,'bad2',5x,'bad4')
@@ -245,11 +245,13 @@ contains
     end    
 
 
-    real*8 function rini(xm,tet,xnr,yn,hr,ifail) !sav2009
+    real*8 function rini(xm,tet,xnr,point,hr,ifail) !sav2009
         use constants, only : zero
         use rt_parameters, only : inew
+        use spectrum_mod
         implicit none
-        real(dp) xm, tet,xnr,yn,hr
+        type(spectrum_point) :: point
+        real(dp) xm, tet,xnr,hr
         integer ifail, ntry
         real(dp) :: vgrp(3),vph(3)
         real(dp) :: ynz,ynpopq
@@ -260,7 +262,6 @@ contains
         real(dp) :: f1,f2
         real(dp),  parameter :: rhostart=1.d0
         integer, parameter :: ntry_max=5
-
         ifail = 1
         rini = zero
         ntry = 0
@@ -271,13 +272,17 @@ contains
             ivar = 1
             !call disp2(pa,xm,tet,xnr,prt,prm)
             if (inew.gt.0) then !g' in ST and poloidal grill direction
-                yn3 = zero                 !Nfi=0
-                xm = yn*dsqrt(g22)/si      !given Npar at Nfi=0
+                !yn3 = zero                 !Nfi=0
+                !xm = yn*dsqrt(g22)/si      !given Npar at Nfi=0
+                yn3 = point%ny**dsqrt(g33)/co     
+                xm = point%nz*dsqrt(g22)/si
 !!              xm=yn*dsqrt(g22)         !given yn=(N*jpol) at Nfi=0
             else !usual tokamak and toroidal grill direction
-                xm = zero               !N2=0
-                yn3 = yn*dsqrt(g33)/co  !if given Npar at Nteta=0
+                !xm = zero               !N2=0
+                !yn3 = yn*dsqrt(g33)/co  !if given Npar at Nteta=0
 !!              yn3=yn*dsqrt(g33)       !if given Nfi at Nteta=0
+                yn3 = point%nz*dsqrt(g33)/co    
+                xm = point%ny*dsqrt(g22)/si
             end if
             ivar = 0
             iroot = 2
