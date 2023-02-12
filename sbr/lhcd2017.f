@@ -65,7 +65,16 @@ cc*********************************************************************
       pe_p=zero
       outpep=zero
       if(pos_spectr%input_power > zero) then
-            spectr = make_spline_approximation(pos_spectr)
+            print *, 'spectrum_type',spectrum_type
+            !pause
+            if (spectrum_type == 1) then
+                  spectr = pos_spectr !make_spline_approximation(pos_spectr)
+                  call spectr%calc_max_power
+            else
+                  spectr = pos_spectr
+                  call spectr%calc_max_power
+                  !pause
+            endif
             call ourlhcd2017(spectr, outpep,pe_p)
       else
             dij(:,:,1)=zero
@@ -85,7 +94,13 @@ cc*********************************************************************
        pe_m=zero
        outpem=zero       
        if(neg_spectr%input_power > zero) then
-            spectr = make_spline_approximation(neg_spectr)
+            if (spectrum_type == 1) then
+                  spectr = neg_spectr !make_spline_approximation(neg_spectr)
+                  call spectr%calc_max_power
+            else
+                  spectr = neg_spectr
+                  call spectr%calc_max_power
+            endif            
             call ourlhcd2017(spectr, outpem,pe_m)              
        else
             dij(:,:,2)=zero
@@ -162,9 +177,10 @@ cc*********************************************************************
       double precision dj2(101),d2j(101)
 
       integer iptnew
-      real*8 dijk, vrjnew
+      real*8 dijk, vrjnew, plaun
       common/t01/dijk(101,100,2), vrjnew(101,100,2), iptnew
       integer ispectr
+      plaun = spectr%input_power
 
       ispectr = spectr%direction
       lfree=1
@@ -624,7 +640,7 @@ c------------------------------------------
        zv2(j,k)=vrj(ni1+ni2+ipt1)
       end do
 
-      if (ispectr == -1) call view(tcur,1,nnz,ntet)  !writing trajectories into a file
+      if (ispectr == -1) call view(tcur,1,spectr%size,ntet)  !writing trajectories into a file
 
       if(ismthout.ne.0) then
        do i=1,nrr

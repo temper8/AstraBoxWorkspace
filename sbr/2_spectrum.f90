@@ -35,6 +35,7 @@ module spectrum_mod
     contains
         procedure :: get_positive_part => get_positive_part_method
         procedure :: get_negative_part => get_negative_part_method
+        procedure :: calc_max_power => calc_max_power_method
     end type spectrum
 
     interface spectrum
@@ -53,6 +54,29 @@ contains
         allocate(this%data(size))
     end function spectrum_constructor 
 
+    subroutine calc_max_power_method(this)
+        use constants, only: xsgs
+        use rt_parameters, only : ntet
+        implicit none
+        class(spectrum),  intent(inout) :: this
+        type(spectrum_point) :: p           
+        real(dp) max_power, pnorm
+        integer i
+        max_power = 0
+        pnorm = this%power_ratio*xsgs/ntet/100
+        print *, 'pnorm =', pnorm        
+        do i = 1, this%size
+            p = this%data(i)
+            p%power = p%power*pnorm
+            p%nz = this%direction * p%nz
+            this%data(i) = p
+            if (p%power>max_power)  max_power = p%power
+        end do        
+        
+        this%max_power = max_power
+        print *, 'this%max_power = ', this%max_power
+    end subroutine
+
     function get_positive_part_method(this) result(spectr)
         !! 
         implicit none
@@ -66,6 +90,7 @@ contains
         do i = 1, this%size
             p = this%data(i)
             if (p%nz>0) then
+                
                 n = n + 1                
                 tmp_spectr%data(n) = p
                 tmp_spectr%sum_power = tmp_spectr%sum_power + p%power
@@ -164,6 +189,10 @@ contains
             read (20,*) spectr%data(i)%nz, spectr%data(i)%ny, spectr%data(i)%power
             sum_power = sum_power + spectr%data(i)%power
         enddo
+        !sum_power
+        !do i=1,n
+        !    spectr%data(i)%power = spectr%data(i)%power/sum_power
+        !enddo
         spectr%sum_power = sum_power
         close(20)
 
@@ -291,10 +320,11 @@ contains
             ynzm(nnz)=.5d0*(ynzm0(ispl)+xx2)
             pm(nnz)=pinp-ptot
             pnorm=plaun*xsgs/(pinp*ntet)
+            print *, 'pnorm =', pnorm
             pmax=-1d+10
             do i=1,nnz
                 call splnt(ynzm0,pm0,yn2z,ispl,ynzm(i),powinp(i),dynn)
-                pm(i)=pm(i)*pnorm
+                !pm(i)=pm(i)*pnorm
                 if (pm(i).gt.pmax) pmax=pm(i)
                 ynzm(i)=dble(ispectr)*ynzm(i) !sav2009
             end do
@@ -305,6 +335,7 @@ contains
             end do
             appx_spectr%max_power = pmax
             appx_spectr%direction = ispectr
+            appx_spectr%power_ratio = spectr%power_ratio
         end function    
 end module spectrum_mod
 
