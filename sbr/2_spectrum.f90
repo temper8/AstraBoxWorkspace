@@ -63,7 +63,7 @@ contains
         real(dp) max_power, pnorm
         integer i
         max_power = 0
-        pnorm = this%power_ratio*xsgs/ntet/100
+        pnorm = this%power_ratio*xsgs/ntet
         print *, 'pnorm =', pnorm        
         do i = 1, this%size
             p = this%data(i)
