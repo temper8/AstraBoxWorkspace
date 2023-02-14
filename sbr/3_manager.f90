@@ -258,7 +258,7 @@ contains
         common /bcef/ ynz,ynpopq
         real(dp) :: g11,g12,g22,g33,gg,g,si,co
         common/metrika/g11,g12,g22,g33,gg,g,si,co !sav2009
-        real(dp) :: pa!, prt, prm,
+        real(dp) :: pa, prt, prm
         real(dp) :: f1,f2
         real(dp),  parameter :: rhostart=1.d0
         integer, parameter :: ntry_max=5
@@ -270,7 +270,7 @@ contains
             pa = rhostart-hr*dble(ntry)-1.d-4
             ntry = ntry+1
             ivar = 1
-            !call disp2(pa,xm,tet,xnr,prt,prm)
+            call disp2(pa,xm,tet,xnr,prt,prm)
             if (inew.gt.0) then !g' in ST and poloidal grill direction
                 !yn3 = zero                 !Nfi=0
                 !xm = yn*dsqrt(g22)/si      !given Npar at Nfi=0
