@@ -102,6 +102,8 @@ module rt_parameters
     integer ::   nnz
     !! nnz,      N_phi grid number    
 
+    integer ::   spectrum_type
+    !! spectrum type 1 - 1D, 2 = 2D, 3, scatter
 
     contains      
     subroutine show_parameters()          
@@ -187,7 +189,7 @@ module rt_parameters
                read(iunit,*) zminus
                read(iunit,*) ntet
                read(iunit,*) nnz
-               read(iunit,*)
+               read(iunit,*) spectrum_type
         close(iunit)        
 
         print *, 'checking initial parameters'
