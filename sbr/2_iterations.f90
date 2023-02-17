@@ -82,11 +82,19 @@ contains
         print *, fname
 
         open(iu, file=fname,position="append")
-        !call this%save_header(iu)
-        !call this%save_data(iu)
-        !    write (20, '(2012(ES22.14))') gv(:)
-        !    write (20, '(2012(ES22.14))') ga(:)
-            write (20, *), this%number, this%spectr_direction, this%P_launched, this%P_landau
+        if (this%number == 1 ) then
+            write (20, '(18A21)') 'iteration', 'direction','P_launched', &
+            'P_landau', 'P_coll', 'P_alph', 'alphas_power', 'P_fast', 'P_lost', &
+            'P_not_accounted', 'P_landau_strong_abs', 'P_landau_weak_abs', &
+            'P_turns', 'efficiency', 'avedens', 'r0',  'eta_eff','residual'
+
+        endif
+        write (20, '(2(I21), 16(ES21.14))') this%number, this%spectr_direction, &
+                    this%P_launched, this%P_landau, this%P_coll, this%P_alph, &
+                    this%alphas_power, this%P_fast, this%P_lost, this%P_not_accounted, &
+                    this%P_landau_strong_absorption, this%P_landau_weak_absorption, &
+                    this%P_turns, this%efficiency, this%avedens, this%r0, &
+                    this%eta_eff, this%residual
         close(iu)
 
     end subroutine     
