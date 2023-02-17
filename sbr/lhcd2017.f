@@ -135,6 +135,7 @@ cc*********************************************************************
       use spectrum_mod
       use manager_mod
       use current
+      use iterations
       implicit real*8 (a-h,o-z)
       type(spectrum) spectr
       real*8 outpe,pe_out 
@@ -169,7 +170,8 @@ cc*********************************************************************
       !common /alph/ dqi0(50,100)
       common /ag/ inak,lenstor,lfree
       common /maxrho/ rmx_n,rmx_t,rmx_z,rmx_ti
-
+      
+      type(IterationResult) :: iteration_result
       real*8 kofpar,timecof
       real*8,dimension(:),allocatable:: vvj,vdfj
       integer kpt1,kpt3
@@ -473,29 +475,25 @@ c----------------------------------------
       if(iterat.gt.5.and.q_cond.le.pabs0.and.pchg.lt.pgiter)
      & go to 110
       pchgprev=pchg
+
+      call integral(1,nspl,rh,con,avedens) 
+
+      iteration_result = IterationResult(number = iterat, 
+     & spectr_direction = ispectr, P_launched = plaun,
+     & P_landau = ol, P_coll = oc, P_alph = oa,
+     & alphas_power = fuspow, P_fast = of,
+     & P_lost = plost/xsgs, P_not_accounted = pnab/xsgs,
+     & P_landau_strong_absorption = ppv1/xsgs,
+     & P_landau_weak_absorption = ppv2/xsgs,
+     & P_turns = psum4/xsgs, efficiency = oi/plaun,
+     & avedens = avedens*1.d19, r0 = r0*1.d-2,
+     & eta_eff = 1.d17*avedens*r0*oi/plaun,
+     & residual = pchg)
+
       if(ipri.gt.1) then
-       write(*,*)
-       write(*,*) 'ITERATION:'
-       write(*,*) 'iteration=',iterat
-       write (*,*) 'ispectr=',ispectr
-       write(*,*) 'P_launched, MW=',plaun
-       write(*,*) 'P_landau, MW=',ol
-       write(*,*) 'P_coll, MW=',oc
-       write(*,*) 'P_alph, MW=',oa 
-       write(*,*) 'Alphas power, MW=',fuspow
-       write(*,*) 'P_fast (landau+coll), MW=',of
-       write(*,*) 'P_lost, MW=',plost/xsgs
-       write(*,*) 'P_not accounted, MW=',pnab/xsgs
-       write(*,*) 'P_landau (strong absorption), MW=',ppv1/xsgs
-       write(*,*) 'P_landau (weak absorption), MW=',ppv2/xsgs
-       write(*,*) 'P_turns, MW=', psum4/xsgs
-       write(*,*) 'efficiency, I(MA)/P(MW)=',oi/plaun !sav2008
-       call integral(1,nspl,rh,con,avedens) !sav2010
-       write (*,*) '<Ne>, m^-3=',avedens*1.d19,' R, m=',r0*1.d-2
-       eta_eff=1.d17*avedens*r0*oi/plaun
-       write (*,*) 'eta_eff=<Ne>*R*I/P, A/(W*m^2)=',eta_eff !sav2010
-       write(*,*) 'nevyazka=', pchg
+            call iteration_result%print
       end if
+
       if(iterat.le.niterat) then
 c-------------------------------------------
 c   recalculate f' for a new mesh
