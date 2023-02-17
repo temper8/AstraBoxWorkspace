@@ -492,6 +492,8 @@ c----------------------------------------
 
       if(ipri.gt.1) then
             call iteration_result%print
+            call iteration_result%save(tcur)
+            !pause
       end if
 
       if(iterat.le.niterat) then

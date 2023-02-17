@@ -43,6 +43,7 @@ module iterations
     
     contains
         procedure :: print => iteration_result_print
+        procedure :: save => iteration_result_save
     
     end type IterationResult
 contains
@@ -70,4 +71,23 @@ contains
         print *, 'eta_eff=<Ne>*R*I/P, A/(W*m^2)=',this%eta_eff
         print *, 'nevyazka=', this%residual
     end subroutine iteration_result_print
+
+    subroutine iteration_result_save(this, time_stamp)
+        !! save Iteration Result to file
+        class(IterationResult), intent(in) :: this
+        real(dp), intent(in) :: time_stamp
+        character(120) fname
+        integer, parameter :: iu = 20
+        write(fname,'("lhcd/rt-result/", f9.7,".dat")')  time_stamp
+        print *, fname
+
+        open(iu, file=fname,position="append")
+        !call this%save_header(iu)
+        !call this%save_data(iu)
+        !    write (20, '(2012(ES22.14))') gv(:)
+        !    write (20, '(2012(ES22.14))') ga(:)
+            write (20, *), this%number, this%spectr_direction, this%P_launched, this%P_landau
+        close(iu)
+
+    end subroutine     
 end module iterations
