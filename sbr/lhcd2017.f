@@ -472,9 +472,6 @@ c----------------------------------------
       q_cond=zero
       if(q_abs.ne.zero) q_cond=0.5d0*q_rest/q_abs
 !!!      if(q_cond.le.pabs0.and.pchg.lt.pgiter)
-      if(iterat.gt.5.and.q_cond.le.pabs0.and.pchg.lt.pgiter)
-     & go to 110
-      pchgprev=pchg
 
       call integral(1,nspl,rh,con,avedens) 
 
@@ -490,11 +487,16 @@ c----------------------------------------
      & eta_eff = 1.d17*avedens*r0*oi/plaun,
      & residual = pchg)
 
+      if(iterat.gt.5.and.q_cond.le.pabs0.and.pchg.lt.pgiter) goto 110
+
       if(ipri.gt.1) then
             call iteration_result%print
             call iteration_result%save(tcur)
             !pause
       end if
+
+
+
 
       if(iterat.le.niterat) then
 c-------------------------------------------
@@ -569,27 +571,8 @@ c------------------------------------------
       if(ipri.gt.0) then
        write (*,*)
        write (*,*) 'RAY-TRACING RESULTS:'
-       write (*,*) 'ispectr=',ispectr
-       write (*,*) 'P_launched, MW=',plaun
-       write (*,*) 'P_landau, MW=',ol
-       write (*,*) 'P_coll, MW=',oc
-       write (*,*) 'P_alph, MW=',oa
-       write (*,*) 'Alphas power, MW=',fuspow
-       write (*,*) 'P_fast (landau+coll), MW=',of
-       write (*,*) 'P_lost, MW=',plost/xsgs
-       write (*,*) 'P_not accounted, MW=',pnab/xsgs
-       write (*,*) '~~~~~~~~~~~~~~'
-       write (*,*) 'P_landau (strong absorption), MW=',ppv1/xsgs
-       write (*,*) 'P_landau (weak absorption), MW=',ppv2/xsgs
-       write (*,*) 'P_turns, MW=', psum4/xsgs
-       write (*,*) '~~~~~~~~~~~~~~'
-       write (*,*) 'efficiency, I(MA)/P(MW)=',oi/plaun !sav2008
-       call integral(1,nspl,rh,con,avedens) !sav2010
-       write (*,*) '<Ne>, m^-3=',avedens*1.d19,' R, m=',r0*1.d-2
-       eta_eff=1.d17*avedens*r0*oi/plaun
-       write (*,*) 'eta_eff=<Ne>*R*I/P, A/(W*m^2)=',eta_eff !sav2010
-       write (*,*) 'nevyazka=', pchg
-       write (*,*) 'iterations=',iterat
+       call iteration_result%print
+       call iteration_result%save(tcur)
        write (*,*) '-------------------------------------------'
       end if
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
