@@ -22,8 +22,8 @@
       real*8 ynzmp(1001),pmp(1001),ynzmm(1001),pmm(1001)
 
       real*8 efld(100),r,vmax
-      real*8 zff,zefff,fnr,fnrr
-      real*8 pn,fn1,fn2,gst,dens,tmp,vt,vclt
+      real*8 zff,fnr,fnrr
+      real*8 pn,gst,dens,tmp,vt,vclt
       real*8 znak
       real*8 calls
       common/firstcall/calls

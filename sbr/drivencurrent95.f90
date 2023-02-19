@@ -113,10 +113,11 @@
       use plasma, only : rh, rh1, fvt, sk
       use maxwell
       use rt_parameters, only : nr
+      use plasma, only: fn1,fn2
       implicit none
       real*8 outj(*),ohj(*),cuj,cujoh,curs,curs0,curdir
       real*8 currn,pqe,vt0,ccur,cfull,cfull0
-      real*8 r,pn,fn1,fn2,fnr,fnrr,vt,vto!,rh1
+      real*8 r,pn,fnr,fnrr,vt,vto!,rh1
       integer klo,khi,ierr,nrr,i,j,inpt,ispectr,ismthout
       !common /a0ab/ nr
       !real*8 y2dn,y2tm,y2tmi

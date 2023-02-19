@@ -262,11 +262,56 @@ contains
         pt=ft(r)
         fvt=dsqrt(pt/9.11d-28)
     end
+
+    double precision  function fn1(x,fnp)
+    !! plasma density and its derivative
+    use spline      
+    implicit real*8 (a-h,o-z)
+    !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
+    !common /a0l4/ con(501),tem(501),temi(501),nspl
+    parameter(zero=0.d0,alfa=4.d0,dr=.02d0)
+    pa=dabs(x)
+    if(pa.le.rh(nspl)) then
+     call splnt(rh,con,y2dn,nspl,pa,y,dy)
+    else
+     call splnt(rh,con,y2dn,nspl,rh(nspl),y1,dy1)
+     r=pa-rh(nspl)
+     y=rh(nspl)*dexp(-alfa*(r/dr)**2)
+     dy=-2.d0*alfa*y*r/dr**2 !corrected
+    end if
+    fn1=y*1.d+13    !cm^-3
+    fnp=dy*1.d+13
+    end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    double precision  function fn2(r,fnp,fnpp)
+    !! plasma density and its first and second derivatives
+    use chebyshev
+    implicit real*8 (a-h,o-z)
+    !common/ne_cheb/chebne(50),chebdne(50),chebddne(50),ncheb
+    parameter(zero=0.d0,alfa=4.d0,dr=.02d0)
+    x=dabs(r)
+    if(x.le.1.d0) then
+     y=chebev(zero,1.d0,chebne,ncheb,x)
+     dy=chebev(zero,1.d0,chebdne,ncheb,x)
+     ddy=chebev(zero,1.d0,chebddne,ncheb,x)
+    else
+     y1=chebev(zero,1.d0,chebne,ncheb,1.d0)
+     s=x-1.d0
+     y=y1*dexp(-alfa*(s/dr)**2)
+     dy=-2.d0*alfa*y*s/dr**2
+     ddy=-2.d0*alfa*y*(1.d0-2.d0*alfa*(s/dr)**2)/dr**2
+    end if
+    fn2=y    !cm^-3
+    fnp=dy
+    fnpp=ddy
+    end
+
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     double precision  function ft(x)
-    ! electron temperature, erg
+    !! electron temperature, erg
         use spline
-    !    use plasma
         implicit real*8 (a-h,o-z)
         !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
         !common /a0l4/ con(501),tem(501),temi(501),nspl
@@ -282,12 +327,44 @@ contains
         ft=y*0.16d-8      ! erg
     end    
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    double precision  function fti(x)
+    ! ion temperature, kev
+          use spline      
+          implicit real*8 (a-h,o-z)
+          !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
+          !common /a0l4/ con(501),tem(501),temi(501),nspl
+          parameter(zero=0.d0,alfa=4.d0,dr=.02d0)
+          pa=dabs(x) !#@sav
+          if(pa.le.rh(nspl)) then
+           call splnt(rh,temi,y2tmi,nspl,pa,y,dy)
+          else
+           r=pa-rh(nspl)
+           y=temi(nspl)*dexp(-alfa*(r/dr)**2)
+          end if
+          fti=y              ! kev
+          end
+    
+    double precision  function zefff(x)
+    !! z_effective profile
+          use spline      
+          implicit real*8 (a-h,o-z)
+          !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
+          !common /a0l4/ con(501),tem(501),temi(501),nspl
+          !common /a0l5/ y2zeff(501)
+          parameter(zero=0.d0,alfa=4.d0,dr=.02d0)
+          pa=dabs(x) !#@sav
+          if(pa.le.rh(nspl)) then
+           call splnt(rh,zeff,y2zeff,nspl,pa,y,dy)
+          else
+           r=pa-rh(nspl)
+           y=zeff(nspl)*dexp(-alfa*(r/dr)**2)
+          end if
+          zefff=y
+          end
 
     double precision  function obeom(ptet,pa)
     use constants
     use approximation
-!    use plasma
     implicit real*8 (a-h,o-z)
     !common /a0befr/ pi,pi2
     !common /a0ef1/ cltn
