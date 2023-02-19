@@ -136,6 +136,7 @@ cc*********************************************************************
       use manager_mod
       use current
       use iteration_result_mod
+      use iterator_mod
       implicit real*8 (a-h,o-z)
       type(spectrum) spectr
       real*8 outpe,pe_out 
@@ -144,25 +145,24 @@ cc*********************************************************************
      &,pd2(100),pd2a(100),pd2b(100),pdprev1(100),pdprev2(100)
      &,source(100),sour(100)
      &,rxx(102),pwe(102),wrk(102)
-      dimension vmid(100),vz1(100),vz2(100),ibeg(100),iend(100)
-      common /a0a4/ plost,pnab
+      !dimension vmid(100),vz1(100),vz2(100),ibeg(100),iend(100)
+      !common /a0a4/ plost,pnab
       common /bcef/ ynz,ynpopq
       common /a0ghp/ vlf,vrt,dflf,dfrt
       common/plosh/ zv1(100,2),zv2(100,2)!,sk(100)
       common /asou/ rsou(102),sou(102),npta
-      common/gridv/vgrid(101,100),dfundv(101,100),nvpt
-      common /vvv2/ psum4
+      !common/gridv/vgrid(101,100),dfundv(101,100),nvpt
+      !common /vvv2/ psum4
       common /arr/ dgdu(50,100),kzero(100)
       common /ag/ inak,lenstor,lfree
       common /maxrho/ rmx_n,rmx_t,rmx_z,rmx_ti
       
       type(IterationResult) :: iteration_result
       real*8 kofpar,timecof
-      real*8,dimension(:),allocatable:: vvj,vdfj
-      integer kpt1,kpt3
-      parameter(kpt1=20,kpt3=20)
-      double precision vrj(101),dj(101),djnew(1001)
-      double precision dj2(101),d2j(101)
+      !real*8,dimension(:),allocatable:: vvj,vdfj
+
+      !double precision vrj(101),dj(101),djnew(1001)
+      !double precision dj2(101),d2j(101)
 
       integer iptnew
       real*8 dijk, vrjnew, plaun
@@ -461,73 +461,10 @@ c----------------------------------------
             !pause
       end if
 
-
-
-
       if(iterat.le.niterat) then
-c-------------------------------------------
-c   recalculate f' for a new mesh
-c-------------------------------------------
-      k=(3-ispectr)/2
-      do j=1,nr
-            r=hr*dble(j)
-            vt=fvt(r)
-            vto=vt/vt0
-            if(iterat.gt.0) then
-                  v1=dmin1(vzmin(j),vz1(j))
-                  v2=dmax1(vzmax(j),vz2(j))
-            else
-                  v1=vzmin(j)
-                  v2=vzmax(j)
-            end if
-            vmax=cltn/vto
-            vp1=v1/vto
-            vp2=v2/vto
-            call gridvel(vp1,vp2,vmax,cdel,ni1,ni2,ipt1,kpt3,vrj)
-            do i=1,i0
-                  vvj(i)=vij(i,j)
-                  vdfj(i)=dfij(i,j,k) !=dfundv(i,j)*vto**2
-            end do
-      do i=1,ipt
-        call lock(vvj,i0,vrj(i),klo,khi,ierr)
-        if(ierr.eq.1) then
-!!!         if(vrj(i).gt.vvj(i0)) exit
-            write(*,*)'lock error in new v-mesh'
-            write(*,*)'j=',j,' i0=',i0
-            write(*,*)'vvj(1)=',vvj(1),' vvj(i0)=',vvj(i0)
-            write(*,*)'i=',i,' vrj(i)=',vrj(i)
-            write(*,*)
-            pause'next key = stop'
-            stop
-        end if
-        call linf(vvj,vdfj,vrj(i),dfout,klo,khi)
-        vgrid(i,j)=vrj(i)*vto
-        dfundv(i,j)=dfout/vto**2
-        if(dfundv(i,j).gt.zero) dfundv(i,j)=zero
-      end do
-      vz1(j)=v1
-      vz2(j)=v2
-      end do
-!!----------------------------
-        ppv1=zero
-        ppv2=zero
-        psum4=zero
-        pnab=zero
-        plost=zero
-        dql=zero
-        dq1=zero
-        dq2=zero
-        dncount=zero
-        vzmin=cltn
-        vzmax=-cltn
-        pdl=zero
-        pdc=zero
-        pda=zero
-        pdfast=zero
-      if(itend0.gt.0) then
-            dqi0=zero
-      end if
-      goto 80
+            call recalculate_f_for_a_new_mesh(ispectr)
+            call init_iteration
+            goto 80
       end if
 c------------------------------------------
 c save results
@@ -733,11 +670,12 @@ c----------------------------------
       use rt_parameters
       use trajectory
       use current
+      use iterator_mod, only: psum4
       implicit real*8 (a-h,o-z)
       dimension an1(length),an2(length)
       common /xn1xn2/ an1,an2
       common /a0ghp/ vlf,vrt,dflf,dfrt
-      common /vvv2/ psum4
+      !common /vvv2/ psum4
       parameter(clt=3.d10,zero=0.d0)
       pow=powexit
       pdec1=zero
@@ -2281,12 +2219,13 @@ cu    uses derivs,mmid,pzextr
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine distr(vz,j,ifound,fder)
+      use iterator_mod
       implicit none
       real*8 vz,fder
-      integer j,ifound,i,klo,khi,ierr,nvpt,nvp
+      integer j,ifound,i,klo,khi,ierr,nvp
       real*8,dimension(:),allocatable:: vzj,dfdvj
-      real*8 vgrid,dfundv,vlf,vrt,dflf,dfrt,dfout
-      common/gridv/vgrid(101,100),dfundv(101,100),nvpt
+      real*8 vlf,vrt,dflf,dfrt,dfout
+      !common/gridv/vgrid(101,100),dfundv(101,100),nvpt
       common /a0ghp/ vlf,vrt,dflf,dfrt
       nvp=nvpt
       allocate(vzj(nvp),dfdvj(nvp))

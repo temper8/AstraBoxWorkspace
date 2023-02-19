@@ -18,6 +18,7 @@ contains
         !use spectrum1D, only: ynzm, pm
         use trajectory
         use spectrum_mod
+        use iterator_mod,only: plost, pnab
         implicit none
         type (spectrum) spectr
         type (spectrum_point) point
@@ -26,8 +27,8 @@ contains
         real*8 rzap(mpnt),tetzap(mpnt),xmzap(mpnt),yn3zap(mpnt)
         !common /a0a1/ ynzm(1001),pm(1001) 
         !common /a0a2/ tet1,tet2
-        real*8 plost,pnab
-        common /a0a4/ plost,pnab
+        ! real*8 plost,pnab
+        !common /a0a4/ plost,pnab
         real*8 rzz,tetzz,xmzz
         common /abc/ rzz,tetzz,xmzz,iznzz,iwzz,irszz
         common /abcd/ irs
