@@ -140,34 +140,19 @@ cc*********************************************************************
       type(spectrum) spectr
       real*8 outpe,pe_out 
       dimension outpe(*)
-!!!!    maximum grid sizes:
-!!!!    rho=100, v_par_electrons=100, v_perp_ions=50
-!      external obeom,ploshad
       dimension galfa(50,100),vpmin(100),vcva(100)
      &,pd2(100),pd2a(100),pd2b(100),pdprev1(100),pdprev2(100)
      &,source(100),sour(100)
      &,rxx(102),pwe(102),wrk(102)
       dimension vmid(100),vz1(100),vz2(100),ibeg(100),iend(100)
- !     parameter(mpnt=10000)
-!      common/refl/nrefj(mpnt)
-!      real*8 ynzm, pm
-!      common /a0a1/ ynzm(1001),pm(1001) 
       common /a0a4/ plost,pnab
       common /bcef/ ynz,ynpopq
-      !common /a0gh/ pabs
       common /a0ghp/ vlf,vrt,dflf,dfrt
       common/plosh/ zv1(100,2),zv2(100,2)!,sk(100)
-      !common /a0i2/ vk(100)
-      !common /a0i3/ dql(101,100),pdl(100),vzmin(100),vzmax(100)
-      !common /a0i4/ fcoll(100),dens(100),eta(100)
       common /asou/ rsou(102),sou(102),npta
       common/gridv/vgrid(101,100),dfundv(101,100),nvpt
-      !common/vvv1/dq1(101,100),dq2(101,100),pdc(100),pda(100),ppv1,ppv2
-      !common/findsigma/dncount(101,100)
       common /vvv2/ psum4
-      !common /vvv3/ pdfast(100)
       common /arr/ dgdu(50,100),kzero(100)
-      !common /alph/ dqi0(50,100)
       common /ag/ inak,lenstor,lfree
       common /maxrho/ rmx_n,rmx_t,rmx_z,rmx_ti
       
@@ -641,16 +626,10 @@ c------------------------------------------
       !use spectrum1D, only: pabs
       use trajectory
       implicit real*8 (a-h,o-z)
-      !parameter(length=5000000)
       real*8 pabs
       real*8 radth
-      !dimension dland(length),dcoll(length),perpn(length),dalf(length)
-      !dimension vel(length),jrad(length),iww(length),tetai(length)
-      !dimension xnpar(length),izz(length)
-      !common/agh/xnpar,vel,dland,dcoll,dalf,perpn,tetai,jrad,iww,izz
       dimension an1(length),an2(length)
       common /xn1xn2/ an1,an2
-      !common /a0gh/ pabs
       common /vth/ vthc(length),poloidn(length)
       common /a0ghp/ vlf,vrt,dflf,dfrt
       common /abcdg/ iabsorp
@@ -659,13 +638,10 @@ c------------------------------------------
       common /bcg/ hrad
       common /bg/ im4
       common /ceg/ ipow,jfoundr
-      !common /a0ab/ nr
       common /eg1/ vfound,ifound
       common /eg2/ pdec1,pdec2,pdec3,pdecv,pdecal,dfdv,icf1,icf2
       common /eg3/ cf1,cf2,cf3,cf4,cf5,cf6
       common /dg/ pintld4,pintcl4,pintal4
-      !common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
-      !common/b0/ itend0
       parameter(clt=3.d10,zero=0.d0)
       powpr=pow
       iabsorp=0
@@ -758,17 +734,10 @@ c----------------------------------
       use trajectory
       use current
       implicit real*8 (a-h,o-z)
-      !parameter(length=5000000)
-      !dimension dland(length),dcoll(length),perpn(length),dalf(length)
-      !dimension vel(length),jrad(length),iww(length),tetai(length)
-      !dimension xnpar(length),izz(length)
-      !common/agh/xnpar,vel,dland,dcoll,dalf,perpn,tetai,jrad,iww,izz
       dimension an1(length),an2(length)
       common /xn1xn2/ an1,an2
       common /a0ghp/ vlf,vrt,dflf,dfrt
-      !common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
       common /vvv2/ psum4
-      !common/b0/ itend0
       parameter(clt=3.d10,zero=0.d0)
       pow=powexit
       pdec1=zero
@@ -869,26 +838,15 @@ c---------------------------------------------
       external extd4
       real*8 pabs
       dimension ystart(2),yy(4)
-      !common /a0ab/ nr
-      !common /a0abcd/ ipri
-      !common /a0bcd/ eps
-      !common /a0bcp/ tin
-      !common /a0bd/ rrange,hdrob
-      !common /a0befr/ pi,pi2
-      !common /a0ef1/ cltn
- !!     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       common /abc/ rzz,tetzz,xmzz,iznzz,iwzz,irszz
       common /abcd/ irs
       common /abcde/ izn!,iw
       common /abcdg/ iabsorp
       common /bcg/ hrad
       common /bcef/ ynz,ynpopq
-      !common /bdeo/ ivar
       common /be1/ xnr1,xnr2,xnr3,xnr4
       common /be2/ ider
-      !common /beo/ iroot
       common /bg/ im4
- !     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
       integer nomth,nomnz
       parameter (pgdop=0.02d0,hmin=0.d-7) !sav2008, old hmin=1.d-7
       eps0=eps
@@ -1060,14 +1018,6 @@ c-------------------------------------
       implicit real*8 (a-h,o-z)
       external extd2
       real*8 pabs
-      !common /a0abcd/ ipri
-      !common /a0ab/ nr
-      !common /a0bcd/ eps
-      !common /a0bcp/ tin
-      !common /a0befr/ pi,pi2
-      !common /a0cd/ rbord,maxstep2,maxstep4
-      !common /a0cdm/ hmin1
-      !common /a0ef1/ cltn
       common /abc/ rzz,tetzz,xmzz,iznzz,iwzz,irszz
       common /abcd/ irs
       common /abcde/ izn!,iw
@@ -1208,17 +1158,10 @@ c---------------------------------------
       use rt_parameters
       implicit real*8 (a-h,o-z)
       external derivs
-      !common /a0befr/ pi,pi2
-      !common /a0abcd/ ipri
-      !common /a0bcd/ eps
-      !common /a0cdm/ hmin1
-      !common /a0bd/ rrange,hdrob
-      !common /a0cd/ rbord,maxstep2,maxstep4
       common /abcd/ irs
       common /abcde/ izn!,iw
       common /abcdg/ iabsorp
       common /bdeo/ ivar
-      !common /a0ef1/ cltn
       common /bcef/ ynz,ynpopq
       common /df/ pdec14,pdec24,pdec34,idec
       common /dg/ pintld4,pintcl4,pintal4
@@ -1363,33 +1306,20 @@ c---------------------------------------
       use rt_parameters
       use manager_mod, only: ivar, iroot, yn3
       implicit real*8 (a-h,o-z)
-      !common /a0befr/ pi,pi2
-      !common /a0ef1/ cltn
-      !common /a0ef2/ ww
-      !common /a0ef3/ xmi,cnye,cnyi,xsz,vt0
       common /abcde/ izn!,iw
       common /bcef/ ynz,ynpopq
-      !common /abefo/ yn3
       common /aef2/ icall1,icall2
-      !common /bdeo/ ivar
       common /be1/ xnr1,xnr2,xnr3,xnr4
       common /be2/ ider
-      !common /beo/ iroot
       common /cefn/ iconv,irefl
       common /ceg/ ipow,jfoundr
       common /eg1/ vfound,ifound
       common /eg2/ pdec1,pdec2,pdec3,pdecv,pdecal,dfdv,icf1,icf2
       common /eg3/ cf1,cf2,cf3,cf4,cf5,cf6
-      !common/a00/ xlog,zalfa,xmalfa,dn1,dn2 !,factor
-      !common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
-      !common/b0/ itend0
-!     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
-      !common /cnew/ inew !est !sav2008
       common/fj/dhdm,dhdnr,dhdtet,dhdr,ddn,dhdn3,dhdv2v,dhdu2u
       common/direct/znakstart
       common/metrika/g11,g12,g22,g33,gg,g,si,co
       common/fjham/ham
-      !parameter(clt=3.d10)
       iconv=0
       irefl=0
       if(pa.ge.one.or.pa.le.zero) goto70
@@ -1735,21 +1665,10 @@ c    reflection
       use rt_parameters            
       use manager_mod, only: yn3
       implicit real*8 (a-h,o-z)
-      !common /a0befr/ pi,pi2
-      !common /a0ef1/ cltn
-      !common /a0ef2/ ww
-      !common /a0ef3/ xmi,cnye,cnyi,xsz,vt0
       common /bcef/ ynz,ynpopq
-      !common /abefo/ yn3
       common /aef2/ icall1,icall2
       common /cefn/ iconv,irefl
       common /df/ pdec14,pdec24,pdec34,idec
-      !common/a00/ xlog,zalfa,xmalfa,dn1,dn2!,factor
-      !common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
-      !common/b0/ itend0
-!     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
-      !common /cnew/ inew !est !sav2008
-      !common/plasma/v,u,e1,e2,e3,dvdr,dudr,dudt
       common/metrika/g11,g12,g22,g33,gg,g,si,co
       common/fj/dhdm,dhdnr,dhdtet,dhdr,ddn,dhdn3,dhdv2v,dhdu2u
       common/fjham/ham
@@ -2111,7 +2030,6 @@ cu    uses derivs,mmid,pzextr
       save a,alf,epsold,first,kmax,kopt,nseq,xnew
       double precision dyd
       integer ii,ind
-      !common /a0cdm/ hmin1
       common /cmn/ ind
       data first/.true./,epsold/-1.d0/
       data nseq /2,4,6,8,10,12,14,16,18/
