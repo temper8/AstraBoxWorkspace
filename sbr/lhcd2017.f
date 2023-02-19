@@ -136,6 +136,7 @@ cc*********************************************************************
       use manager_mod
       use current
       use iteration_result_mod
+      use iterator_mod
       implicit real*8 (a-h,o-z)
       type(spectrum) spectr
       real*8 outpe,pe_out 
@@ -144,13 +145,13 @@ cc*********************************************************************
      &,pd2(100),pd2a(100),pd2b(100),pdprev1(100),pdprev2(100)
      &,source(100),sour(100)
      &,rxx(102),pwe(102),wrk(102)
-      dimension vmid(100),vz1(100),vz2(100),ibeg(100),iend(100)
+      !dimension vmid(100),vz1(100),vz2(100),ibeg(100),iend(100)
       common /a0a4/ plost,pnab
       common /bcef/ ynz,ynpopq
       common /a0ghp/ vlf,vrt,dflf,dfrt
       common/plosh/ zv1(100,2),zv2(100,2)!,sk(100)
       common /asou/ rsou(102),sou(102),npta
-      common/gridv/vgrid(101,100),dfundv(101,100),nvpt
+      !common/gridv/vgrid(101,100),dfundv(101,100),nvpt
       common /vvv2/ psum4
       common /arr/ dgdu(50,100),kzero(100)
       common /ag/ inak,lenstor,lfree
@@ -158,11 +159,10 @@ cc*********************************************************************
       
       type(IterationResult) :: iteration_result
       real*8 kofpar,timecof
-      real*8,dimension(:),allocatable:: vvj,vdfj
-      integer kpt1,kpt3
-      parameter(kpt1=20,kpt3=20)
-      double precision vrj(101),dj(101),djnew(1001)
-      double precision dj2(101),d2j(101)
+      !real*8,dimension(:),allocatable:: vvj,vdfj
+
+      !double precision vrj(101),dj(101),djnew(1001)
+      !double precision dj2(101),d2j(101)
 
       integer iptnew
       real*8 dijk, vrjnew, plaun
@@ -461,31 +461,27 @@ c----------------------------------------
             !pause
       end if
 
-
-
-
       if(iterat.le.niterat) then
-
-!!----------------------------
-        ppv1=zero
-        ppv2=zero
-        psum4=zero
-        pnab=zero
-        plost=zero
-        dql=zero
-        dq1=zero
-        dq2=zero
-        dncount=zero
-        vzmin=cltn
-        vzmax=-cltn
-        pdl=zero
-        pdc=zero
-        pda=zero
-        pdfast=zero
-      if(itend0.gt.0) then
-            dqi0=zero
-      end if
-      goto 80
+            call recalculate_f_for_a_new_mesh(ispectr)
+            ppv1=zero
+            ppv2=zero
+            psum4=zero
+            pnab=zero
+            plost=zero
+            dql=zero
+            dq1=zero
+            dq2=zero
+            dncount=zero
+            vzmin=cltn
+            vzmax=-cltn
+            pdl=zero
+            pdc=zero
+            pda=zero
+            pdfast=zero
+            if(itend0.gt.0) then
+                  dqi0=zero
+            end if
+            goto 80
       end if
 c------------------------------------------
 c save results
@@ -2239,12 +2235,13 @@ cu    uses derivs,mmid,pzextr
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine distr(vz,j,ifound,fder)
+      use iterator_mod
       implicit none
       real*8 vz,fder
-      integer j,ifound,i,klo,khi,ierr,nvpt,nvp
+      integer j,ifound,i,klo,khi,ierr,nvp
       real*8,dimension(:),allocatable:: vzj,dfdvj
-      real*8 vgrid,dfundv,vlf,vrt,dflf,dfrt,dfout
-      common/gridv/vgrid(101,100),dfundv(101,100),nvpt
+      real*8 vlf,vrt,dflf,dfrt,dfout
+      !common/gridv/vgrid(101,100),dfundv(101,100),nvpt
       common /a0ghp/ vlf,vrt,dflf,dfrt
       nvp=nvpt
       allocate(vzj(nvp),dfdvj(nvp))

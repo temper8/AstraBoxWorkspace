@@ -1,13 +1,40 @@
 module iterator_mod
     use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64      
     implicit none
-    
+    real(dp) :: vmid(100),vz1(100),vz2(100)
+    integer  :: ibeg(100),iend(100)
+
+    real(dp) :: vrj(101),dj(101),djnew(1001)
+    real(dp) :: dj2(101),d2j(101)
+
+    real(dp), dimension(:), allocatable:: vvj, vdfj
+
+    real(dp) :: vgrid(101,100), dfundv(101,100)
+    !!common/gridv/vgrid(101,100),dfundv(101,100)
+    integer  :: nvpt
+    !!common/gridv/nvpt
+    integer :: ipt1, ipt2, ipt
+    integer, parameter :: kpt1=20, kpt3=20
+
+    integer :: iterat
 contains
-    subroutine recalculate_f_for_a_new_mesh
+    subroutine recalculate_f_for_a_new_mesh(ispectr)
+        !!   recalculate f' for a new mesh
+        use constants, only : zero
+        use rt_parameters, only : nr, ni1,ni2
+        use plasma, only: vt0, fvt, cltn
+        use current, only: vzmin, vzmax
+        use maxwell, only: i0, vij, dfij
         implicit none
-        !-------------------------------------------
-        !   recalculate f' for a new mesh
-        !-------------------------------------------
+        integer, intent(in) :: ispectr
+        
+        integer i, j, k
+        real(dp) :: cdel, dfout
+
+        integer :: klo,khi,ierr
+        real(dp) :: r, hr, vt, vto, vmax
+        real(dp) :: v1, v2, vp1, vp2
+        hr = 1.d0/dble(nr+1)
         k=(3-ispectr)/2
         do j=1,nr
             r=hr*dble(j)
