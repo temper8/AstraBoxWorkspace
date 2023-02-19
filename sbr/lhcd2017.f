@@ -146,13 +146,13 @@ cc*********************************************************************
      &,source(100),sour(100)
      &,rxx(102),pwe(102),wrk(102)
       !dimension vmid(100),vz1(100),vz2(100),ibeg(100),iend(100)
-      common /a0a4/ plost,pnab
+      !common /a0a4/ plost,pnab
       common /bcef/ ynz,ynpopq
       common /a0ghp/ vlf,vrt,dflf,dfrt
       common/plosh/ zv1(100,2),zv2(100,2)!,sk(100)
       common /asou/ rsou(102),sou(102),npta
       !common/gridv/vgrid(101,100),dfundv(101,100),nvpt
-      common /vvv2/ psum4
+      !common /vvv2/ psum4
       common /arr/ dgdu(50,100),kzero(100)
       common /ag/ inak,lenstor,lfree
       common /maxrho/ rmx_n,rmx_t,rmx_z,rmx_ti
@@ -463,24 +463,7 @@ c----------------------------------------
 
       if(iterat.le.niterat) then
             call recalculate_f_for_a_new_mesh(ispectr)
-            ppv1=zero
-            ppv2=zero
-            psum4=zero
-            pnab=zero
-            plost=zero
-            dql=zero
-            dq1=zero
-            dq2=zero
-            dncount=zero
-            vzmin=cltn
-            vzmax=-cltn
-            pdl=zero
-            pdc=zero
-            pda=zero
-            pdfast=zero
-            if(itend0.gt.0) then
-                  dqi0=zero
-            end if
+            call init_iteration
             goto 80
       end if
 c------------------------------------------
@@ -687,11 +670,12 @@ c----------------------------------
       use rt_parameters
       use trajectory
       use current
+      use iterator_mod, only: psum4
       implicit real*8 (a-h,o-z)
       dimension an1(length),an2(length)
       common /xn1xn2/ an1,an2
       common /a0ghp/ vlf,vrt,dflf,dfrt
-      common /vvv2/ psum4
+      !common /vvv2/ psum4
       parameter(clt=3.d10,zero=0.d0)
       pow=powexit
       pdec1=zero

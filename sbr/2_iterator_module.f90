@@ -17,7 +17,36 @@ module iterator_mod
     integer, parameter :: kpt1=20, kpt3=20
 
     integer :: iterat
+    real(dp) :: psum4
+    !!common /vvv2/ psum4
+    real(dp) plost,pnab
+    !!common /a0a4/ plost,pnab
 contains
+    subroutine init_iteration
+        use constants, only : zero
+        use rt_parameters, only : itend0
+        use current
+        use plasma, only: cltn
+        implicit none
+        ppv1=zero
+        ppv2=zero
+        psum4=zero
+        pnab=zero
+        plost=zero
+        dql=zero
+        dq1=zero
+        dq2=zero
+        dncount=zero
+        vzmin=cltn
+        vzmax=-cltn
+        pdl=zero
+        pdc=zero
+        pda=zero
+        pdfast=zero
+        if(itend0.gt.0) then
+              dqi0=zero
+        end if
+    end 
     subroutine recalculate_f_for_a_new_mesh(ispectr)
         !!   recalculate f' for a new mesh
         use constants, only : zero
