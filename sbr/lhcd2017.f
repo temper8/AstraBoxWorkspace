@@ -394,30 +394,11 @@ c------------------------------------
 !!!!!!!!!!!!!!! begin iterations !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       q_rest=plaun
       iterat=0
-      nvmin=1 !minimum counted events at a given radius rho
+
 80    continue
       call manager(iterat, iw0, ntet, spectr)
-c-----------------------------------------------
-c  find achieved radial points jbeg-jend
-c----------------------------------------------
-      jbeg=1
-      jend=0
-      do j=1,nr
-            nvach=0
-            do i=1,nvpt
-                  nvach=nvach+dncount(i,j)
-            end do
-            if(nvach.lt.nvmin) then
-                  if(jend.eq.0) jbeg=jbeg+1
-            else
-            jend=j
-            end if
-      end do
-      if(jend.eq.0.or.jbeg.ge.jend) then
-            write(*,*)'failure: jbeg=',jbeg,' jend=',jend 
-            pause
-            stop
-      end if
+
+      call find_achieved_radial_points(nvpt)
 
       do j=1,nr
             pdl(j)=pdl(j)*xwtt

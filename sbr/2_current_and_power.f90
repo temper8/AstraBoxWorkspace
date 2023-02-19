@@ -28,6 +28,34 @@ module current
     !common/findsigma/dncount(101,100)
 contains
 
+subroutine find_achieved_radial_points(nvpt)
+    !!  find achieved radial points jbeg-jend
+    use rt_parameters, only : nr
+    implicit none
+    integer, intent(in) :: nvpt
+    integer i, j, jbeg, jend, nvmin, nvach
+
+    nvmin=1 !minimum counted events at a given radius rho
+    jbeg=1
+    jend=0
+    do j=1,nr
+        nvach=0
+        do i=1,nvpt
+            nvach=nvach+dncount(i,j)
+        end do
+        if(nvach.lt.nvmin) then
+        if(jend.eq.0) jbeg=jbeg+1
+        else
+            jend=j
+        end if
+    end do
+    if(jend.eq.0.or.jbeg.ge.jend) then
+        write(*,*)'failure: jbeg=',jbeg,' jend=',jend 
+        pause
+        stop
+    end if
+end subroutine    
+
 subroutine dfind(j,i,v,powpr,pil,pic,pia,df,decv,refr,vlf,vrt,ifast)
     use constants
     use plasma
