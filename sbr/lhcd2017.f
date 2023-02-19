@@ -135,7 +135,7 @@ cc*********************************************************************
       use spectrum_mod
       use manager_mod
       use current
-      use iterations
+      use iteration_result_mod
       implicit real*8 (a-h,o-z)
       type(spectrum) spectr
       real*8 outpe,pe_out 
