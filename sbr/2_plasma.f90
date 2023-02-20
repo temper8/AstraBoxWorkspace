@@ -239,14 +239,12 @@ contains
         end do        
     end subroutine
 
-    double precision  function fn(x)
-    ! plasma  density,  cm^-3
+    real(dp) function fn(x)
+    !! plasma  density,  cm^-3
+        use constants, only: zero
         use spline      
-    !      use plasma
         implicit real*8 (a-h,o-z)
-        !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
-        !common /a0l4/ con(501),tem(501),temi(501),nspl
-        parameter(zero=0.d0,alfa=4.d0,dr=.02d0)
+        real(dp), parameter :: alfa=4.d0, dr=.02d0
         pa=dabs(x)
         if(pa.le.rh(nspl)) then
             call splnt(rh,con,y2dn,nspl,pa,y,dy)
@@ -257,186 +255,184 @@ contains
         fn=y*1.d+13    !cm^-3
     end    
 
-    double precision  function fvt(r)
+    real(dp) function fvt(r)
+    !! нет описания
         implicit real*8 (a-h,o-z)
         pt=ft(r)
         fvt=dsqrt(pt/9.11d-28)
     end
 
-    double precision  function fn1(x,fnp)
+    real(dp) function fn1(x,fnp)
     !! plasma density and its derivative
-    use spline      
-    implicit real*8 (a-h,o-z)
-    !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
-    !common /a0l4/ con(501),tem(501),temi(501),nspl
-    parameter(zero=0.d0,alfa=4.d0,dr=.02d0)
-    pa=dabs(x)
-    if(pa.le.rh(nspl)) then
-     call splnt(rh,con,y2dn,nspl,pa,y,dy)
-    else
-     call splnt(rh,con,y2dn,nspl,rh(nspl),y1,dy1)
-     r=pa-rh(nspl)
-     y=rh(nspl)*dexp(-alfa*(r/dr)**2)
-     dy=-2.d0*alfa*y*r/dr**2 !corrected
-    end if
-    fn1=y*1.d+13    !cm^-3
-    fnp=dy*1.d+13
+        use constants, only: zero
+        use spline      
+        implicit real*8 (a-h,o-z)
+        real(dp), parameter :: alfa=4.d0, dr=.02d0
+        pa=abs(x)
+        if(pa.le.rh(nspl)) then
+            call splnt(rh,con,y2dn,nspl,pa,y,dy)
+        else
+            call splnt(rh,con,y2dn,nspl,rh(nspl),y1,dy1)
+            r=pa-rh(nspl)
+            y=rh(nspl)*exp(-alfa*(r/dr)**2)
+            dy=-2.d0*alfa*y*r/dr**2 !corrected
+        end if
+        fn1=y*1.d+13    !cm^-3
+        fnp=dy*1.d+13
     end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    double precision  function fn2(r,fnp,fnpp)
+    real(dp) function fn2(r,fnp,fnpp)
     !! plasma density and its first and second derivatives
-    use chebyshev
-    implicit real*8 (a-h,o-z)
-    !common/ne_cheb/chebne(50),chebdne(50),chebddne(50),ncheb
-    parameter(zero=0.d0,alfa=4.d0,dr=.02d0)
-    x=dabs(r)
-    if(x.le.1.d0) then
-     y=chebev(zero,1.d0,chebne,ncheb,x)
-     dy=chebev(zero,1.d0,chebdne,ncheb,x)
-     ddy=chebev(zero,1.d0,chebddne,ncheb,x)
-    else
-     y1=chebev(zero,1.d0,chebne,ncheb,1.d0)
-     s=x-1.d0
-     y=y1*dexp(-alfa*(s/dr)**2)
-     dy=-2.d0*alfa*y*s/dr**2
-     ddy=-2.d0*alfa*y*(1.d0-2.d0*alfa*(s/dr)**2)/dr**2
-    end if
-    fn2=y    !cm^-3
-    fnp=dy
-    fnpp=ddy
+        use constants, only: zero
+        use chebyshev
+        implicit real*8 (a-h,o-z)
+        !common/ne_cheb/chebne(50),chebdne(50),chebddne(50),ncheb
+        real(dp), parameter :: alfa=4.d0, dr=.02d0
+        x=abs(r)
+        if(x.le.1.d0) then
+            y=chebev(zero,1.d0,chebne,ncheb,x)
+            dy=chebev(zero,1.d0,chebdne,ncheb,x)
+            ddy=chebev(zero,1.d0,chebddne,ncheb,x)
+        else
+            y1=chebev(zero,1.d0,chebne,ncheb,1.d0)
+            s=x-1.d0
+            y=y1*exp(-alfa*(s/dr)**2)
+            dy=-2.d0*alfa*y*s/dr**2
+            ddy=-2.d0*alfa*y*(1.d0-2.d0*alfa*(s/dr)**2)/dr**2
+        end if
+        fn2=y    !cm^-3
+        fnp=dy
+        fnpp=ddy
     end
 
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    double precision  function ft(x)
+    real(dp) function ft(x)
     !! electron temperature, erg
+        use constants, only: zero
         use spline
         implicit real*8 (a-h,o-z)
         !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
         !common /a0l4/ con(501),tem(501),temi(501),nspl
-        parameter(zero=0.d0,alfa=4.d0,dr=.02d0)
-        pa=dabs(x) !#@sav
+        real(dp), parameter :: alfa=4.d0, dr=.02d0
+        pa=abs(x) !#@sav
         if(pa.le.rh(nspl)) then
             call splnt(rh,tem,y2tm,nspl,pa,y,dy)
         else
             r=pa-rh(nspl)
-            y=tem(nspl)*dexp(-alfa*(r/dr)**2)
+            y=tem(nspl)*exp(-alfa*(r/dr)**2)
         end if
         !!      ft=y            ! kev
         ft=y*0.16d-8      ! erg
     end    
 
-    double precision  function fti(x)
-    ! ion temperature, kev
-          use spline      
-          implicit real*8 (a-h,o-z)
-          !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
-          !common /a0l4/ con(501),tem(501),temi(501),nspl
-          parameter(zero=0.d0,alfa=4.d0,dr=.02d0)
-          pa=dabs(x) !#@sav
-          if(pa.le.rh(nspl)) then
-           call splnt(rh,temi,y2tmi,nspl,pa,y,dy)
-          else
-           r=pa-rh(nspl)
-           y=temi(nspl)*dexp(-alfa*(r/dr)**2)
-          end if
-          fti=y              ! kev
-          end
+    real(dp) function fti(x)
+    !! ion temperature, kev
+        use constants, only: zero
+        use spline      
+        implicit real*8 (a-h,o-z)
+        !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
+        !common /a0l4/ con(501),tem(501),temi(501),nspl
+        real(dp), parameter :: alfa=4.d0, dr=.02d0
+        pa=abs(x) !#@sav
+        if(pa.le.rh(nspl)) then
+            call splnt(rh,temi,y2tmi,nspl,pa,y,dy)
+        else
+            r=pa-rh(nspl)
+            y=temi(nspl)*exp(-alfa*(r/dr)**2)
+        end if
+        fti=y              ! kev
+    end
     
-    double precision  function zefff(x)
+    real(dp) function zefff(x)
     !! z_effective profile
-          use spline      
-          implicit real*8 (a-h,o-z)
-          !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
-          !common /a0l4/ con(501),tem(501),temi(501),nspl
-          !common /a0l5/ y2zeff(501)
-          parameter(zero=0.d0,alfa=4.d0,dr=.02d0)
-          pa=dabs(x) !#@sav
-          if(pa.le.rh(nspl)) then
-           call splnt(rh,zeff,y2zeff,nspl,pa,y,dy)
-          else
-           r=pa-rh(nspl)
-           y=zeff(nspl)*dexp(-alfa*(r/dr)**2)
-          end if
-          zefff=y
-          end
+        use constants, only: zero    
+        use spline      
+        implicit real*8 (a-h,o-z)
+        !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
+        !common /a0l4/ con(501),tem(501),temi(501),nspl
+        !common /a0l5/ y2zeff(501)
+        real(dp), parameter :: alfa=4.d0, dr=.02d0
+        pa=abs(x) !#@sav
+        if(pa.le.rh(nspl)) then
+            call splnt(rh,zeff,y2zeff,nspl,pa,y,dy)
+        else
+            r=pa-rh(nspl)
+            y=zeff(nspl)*exp(-alfa*(r/dr)**2)
+        end if
+        zefff=y
+    end
 
-    double precision  function obeom(ptet,pa)
-    use constants
-    use approximation
-    implicit real*8 (a-h,o-z)
-    !common /a0befr/ pi,pi2
-    !common /a0ef1/ cltn
-!     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
-    parameter(pa0=0.d0)
-    xdl=fdf(pa,cdl,ncoef,xdlp)
-    xly=fdf(pa,cly,ncoef,xlyp)
-    xgm=fdf(pa,cgm,ncoef,xgmp)
-    xlyv=xlyp*pa+xly
-    cotet=dcos(ptet)
-    sitet=dsin(ptet)
-    dxdr=-xdlp+cotet-xgmp*sitet**2
-    dxdt=-(pa+two*xgm*cotet)*sitet
-    dzdr=xlyv*sitet
-    dzdt=xly*pa*cotet
-    x0=r0/rm-xdl+pa*cotet-xgm*sitet**2
-    dxdrdt=-sitet-two*xgmp*sitet*cotet
-    dzdrdt=xlyv*cotet
-    dxdtdt=-pa*cotet-two*xgm*(cotet**2-sitet**2)
-    dzdtdt=-xly*pa*sitet
-    x0t=dxdt
+    real(dp) function obeom(ptet,pa)
+        use constants
+        use approximation
+        implicit real*8 (a-h,o-z)
+        !common /a0befr/ pi,pi2
+        !common /a0ef1/ cltn
+        !common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
+        parameter(pa0=0.d0)
+        xdl=fdf(pa,cdl,ncoef,xdlp)
+        xly=fdf(pa,cly,ncoef,xlyp)
+        xgm=fdf(pa,cgm,ncoef,xgmp)
+        xlyv=xlyp*pa+xly
+        cotet=dcos(ptet)
+        sitet=dsin(ptet)
+        dxdr=-xdlp+cotet-xgmp*sitet**2
+        dxdt=-(pa+two*xgm*cotet)*sitet
+        dzdr=xlyv*sitet
+        dzdt=xly*pa*cotet
+        x0=r0/rm-xdl+pa*cotet-xgm*sitet**2
+        dxdrdt=-sitet-two*xgmp*sitet*cotet
+        dzdrdt=xlyv*cotet
+        dxdtdt=-pa*cotet-two*xgm*(cotet**2-sitet**2)
+        dzdtdt=-xly*pa*sitet
+        x0t=dxdt
 !--------------------------------------
 ! components of metric tensor
 !--------------------------------------
-    g11=dxdr**2+dzdr**2
-    g22=dxdt**2+dzdt**2
-    g12=dxdr*dxdt+dzdr*dzdt
-    g33=x0**2
-    xj=(dzdr*dxdt-dxdr*dzdt)**2  !gg=g11*g22-g12*g12
-    g=xj*g33
-    obeom=dsqrt(g)
+        g11=dxdr**2+dzdr**2
+        g22=dxdt**2+dzdt**2
+        g12=dxdr*dxdt+dzdr*dzdt
+        g33=x0**2
+        xj=(dzdr*dxdt-dxdr*dzdt)**2  !gg=g11*g22-g12*g12
+        g=xj*g33
+        obeom=dsqrt(g)
     end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    double precision  function ploshad(ptet,pa)
-    use constants
-    use approximation
-!    use plasma
-    implicit real*8 (a-h,o-z)
-    !common /a0befr/ pi,pi2
-    !common /a0ef1/ cltn
-!     common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
-    parameter(pa0=0.d0)
-    xdl=fdf(pa,cdl,ncoef,xdlp)
-    xly=fdf(pa,cly,ncoef,xlyp)
-    xgm=fdf(pa,cgm,ncoef,xgmp)
-    xlyv=xlyp*pa+xly
-    cotet=dcos(ptet)
-    sitet=dsin(ptet)
-    dxdr=-xdlp+cotet-xgmp*sitet**2
-    dxdt=-(pa+two*xgm*cotet)*sitet
-    dzdr=xlyv*sitet
-    dzdt=xly*pa*cotet
-    x0=r0/rm-xdl+pa*cotet-xgm*sitet**2
-    dxdrdt=-sitet-two*xgmp*sitet*cotet
-    dzdrdt=xlyv*cotet
-    dxdtdt=-pa*cotet-two*xgm*(cotet**2-sitet**2)
-    dzdtdt=-xly*pa*sitet
-    x0t=dxdt
-!--------------------------------------
-! components of metric tensor
-!--------------------------------------
-    g11=dxdr**2+dzdr**2
-    g22=dxdt**2+dzdt**2
-    g12=dxdr*dxdt+dzdr*dzdt
-    xj=(dzdr*dxdt-dxdr*dzdt)**2  !gg=g11*g22-g12*g12
-    ploshad=dsqrt(xj)
+
+    real(dp) function ploshad(ptet,pa)
+        use constants
+        use approximation
+        implicit real*8 (a-h,o-z)
+        !common /a0befr/ pi,pi2
+        !common /a0ef1/ cltn
+        !common /a0k/ cdl(10),cly(10),cgm(10),cmy(10),ncoef
+        parameter(pa0=0.d0)
+        xdl=fdf(pa,cdl,ncoef,xdlp)
+        xly=fdf(pa,cly,ncoef,xlyp)
+        xgm=fdf(pa,cgm,ncoef,xgmp)
+        xlyv=xlyp*pa+xly
+        cotet=dcos(ptet)
+        sitet=dsin(ptet)
+        dxdr=-xdlp+cotet-xgmp*sitet**2
+        dxdt=-(pa+two*xgm*cotet)*sitet
+        dzdr=xlyv*sitet
+        dzdt=xly*pa*cotet
+        x0=r0/rm-xdl+pa*cotet-xgm*sitet**2
+        dxdrdt=-sitet-two*xgmp*sitet*cotet
+        dzdrdt=xlyv*cotet
+        dxdtdt=-pa*cotet-two*xgm*(cotet**2-sitet**2)
+        dzdtdt=-xly*pa*sitet
+        x0t=dxdt
+        !--------------------------------------
+        ! components of metric tensor
+        !--------------------------------------
+        g11=dxdr**2+dzdr**2
+        g22=dxdt**2+dzdt**2
+        g12=dxdr*dxdt+dzdr*dzdt
+        xj=(dzdr*dxdt-dxdr*dzdt)**2  !gg=g11*g22-g12*g12
+        ploshad=dsqrt(xj)
     end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     real(dp) function gaussint(f,a,b,r,eps)
+    !! что-то про гаусс
         implicit none
         real(dp) w(12), x(12)
         real(dp) f, a, b, r, eps
