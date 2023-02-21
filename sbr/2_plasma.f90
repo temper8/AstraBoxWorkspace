@@ -362,6 +362,8 @@ contains
             y=zeff(nspl)*exp(-alfa*(r/dr)**2)
         end if
         zefff=y
+        print *, zefff, x 
+        pause
     end
 
 
