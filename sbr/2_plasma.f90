@@ -245,7 +245,8 @@ contains
     !! plasma  density,  cm^-3
         use constants, only: zero
         use spline      
-        implicit real*8 (a-h,o-z)
+        real(dp), intent(in) :: x
+        real(dp) :: pa, r, y, dy
         real(dp), parameter :: alfa=4.d0, dr=.02d0
         pa=dabs(x)
         if(pa.le.rh(nspl)) then
@@ -259,16 +260,19 @@ contains
 
     real(dp) function fvt(r)
     !! нет описания
-        implicit real*8 (a-h,o-z)
+        real(dp), intent(in) :: r
+        real(dp) :: pt
         pt=ft(r)
-        fvt=dsqrt(pt/9.11d-28)
+        fvt=sqrt(pt/9.11d-28)
     end
 
     real(dp) function fn1(x,fnp)
     !! plasma density and its derivative
         use constants, only: zero
         use spline      
-        implicit real*8 (a-h,o-z)
+        real(dp), intent(in) :: x
+        real(dp), intent(out) :: fnp
+        real(dp) :: r, pa, y1, y, s, dy, dy1 
         real(dp), parameter :: alfa=4.d0, dr=.02d0
         pa=abs(x)
         if(pa.le.rh(nspl)) then
@@ -283,12 +287,13 @@ contains
         fnp=dy*1.d+13
     end
 
-    real(dp) function fn2(r,fnp,fnpp)
+    real(dp) function fn2(r, fnp, fnpp)
     !! plasma density and its first and second derivatives
         use constants, only: zero
         use chebyshev
-        implicit real*8 (a-h,o-z)
-        !common/ne_cheb/chebne(50),chebdne(50),chebddne(50),ncheb
+        real(dp), intent(in) :: r
+        real(dp), intent(out) :: fnp, fnpp
+        real(dp) :: x, y1, y, s, dy, ddy 
         real(dp), parameter :: alfa=4.d0, dr=.02d0
         x=abs(r)
         if(x.le.1.d0) then
@@ -311,9 +316,8 @@ contains
     !! electron temperature, erg
         use constants, only: zero
         use spline
-        implicit real*8 (a-h,o-z)
-        !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
-        !common /a0l4/ con(501),tem(501),temi(501),nspl
+        real(dp), intent(in) :: x
+        real(dp) :: pa, r, y, dy
         real(dp), parameter :: alfa=4.d0, dr=.02d0
         pa=abs(x) !#@sav
         if(pa.le.rh(nspl)) then
@@ -330,9 +334,8 @@ contains
     !! ion temperature, kev
         use constants, only: zero
         use spline      
-        implicit real*8 (a-h,o-z)
-        !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
-        !common /a0l4/ con(501),tem(501),temi(501),nspl
+        real(dp), intent(in) :: x
+        real(dp) :: pa, r, y, dy
         real(dp), parameter :: alfa=4.d0, dr=.02d0
         pa=abs(x) !#@sav
         if(pa.le.rh(nspl)) then
@@ -348,10 +351,8 @@ contains
     !! z_effective profile
         use constants, only: zero    
         use spline      
-        implicit real*8 (a-h,o-z)
-        !common /a0l3/ y2dn(501),y2tm(501),y2tmi(501)
-        !common /a0l4/ con(501),tem(501),temi(501),nspl
-        !common /a0l5/ y2zeff(501)
+        real(dp), intent(in) :: x
+        real(dp) :: pa, r, y, dy
         real(dp), parameter :: alfa=4.d0, dr=.02d0
         pa=abs(x) !#@sav
         if(pa.le.rh(nspl)) then
