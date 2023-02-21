@@ -51,6 +51,8 @@ module plasma
     real(dp) chebne(50),chebdne(50),chebddne(50)    
     !! бывший common/ne_cheb
 
+    real(dp) enorm(100), fst(100)
+    !! em поле и еще что-то
 contains
     subroutine init_plasma(NA1, ABC, BTOR, RTOR, UPDWN, GP2, AMETR, RHO, SHIF, ELON, TRIA,MU, NE, TE, TI, ZEF, UPL)
         use constants
@@ -360,6 +362,44 @@ contains
         end if
         zefff=y
     end
+
+
+    subroutine calc_enorm
+        use constants
+        use rt_parameters, only: nr, inew
+        use spline
+        use maxwell
+        implicit none
+        integer j, klo,khi,ierr
+        real(dp) :: efld(100)
+        real(dp) :: r, pn, vt, tmp, xlogj,vmax
+        real(dp) :: fnr,fnrr, dens
+        !real*8 fn1,fn2
+        do j=1,nr
+            r=dble(j)/dble(nr+1)
+            call lock(rh,nspl,r,klo,khi,ierr)
+            if(ierr.eq.1) then
+             write(*,*)'lock error in saveprofiles, Efield'
+             write(*,*)'j=',j,' rh(j)=',rh(j),' r=',r
+             pause
+             stop
+            end if
+            call linf(rh,afld,r,efld(j),klo,khi)
+            if(inew.eq.0) then !vardens
+             pn=fn1(r,fnr)
+            else
+             pn=fn2(r,fnr,fnrr)
+            end if
+            vt=fvt(r)
+            tmp=ft(r)/0.16d-8  !Te,  KeV
+            dens=pn/1.d+13     !10^13 cm^-3
+            xlogj=dlog(5.1527d7*tmp*16.d0*dsqrt(tmp)/dsqrt(dens))
+            enorm(j)=(3.835d0/xlogj)*efld(j)*tmp/dens
+            enorm(j)=enorm(j)*5.d0/(5.d0+zefff(r))
+     !!       fst(j)=pn*xlogj*c0**4/pi4/vt**3
+            fst(j)=((5.d0+zefff(r))/5.d0)*pn*xlogj*c0**4/pi4/vt**3
+            end do        
+    end subroutine
 
     real(dp) function obeom(ptet,pa)
         use constants

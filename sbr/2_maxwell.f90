@@ -6,7 +6,7 @@ module maxwell
 
       real(dp) vij(i0,100), fij0(i0,100,2), fij(i0,100,2)
       real(dp) dfij(i0,100,2), dij(i0,100,2)
-      real(dp) enorm(100), fst(100)
+
 contains
       subroutine init_vi(vclt, vi)
             real*8, intent(in) :: vclt

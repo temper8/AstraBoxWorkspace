@@ -4,7 +4,7 @@ subroutine fokkerplanck_new(time, TAU)
     use Utils
     use rt_parameters
     use maxwell  
-    use plasma, only : fvt  
+    use plasma, only : fvt, enorm, fst
     implicit none
 
     type(FokkerPlanck1D) fp_test

@@ -38,30 +38,8 @@
       call init_plasma(NA1,ABC,BTOR,RTOR,UPDWN,GP2,
      & AMETR,RHO,SHIF,ELON,TRIA,MU,NE,TE,TI,ZEF,UPL)
 
-      do j=1,nr
-       r=dble(j)/dble(nr+1)
-       call lock(rh,nspl,r,klo,khi,ierr)
-       if(ierr.eq.1) then
-        write(*,*)'lock error in saveprofiles, Efield'
-        write(*,*)'j=',j,' rh(j)=',rh(j),' r=',r
-        pause
-        stop
-       end if
-       call linf(rh,afld,r,efld(j),klo,khi)
-       if(inew.eq.0) then !vardens
-        pn=fn1(r,fnr)
-       else
-        pn=fn2(r,fnr,fnrr)
-       end if
-       vt=fvt(r)
-       tmp=ft(r)/0.16d-8  !Te,  KeV
-       dens=pn/1.d+13     !10^13 cm^-3
-       xlogj=dlog(5.1527d7*tmp*16.d0*dsqrt(tmp)/dsqrt(dens))
-       enorm(j)=(3.835d0/xlogj)*efld(j)*tmp/dens
-       enorm(j)=enorm(j)*5.d0/(5.d0+zefff(r))
-!!       fst(j)=pn*xlogj*c0**4/pi4/vt**3
-       fst(j)=((5.d0+zefff(r))/5.d0)*pn*xlogj*c0**4/pi4/vt**3
-       end do
+      call calc_enorm
+      
  !     open(96, file='lhcd/out/difsave.dat', position='append')
       if(calls.eq.zero) then
        do j=1,nr

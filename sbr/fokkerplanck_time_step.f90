@@ -2,6 +2,7 @@
 subroutine fokkerplanck_time_step(time, TAU)
     use rt_parameters
     use maxwell    
+    use plasma, only : fvt, enorm, fst
     implicit none
     real*8, intent(in) :: time, TAU
     real*8 t, dtstep, dtau
@@ -16,7 +17,7 @@ subroutine fokkerplanck_time_step(time, TAU)
     real*8 xend,h,dt
     real*8, allocatable :: d1(:),d2(:),d3(:)
     real*8, allocatable :: out_fj(:)
-    real*8 znak,alfa2,dt0,h0,r,fvt
+    real*8 znak,alfa2,dt0,h0,r
     !common/ef/ alfa2
     
     real*8 d0
