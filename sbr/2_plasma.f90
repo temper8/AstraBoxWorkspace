@@ -401,6 +401,27 @@ contains
         end do        
     end subroutine
 
+    subroutine init_maxwell
+        use constants
+        use rt_parameters, only: nr, inew
+        use spline
+        use maxwell        
+        implicit none
+        integer j
+        real(dp) r, vclt
+        do j=1,nr
+            r=dble(j)/dble(nr+1)
+            vclt=3.d10/fvt(r)
+            !print *, vclt
+            call init_vi(vclt, vij(:,j))
+            call init_fmaxw_classic(vclt,enorm(j),fij(:,j,1),dfij(:,j,1))
+            call init_fmaxw_ext(vclt,enorm(j),fij(:,j,2),dfij(:,j,2))     
+          end do
+          fij0(:,:,:)=fij(:,:,:)
+          dij(:,:,:)=zero
+
+    end subroutine
+
     real(dp) function obeom(ptet,pa)
         use constants
         use approximation

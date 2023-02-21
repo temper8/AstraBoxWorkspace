@@ -13,21 +13,20 @@
       include 'for/status.inc'
       integer im,ip
       real*8 p_in
-        real*8 anz,apz,share
-      real*8 pchm0
-      real*8 fpol,dfmy
-      real*8 xlogj
-      real*8 znak_tor,znak_pol
-      common/left/ znak_tor,znak_pol
-      real*8 ynzmp(1001),pmp(1001),ynzmm(1001),pmm(1001)
+       ! real*8 anz,apz,share
+      !real*8 pchm0
+      !real*8 fpol,dfmy
+      !real*8 xlogj
+      !real*8 znak_tor,znak_pol
+      !common/left/ znak_tor,znak_pol
+      !real*8 ynzmp(1001),pmp(1001),ynzmm(1001),pmm(1001)
 
-      real*8 efld(100),r,vmax
-      real*8 zff,fnr,fnrr
-      real*8 pn,gst,dens,tmp,vt,vclt
-      real*8 znak
-      real*8 calls
-      common/firstcall/calls
-      save share
+      !real*8 efld(100),r,vmax
+      !real*8 zff,fnr,fnrr
+      !real*8 pn,gst,dens,tmp,vt,vclt
+      !real*8 znak
+      integer :: calls = 0
+      !save share
 
       p_in=dble(QLH)    ! input LH power, MW
 
@@ -41,19 +40,10 @@
       call calc_enorm
       
  !     open(96, file='lhcd/out/difsave.dat', position='append')
-      if(calls.eq.zero) then
-       do j=1,nr
-         r=dble(j)/dble(nr+1)
-         vclt=3.d10/fvt(r)
-         print *, vclt
-         call init_vi(vclt, vij(:,j))
-         call init_fmaxw_classic(vclt,enorm(j),fij(:,j,1),dfij(:,j,1))
-         call init_fmaxw_ext(vclt,enorm(j),fij(:,j,2),dfij(:,j,2))     
-       end do
-       fij0(:,:,:)=fij(:,:,:)
-       dij(:,:,:)=zero
+      if(calls.eq.0) then
+            call init_maxwell
+            calls=1
       end if
-      calls=1.d0
 !      close(96)
       end
 
