@@ -30,7 +30,7 @@
 
       p_in=dble(QLH)    ! input LH power, MW
 
-      if(calls.eq.zero) then
+      if(calls.eq.0) then
             call read_parameters('lhcd/ray_tracing.dat')
       end if
 
