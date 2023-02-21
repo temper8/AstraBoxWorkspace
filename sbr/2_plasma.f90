@@ -352,7 +352,7 @@ contains
         use constants, only: zero    
         use spline      
         real(dp), intent(in) :: x
-        real(dp) :: pa, r, y, dy
+        real(dp) :: pa, r, y, dy, dz
         real(dp), parameter :: alfa=4.d0, dr=.02d0
         pa=abs(x) !#@sav
         if(pa.le.rh(nspl)) then
@@ -362,8 +362,11 @@ contains
             y=zeff(nspl)*exp(-alfa*(r/dr)**2)
         end if
         zefff=y
-        print *, zefff, x 
-        pause
+        dz = abs(y - 1.4d0)
+        if (dz > 0.000001) then 
+            print *, zefff, x, dz
+            pause
+        end if
     end
 
 
