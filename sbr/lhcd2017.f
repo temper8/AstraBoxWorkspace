@@ -1571,6 +1571,7 @@ c--------------------------------------
 !!        pdec1=-pdecv*dfdv
         pdec1=dabs(pdecv*dfdv)
         pnye=cnye*wpq**2/(pn*vt**3)
+        print *,'zefff', pa, zefff(pa)
         pnyi=cnyi*pnye*zefff(pa)
         print *, 'pnyi', pnyi, cnyi, pnye, ww
         pdec2=dabs(pnyi/ww*(wpq/whe**2*ynpopq+wpq/ww**2*ynzq)*ynpopq/
