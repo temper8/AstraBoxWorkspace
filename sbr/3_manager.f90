@@ -170,7 +170,7 @@ contains
                 nbad1 = nbad1+nb1
                 nbad2 = nbad2+nb2
                 nrefj(itr) = nrefj(itr)+nmax
-                print *, pow
+                print *, pow, nmax
                 powexit = pow
                 nref = nref+nmax
 10              if (iabsorp.lt.0) then
@@ -198,6 +198,7 @@ contains
                     mend(itr) = inak-1
                     goto 30
                 end if
+                print *, 'plost', plost
                 !---------------------------------------
                 ! remember end point of trajectory
                 !---------------------------------------
@@ -229,8 +230,10 @@ contains
                     pgamma = 1.d0-pow1/point%power
                     powexit = pow1/pgamma
                     dltpow = powexit-pow1+pabs
+                    print *, '1 -- ', powexit, dltpow, pabs
                     call dqliter(dltpow,ib,ie,hr,powexit,iout)
                     powexit = powexit-dltpow+pabs
+                    print *, '2 -- ', powexit, dltpow, pabs
                     if(powexit.lt.zero) powexit=zero
                 end if
 30              continue
