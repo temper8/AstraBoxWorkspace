@@ -75,8 +75,11 @@ contains
             allocate(temi(N),zeff(N), afld(N))
             allocate(delta(N),ell(N),gamm(N),amy(N))
         end if
+        print *, 'ABC', ABC
         do i=1, ngrid
             rh(i)=AMETR(i)/ABC
+            print *, rh(i), AMETR(i)/ABC, AMETR(i)
+            pause
             rha(i)=RHO(i)/ABC  !/ABC instead of /ROC is not a mistake!
             delta(i)=(SHIF(1)-SHIF(i))/ABC  !FRTC Shafr. shift. defin.
             ell(i)=ELON(i)
