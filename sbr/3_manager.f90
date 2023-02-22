@@ -163,6 +163,7 @@ contains
                 nmax = nmax0
                 iabsorp = 0
                 inak0 = inak
+                print *, pow, nmax, icall1, iabsorp
                 !-------------------------------------
                 ! call ray tracing
                 !-------------------------------------
