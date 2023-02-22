@@ -349,7 +349,7 @@ c------------------------------------
       tok=zero
       cur=zero
       pd2=zero
-      pd2a=zero
+      pd2a=zeropnab
       pd2b=zero
       dql=zero
       dq1=zero
@@ -422,12 +422,15 @@ c----------------------------------------
       cppa=zero
       cppf=zero
       do j=1,nr
+            print *, cppl
             cppl=cppl+pdl(j)
             cppc=cppc+pdc(j)
             cppa=cppa+pda(j)
             cppf=cppf+pdfast(j)
       end do
       ol=cppl*1d-6
+      print *, ol 
+      pause
       oc=cppc*1d-6
       oa=cppa*1d-6
       of=cppf*1d-6
