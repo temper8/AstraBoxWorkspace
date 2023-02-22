@@ -1574,7 +1574,7 @@ c--------------------------------------
         pnyi=cnyi*pnye*zefff(pa)
         pdec2=dabs(pnyi/ww*(wpq/whe**2*ynpopq+wpq/ww**2*ynzq)*ynpopq/
      *  dhdnr/xsz)
-        print *, 'calc pdec2= 'pdec2
+        print *, 'calc pdec2= ', pdec2
         cf1=dsqrt(ynpopq)
         if(itend0.gt.0) then
           tmp=ft(pa)/0.16d-8
