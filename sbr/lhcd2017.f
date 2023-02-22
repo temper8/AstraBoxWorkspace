@@ -1264,7 +1264,7 @@ c---------------------------------------
       common/fjham/ham
       iconv=0
       irefl=0
-      if(pa.ge.one.or.pa.le.zero) goto70
+      if(pa.ge.one.or.pa.le.zero) goto 70
       icall1=icall1+1
       xdl=fdf(pa,cdl,ncoef,xdlp)
       xly=fdf(pa,cly,ncoef,xlyp)
@@ -1594,7 +1594,7 @@ c    reflection
       if (ivar.gt.1.and.ivar.ne.10) then
         iw=-iw
         ivar=10
-        goto30
+        goto 30
       end if
       if (ivar.eq.10) ivar=-1
       return
