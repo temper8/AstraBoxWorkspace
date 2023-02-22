@@ -80,9 +80,9 @@ contains
             rh(i)=AMETR(i)/ABC
             print *, rh(i), AMETR(i)/ABC, AMETR(i)
             print *, rh(i), dble(AMETR(i)/ABC), dble(AMETR(i))
-            pause
             rha(i)=RHO(i)/ABC  !/ABC instead of /ROC is not a mistake!
-            print *, RHO(i)
+            print *, RHO(i), SHIF(i), ELON(i)
+            pause            
             delta(i)=(SHIF(1)-SHIF(i))/ABC  !FRTC Shafr. shift. defin.
             ell(i)=ELON(i)
             gamm(i)=rh(i)*TRIA(i)
