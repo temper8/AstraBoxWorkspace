@@ -57,6 +57,8 @@ contains
         hh=h**2/6d0
         ax=-1d0/h
         bx=-ax
+        print *, 'splnt' , a, b, aa, bb, hh
+        print *, ya(klo) , ya(khi), y2a(klo), y2a(khi)
         y=a*ya(klo)+b*ya(khi)+(a*(aa-1d0)*y2a(klo)+b*(bb-1d0)*y2a(khi))*hh
         dy=ax*ya(klo)+bx*ya(khi)+ax*((3.d0*aa-1d0)*y2a(klo)-(3.d0*bb-1d0)*y2a(khi))*hh
     end
