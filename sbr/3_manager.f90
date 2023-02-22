@@ -170,7 +170,7 @@ contains
                 nbad1 = nbad1+nb1
                 nbad2 = nbad2+nb2
                 nrefj(itr) = nrefj(itr)+nmax
-                print *, pow, nmax
+                print *, pow, nmax, icall1, iabsorp
                 powexit = pow
                 nref = nref+nmax
 10              if (iabsorp.lt.0) then
