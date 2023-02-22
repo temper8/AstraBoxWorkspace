@@ -1570,6 +1570,7 @@ c--------------------------------------
         pdecv=dabs(aimh/dhdnr/xsz)
 !!        pdec1=-pdecv*dfdv
         pdec1=dabs(pdecv*dfdv)
+        print *, cnye, wpq, pn, vt
         pnye=cnye*wpq**2/(pn*vt**3)
         print *,'zefff', pa, zefff(pa)
         pnyi=cnyi*pnye*zefff(pa)
