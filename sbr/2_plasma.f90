@@ -263,7 +263,7 @@ contains
         real(dp), intent(in) :: r
         real(dp) :: pt
         pt=ft(r)
-        print *, 'fvt pt =', pt
+        print *, 'fvt pt =', pt, r
         fvt=sqrt(pt/9.11d-28)
         print *, fvt
     end
@@ -321,7 +321,9 @@ contains
         real(dp), intent(in) :: x
         real(dp) :: pa, r, y, dy
         real(dp), parameter :: alfa=4.d0, dr=.02d0
+        print *, 'ft(x)' , x
         pa=abs(x) !#@sav
+        print *, rh(nspl), nspl
         if(pa.le.rh(nspl)) then
             call splnt(rh,tem,y2tm,nspl,pa,y,dy)
         else
@@ -330,6 +332,7 @@ contains
         end if
         !!      ft=y            ! kev
         ft=y*0.16d-8      ! erg
+        print *, ft, y
     end    
 
     real(dp) function fti(x)
