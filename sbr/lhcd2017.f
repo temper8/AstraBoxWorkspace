@@ -618,8 +618,8 @@ c--------------------------------------
        dcv=pintld4/vsr
       else
        pintld=dabs(pdec1*hdis)
-       print * 'pdec2 =', pdec2
-       print * 'hdis =', hdis
+       print *, 'pdec2 =', pdec2
+       print *, 'hdis =', hdis
        pintcl=dabs(pdec2*hdis)
        pintal=dabs(pdec3*hdis)
        dcv=pdecv*hdis/vsr
