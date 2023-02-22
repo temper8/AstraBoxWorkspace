@@ -99,6 +99,7 @@ contains
                     !-----------------------------------------
                     yn = point%nz
                     pow = point%power
+                    print *, 'init pow', pow
                     !yn=ynzm(inz) !sav2008, yn is introduced
                     !pow=pm(inz)
                     irs = 1
