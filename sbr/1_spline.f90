@@ -1,14 +1,15 @@
 module spline
+    use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64      
     implicit none
     
 contains
     subroutine splne(x,y,n,y2)
         integer, parameter :: nn=1001
-        real*8, parameter :: zero=0d0
+        real(dp), parameter :: zero=0d0
         integer n
-        real*8 x(n),y(n),y2(n),u(nn)
+        real(dp) x(n),y(n),y2(n),u(nn)
         integer i,k
-        real*8 p,qn,un,sig
+        real(dp) p,qn,un,sig
         if(n.gt.nn) stop 'n>nn in splne!'
             y2(1)=zero
             u(1)=zero
@@ -28,11 +29,11 @@ contains
     end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     subroutine splnt(xa,ya,y2a,n,x,y,dy)
-        real*8, parameter :: zero=0d0
+        real(dp), parameter :: zero=0d0
         integer n
-        real*8 xa(n),ya(n),y2a(n)
+        real(dp) xa(n),ya(n),y2a(n)
         integer k, klo, khi
-        real*8 x,h,a,b,aa,bb,hh,ax,bx,y,dy
+        real(dp) x,h,a,b,aa,bb,hh,ax,bx,y,dy
         klo=1
         khi=n
         do while(khi-klo.gt.1)
@@ -61,11 +62,11 @@ contains
     end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     subroutine dsplnt(xa,ya,y2a,n,x,y,dy,ddy)
-        real*8, parameter :: zero=0d0
+        real(dp), parameter :: zero=0d0
         integer n
-        real*8 xa(n),ya(n),y2a(n)
+        real(dp) xa(n),ya(n),y2a(n)
         integer k, klo, khi
-        real*8 x,h,a,b,aa,bb,hh,ax,bx,y,dy,ddy        
+        real(dp) x,h,a,b,aa,bb,hh,ax,bx,y,dy,ddy        
         klo=1
         khi=n
         do while(khi-klo.gt.1)
