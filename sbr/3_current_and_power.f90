@@ -68,15 +68,13 @@ subroutine dfind(j,i,v,powpr,pil,pic,pia,df,decv,refr,vlf,vrt,ifast)
      !common /vvv3/ pdfast(100)
      !common /alph/ dqi0(50,100)
      !common/findsigma/dncount(101,100)
-     
-    print *, 'call dfind'
+
     if(v.gt.cltn) return
     if(pil.gt.zero) then
         if(v.lt.vzmin(j)) vzmin(j)=v
         if(v.gt.vzmax(j)) vzmax(j)=v
     end if
-    print *, 'call dfind 2'
-    pause
+
     pchgl=zero
     pchgc=zero
     pchga=zero
@@ -112,7 +110,7 @@ subroutine dfind(j,i,v,powpr,pil,pic,pia,df,decv,refr,vlf,vrt,ifast)
     end if
 
 1   continue
-    print *, j, pchgl
+
     dql(i,j)=dql(i,j)+dd
     pdl(j)=pdl(j)+pchgl
     pdc(j)=pdc(j)+pchgc
