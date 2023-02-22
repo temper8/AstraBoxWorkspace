@@ -1533,7 +1533,7 @@ c---------------------------------------------
       s1=-yn2*(g12t/g22-g12/g22**2*g22t)
       s21=yn2**2*(g11t/g22-g11/g22**2*g22t)
       s22=yn3**2*( xjt/(g33*g22)-
-     *xj/(g33*g22)**2*(g33t*g22+g22t*g33) )
+     &xj/(g33*g22)**2*(g33t*g22+g22t*g33) )
       sjg=(xjt*g22-xj*g22t)/g22**2
       s23=two*ynz*ynzt*xj/g22+sjg*ynzq
       s24=vvt*xj/g22+ynpopq*sjg
@@ -1565,15 +1565,16 @@ c--------------------------------------
         dfdv=fder
         vfound=vz
         cf2=ptet
-	cf6=yny
+	  cf6=yny
         aimh=wpq/ww**2*pi*sl1*cltn**2/ynzq
         pdecv=dabs(aimh/dhdnr/xsz)
 !!        pdec1=-pdecv*dfdv
         pdec1=dabs(pdecv*dfdv)
         pnye=cnye*wpq**2/(pn*vt**3)
         pnyi=cnyi*pnye*zefff(pa)
+        print *, 'pnyi', pnyi, cnyi, pnye, ww
         pdec2=dabs(pnyi/ww*(wpq/whe**2*ynpopq+wpq/ww**2*ynzq)*ynpopq/
-     *  dhdnr/xsz)
+     &  dhdnr/xsz)
         print *, 'calc pdec2= ', pdec2
         cf1=dsqrt(ynpopq)
         if(itend0.gt.0) then
