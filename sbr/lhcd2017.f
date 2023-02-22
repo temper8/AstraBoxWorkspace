@@ -608,6 +608,7 @@ c--------------------------------------
       if(im4.eq.1) then
 !!       pintld=-pintld4*dfdv
        pintld=dabs(pintld4*dfdv)
+       print *, 'pintcl4', pintcl4
        pintcl=dabs(pintcl4)
        if(itend0.gt.0) then
         argum=clt/(refr*valfa)
@@ -617,6 +618,8 @@ c--------------------------------------
        dcv=pintld4/vsr
       else
        pintld=dabs(pdec1*hdis)
+       print * 'pdec2 =', pdec2
+       print * 'hdis =', hdis
        pintcl=dabs(pdec2*hdis)
        pintal=dabs(pdec3*hdis)
        dcv=pdecv*hdis/vsr
