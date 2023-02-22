@@ -263,7 +263,9 @@ contains
         real(dp), intent(in) :: r
         real(dp) :: pt
         pt=ft(r)
+        print *, 'fvt pt =', pt
         fvt=sqrt(pt/9.11d-28)
+        print *, fvt
     end
 
     real(dp) function fn1(x,fnp)
