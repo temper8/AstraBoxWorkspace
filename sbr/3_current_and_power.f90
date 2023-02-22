@@ -110,6 +110,7 @@ subroutine dfind(j,i,v,powpr,pil,pic,pia,df,decv,refr,vlf,vrt,ifast)
     end if
 
 1   continue
+    print *, j, pchgl
     dql(i,j)=dql(i,j)+dd
     pdl(j)=pdl(j)+pchgl
     pdc(j)=pdc(j)+pchgc
