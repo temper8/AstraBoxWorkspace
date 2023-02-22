@@ -622,9 +622,13 @@ c--------------------------------------
        dcv=pdecv*hdis/vsr
       end if
       if(pabs.ne.zero) then
+       print *, pintld, pintcl
        powd=pow*dexp(-2d0*pintld)
+       print *, powd
        powccc=dexp(-2d0*pintcl)
+       print *, powccc
        powcol=powd*powccc
+       print *, powcol
        powal=powcol*dexp(-2d0*pintal)
        print *, pow, powal
        pause
