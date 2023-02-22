@@ -169,6 +169,7 @@ contains
                 nbad1 = nbad1+nb1
                 nbad2 = nbad2+nb2
                 nrefj(itr) = nrefj(itr)+nmax
+                print *, pow
                 powexit = pow
                 nref = nref+nmax
 10              if (iabsorp.lt.0) then
@@ -237,6 +238,8 @@ contains
             end do
             if(ipri.gt.1) write(*,1003)itet,icall1,icall2,nref,lfree-1,nbad1,nbad2
             print *,'itr =', itr
+            print *, pnab,  dltpow
+            pause
         end do
 1001    format (30x,i4,' iteration')
 1002    format (6x,'n',5x,'call2',6x,'call4',6x,'nrefl',4x,'last',5x,'bad2',5x,'bad4')
