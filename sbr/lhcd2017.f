@@ -626,6 +626,8 @@ c--------------------------------------
        powccc=dexp(-2d0*pintcl)
        powcol=powd*powccc
        powal=powcol*dexp(-2d0*pintal)
+       print *, pow, powal
+       pause
        pow=powal
       end if
       if(pow.le.pabs) iabsorp=1
