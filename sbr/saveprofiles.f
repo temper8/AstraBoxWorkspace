@@ -16,7 +16,9 @@
       if(calls.eq.0) then
             call read_parameters('lhcd/ray_tracing.dat')
       end if
-
+      print *, 'saveprofiles'
+      print *, AMETR(1), AMETR(2), AMETR(3)
+      pause
       call init_plasma(NA1,ABC,BTOR,RTOR,UPDWN,GP2,
      & AMETR,RHO,SHIF,ELON,TRIA,MU,NE,TE,TI,ZEF,UPL)
 
