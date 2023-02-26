@@ -98,13 +98,13 @@ C Writing radial data
 		do  j=1, NP1 
 			SELECT CASE (MODEX) 
 			CASE (0:1)		
-				write(7,'(100e15.5)') AMETR(j), (ROUT(j,jj), jj=1,NROUT )
+				write(7,'(100ES22.14)') AMETR(j), (ROUT(j,jj), jj=1,NROUT )
 			CASE (2)
-				write(7,'(100e15.5)') RHO(j), (ROUT(j,jj), jj=1,NROUT )				
+				write(7,'(100ES22.14)') RHO(j), (ROUT(j,jj), jj=1,NROUT )				
 			CASE (3)
-				write(7,'(100e15.5)') FP(j), (ROUT(j,jj), jj=1,NROUT )					
+				write(7,'(100ES22.14)') FP(j), (ROUT(j,jj), jj=1,NROUT )					
 			CASE DEFAULT
-				write(7,'(100e15.5)') AMETR(j), (ROUT(j,jj), jj=1,NROUT )
+				write(7,'(100ES22.14)') AMETR(j), (ROUT(j,jj), jj=1,NROUT )
 		    END SELECT
 			
 		enddo
