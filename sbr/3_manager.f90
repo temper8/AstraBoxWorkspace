@@ -53,7 +53,7 @@ contains
         real(dp) tetin0, tetin, tet
 
         pabs = spectr%max_power*pabs0/1.d2
-        print *, 'pabs =', pabs, spectr%max_power, pabs0
+        ! print *, 'pabs =', pabs, spectr%max_power, pabs0
         lenstor = length
         htet = zero
         hr = 1.d0/dble(nr+1) !sav2008
@@ -99,7 +99,7 @@ contains
                     !-----------------------------------------
                     yn = point%nz
                     pow = point%power
-                    print *, 'init pow', pow
+                    ! print *, 'init pow', pow
                     !yn=ynzm(inz) !sav2008, yn is introduced
                     !pow=pm(inz)
                     irs = 1
@@ -163,7 +163,7 @@ contains
                 nmax = nmax0
                 iabsorp = 0
                 inak0 = inak
-                print *, pow, nmax, icall1, iabsorp
+                ! print *, pow, nmax, icall1, iabsorp
                 !-------------------------------------
                 ! call ray tracing
                 !-------------------------------------
@@ -171,7 +171,7 @@ contains
                 nbad1 = nbad1+nb1
                 nbad2 = nbad2+nb2
                 nrefj(itr) = nrefj(itr)+nmax
-                print *, pow, nmax, icall1, iabsorp
+                ! print *, pow, nmax, icall1, iabsorp
                 powexit = pow
                 nref = nref+nmax
 10              if (iabsorp.lt.0) then
@@ -199,7 +199,7 @@ contains
                     mend(itr) = inak-1
                     goto 30
                 end if
-                print *, 'plost', plost
+                ! print *, 'plost', plost
                 !---------------------------------------
                 ! remember end point of trajectory
                 !---------------------------------------
@@ -231,10 +231,10 @@ contains
                     pgamma = 1.d0-pow1/point%power
                     powexit = pow1/pgamma
                     dltpow = powexit-pow1+pabs
-                    print *, '1 -- ', powexit, dltpow, pabs
+                    ! print *, '1 -- ', powexit, dltpow, pabs
                     call dqliter(dltpow,ib,ie,hr,powexit,iout)
                     powexit = powexit-dltpow+pabs
-                    print *, '2 -- ', powexit, dltpow, pabs
+                    ! print *, '2 -- ', powexit, dltpow, pabs
                     if(powexit.lt.zero) powexit=zero
                 end if
 30              continue
@@ -242,9 +242,9 @@ contains
 31              continue
             end do
             if(ipri.gt.1) write(*,1003)itet,icall1,icall2,nref,lfree-1,nbad1,nbad2
-            print *,'itr =', itr
-            print *, pnab,  dltpow
-            pause
+            ! print *,'itr =', itr
+            ! print *, pnab,  dltpow
+            !pause
         end do
 1001    format (30x,i4,' iteration')
 1002    format (6x,'n',5x,'call2',6x,'call4',6x,'nrefl',4x,'last',5x,'bad2',5x,'bad4')

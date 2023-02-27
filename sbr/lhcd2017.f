@@ -421,17 +421,17 @@ c----------------------------------------
       cppc=zero
       cppa=zero
       cppf=zero
-      print *, ' ----- cppl'
+      !print *, ' ----- cppl'
       do j=1,nr
-            print *, cppl
+            !print *, cppl
             cppl=cppl+pdl(j)
             cppc=cppc+pdc(j)
             cppa=cppa+pda(j)
             cppf=cppf+pdfast(j)
       end do
       ol=cppl*1d-6
-      print *, ol 
-      pause
+      !print *, ol 
+      !pause
       oc=cppc*1d-6
       oa=cppa*1d-6
       of=cppf*1d-6
@@ -608,7 +608,7 @@ c--------------------------------------
       if(im4.eq.1) then
 !!       pintld=-pintld4*dfdv
        pintld=dabs(pintld4*dfdv)
-       print *, 'pintcl4', pintcl4
+       !print *, 'pintcl4', pintcl4
        pintcl=dabs(pintcl4)
        if(itend0.gt.0) then
         argum=clt/(refr*valfa)
@@ -618,24 +618,24 @@ c--------------------------------------
        dcv=pintld4/vsr
       else
        pintld=dabs(pdec1*hdis)
-       print *, 'pdec2 =', pdec2
-       print *, 'hdis =', hdis
+       !print *, 'pdec2 =', pdec2
+       !print *, 'hdis =', hdis
        pintcl=dabs(pdec2*hdis)
        pintal=dabs(pdec3*hdis)
        dcv=pdecv*hdis/vsr
       end if
       if(pabs.ne.zero) then
-       print *, 'pintld', pintld, pintcl
+       !print *, 'pintld', pintld, pintcl
        powd=pow*dexp(-2d0*pintld)
-       print *, 'powd= ', powd
-       print *, 'pintcl= ', pintcl
+       !print *, 'powd= ', powd
+       !print *, 'pintcl= ', pintcl
        powccc=dexp(-2d0*pintcl)
-       print *, 'powccc=', powccc
+       !print *, 'powccc=', powccc
        powcol=powd*powccc
-       print *, powcol
+       !print *, powcol
        powal=powcol*dexp(-2d0*pintal)
-       print *, pow, powal
-       pause
+       !print *, pow, powal
+       !pause
        pow=powal
       end if
       if(pow.le.pabs) iabsorp=1
@@ -1570,14 +1570,14 @@ c--------------------------------------
         pdecv=dabs(aimh/dhdnr/xsz)
 !!        pdec1=-pdecv*dfdv
         pdec1=dabs(pdecv*dfdv)
-        print *, cnye, wpq, pn, vt
+        !print *, cnye, wpq, pn, vt
         pnye=cnye*wpq**2/(pn*vt**3)
-        print *,'zefff', pa, zefff(pa)
+        !print *,'zefff', pa, zefff(pa)
         pnyi=cnyi*pnye*zefff(pa)
-        print *, 'pnyi', pnyi, cnyi, pnye, ww
+        !print *, 'pnyi', pnyi, cnyi, pnye, ww
         pdec2=dabs(pnyi/ww*(wpq/whe**2*ynpopq+wpq/ww**2*ynzq)*ynpopq/
      &  dhdnr/xsz)
-        print *, 'calc pdec2= ', pdec2
+        !print *, 'calc pdec2= ', pdec2
         cf1=dsqrt(ynpopq)
         if(itend0.gt.0) then
           tmp=ft(pa)/0.16d-8

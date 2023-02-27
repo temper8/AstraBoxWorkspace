@@ -44,25 +44,25 @@ contains
                 klo=k
             endif
         end do
-        print *, 'splnt' , khi, klo
-        print *, 'splnt' ,xa(khi), xa(klo)
+        ! print *, 'splnt' , khi, klo
+        ! print *, 'splnt' ,xa(khi), xa(klo)
         h=xa(khi)-xa(klo)
         if(h.eq.zero) then
             write(*,*)'bad x input in splnt(), x=',x
             write(*,*)'klo=',klo,' kho=',khi
             stop
         end if
-        print *, h, x
+        ! print *, h, x
         a=(xa(khi)-x)/h
-        print *, a
+        ! print *, a
         b=(x-xa(klo))/h
         aa=a**2
         bb=b**2
         hh=h**2/6d0
-        ax=-1d0/h
+        ax=-1d0/h 
         bx=-ax
-        print *, a, b, aa, bb, hh
-        print *, ya(klo) , ya(khi), y2a(klo), y2a(khi)
+        ! print *, a, b, aa, bb, hh
+        ! print *, ya(klo) , ya(khi), y2a(klo), y2a(khi)
         y=a*ya(klo)+b*ya(khi)+(a*(aa-1d0)*y2a(klo)+b*(bb-1d0)*y2a(khi))*hh
         dy=ax*ya(klo)+bx*ya(khi)+ax*((3.d0*aa-1d0)*y2a(klo)-(3.d0*bb-1d0)*y2a(khi))*hh
     end

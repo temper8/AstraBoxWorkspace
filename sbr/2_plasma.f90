@@ -75,7 +75,7 @@ contains
             allocate(temi(N),zeff(N), afld(N))
             allocate(delta(N),ell(N),gamm(N),amy(N))
         end if
-        print *, 'ABC', ABC
+        ! print *, 'ABC', ABC
         do i=1, ngrid
             rh(i)=AMETR(i)/ABC
             rha(i)=RHO(i)/ABC  !/ABC instead of /ROC is not a mistake!
@@ -264,9 +264,9 @@ contains
         real(dp), intent(in) :: r
         real(dp) :: pt
         pt=ft(r)
-        print *, 'fvt pt =', pt, r
+        !print *, 'fvt pt =', pt, r
         fvt=sqrt(pt/9.11d-28)
-        print *, fvt
+        !print *, fvt
     end
 
     real(dp) function fn1(x,fnp)
@@ -322,9 +322,9 @@ contains
         real(dp), intent(in) :: x
         real(dp) :: pa, r, y, dy
         real(dp), parameter :: alfa=4.d0, dr=.02d0
-        print *, 'ft(x)' , x
+        ! print *, 'ft(x)' , x
         pa=abs(x) !#@sav
-        print *, rh(nspl), nspl
+        ! print *, rh(nspl), nspl
         if(pa.le.rh(nspl)) then
             call splnt(rh,tem,y2tm,nspl,pa,y,dy)
         else
@@ -333,7 +333,7 @@ contains
         end if
         !!      ft=y            ! kev
         ft=y*0.16d-8      ! erg
-        print *, ft, y
+        ! print *, ft, y
     end    
 
     real(dp) function fti(x)
@@ -368,11 +368,6 @@ contains
             y=zeff(nspl)*exp(-alfa*(r/dr)**2)
         end if
         zefff=y
-        dz = abs(y - 1.4d0)
-        if (dz > 0.000001) then 
-            print *, zefff, x, dz
-            pause
-        end if
     end
 
 
