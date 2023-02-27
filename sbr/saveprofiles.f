@@ -18,7 +18,6 @@
       end if
       print *, 'saveprofiles'
       print *, AMETR(1), AMETR(2), AMETR(3)
-      pause
       call init_plasma(NA1,ABC,BTOR,RTOR,UPDWN,GP2,
      & AMETR,RHO,SHIF,ELON,TRIA,MU,NE,TE,TI,ZEF,UPL)
 
@@ -27,7 +26,7 @@
       if(calls.eq.0) then
             call init_maxwell
             calls=1
-            pause
+            pause 'after init maxwell'
       end if
 
       end
