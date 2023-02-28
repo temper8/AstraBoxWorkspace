@@ -262,9 +262,10 @@ contains
         implicit none
         type(spectrum_point) :: point
         real(dp) xm, tet,xnr,hr
-        integer ifail, ntry
+        integer ifail, ntry,ider
         real(dp) :: vgrp(3),vph(3)
         real(dp) :: ynz,ynpopq
+        common /be2/ ider
         common /bcef/ ynz,ynpopq
         real(dp) :: g11,g12,g22,g33,gg,g,si,co
         common/metrika/g11,g12,g22,g33,gg,g,si,co !sav2009
