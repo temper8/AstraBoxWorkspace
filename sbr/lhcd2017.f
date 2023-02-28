@@ -658,7 +658,7 @@ c----------------------------------
       perpn(inak)=refr
       poloidn(inak)=npoloid
       tetai(inak)=tet_i
-      radth=dble(j)/dble(31)
+      radth=dble(j)/dble(nr+1)
       vthc(inak)=3.d10/fvt(radth)
       iww(inak)=ifast
       izz(inak)=idir
