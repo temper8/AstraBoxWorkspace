@@ -254,6 +254,8 @@ contains
             call splnt(rh,con,y2dn,nspl,pa,y,dy)
         else
             r=pa-rh(nspl)
+            print *, 'fn abroad',r 
+            pause            
             y=con(nspl)*dexp(-alfa*(r/dr)**2)
         end if
         fn=y*1.d+13    !cm^-3
@@ -283,6 +285,8 @@ contains
         else
             call splnt(rh,con,y2dn,nspl,rh(nspl),y1,dy1)
             r=pa-rh(nspl)
+            print *, 'fn1 abroad',r 
+            pause
             y=rh(nspl)*exp(-alfa*(r/dr)**2)
             dy=-2.d0*alfa*y*r/dr**2 !corrected
         end if
@@ -304,6 +308,7 @@ contains
             dy=chebev(zero,1.d0,chebdne,ncheb,x)
             ddy=chebev(zero,1.d0,chebddne,ncheb,x)
         else
+            print *, 'fn2 abroad',x   
             y1=chebev(zero,1.d0,chebne,ncheb,1.d0)
             s=x-1.d0
             y=y1*exp(-alfa*(s/dr)**2)
@@ -320,7 +325,7 @@ contains
         use constants, only: zero
         use spline
         real(dp), intent(in) :: x
-        real(dp) :: pa, r, y, dy
+        real(dp) :: pa, r, y, yb, dy
         real(dp), parameter :: alfa=4.d0, dr=.02d0
         ! print *, 'ft(x)' , x
         pa=abs(x) !#@sav
@@ -328,8 +333,12 @@ contains
         if(pa.le.rh(nspl)) then
             call splnt(rh,tem,y2tm,nspl,pa,y,dy)
         else
+            call splnt(rh,tem,y2tm,nspl,pa,y,dy)
             r=pa-rh(nspl)
-            y=tem(nspl)*exp(-alfa*(r/dr)**2)
+            yb=tem(nspl)*exp(-alfa*(r/dr)**2)
+            print *, 'ft abroad',r  
+            print *, y,yb
+            pause            
         end if
         !!      ft=y            ! kev
         ft=y*0.16d-8      ! erg
@@ -348,6 +357,8 @@ contains
             call splnt(rh,temi,y2tmi,nspl,pa,y,dy)
         else
             r=pa-rh(nspl)
+            print *, 'fti abroad',r    
+            pause        
             y=temi(nspl)*exp(-alfa*(r/dr)**2)
         end if
         fti=y              ! kev
@@ -365,6 +376,8 @@ contains
             call splnt(rh,zeff,y2zeff,nspl,pa,y,dy)
         else
             r=pa-rh(nspl)
+            print *, 'zeff abroad',r
+            pause
             y=zeff(nspl)*exp(-alfa*(r/dr)**2)
         end if
         zefff=y
