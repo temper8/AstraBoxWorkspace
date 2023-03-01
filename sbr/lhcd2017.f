@@ -2606,34 +2606,34 @@ cu    uses derivs
      *dc3=c3-18575.d0/48384.d0,dc4=c4-13525.d0/55296.d0,dc5=-277.d0
      */14336.d0,
      *dc6=c6-.25d0)
-      do 11 i=1,n
+      do i=1,n
         ytemp(i)=y(i)+b21*h*dydx(i)
-11    continue
+      enddo
       call derivs(x+a2*h,ytemp,ak2)
-      do 12 i=1,n
+      do i=1,n
         ytemp(i)=y(i)+h*(b31*dydx(i)+b32*ak2(i))
-12    continue
+      enddo
       call derivs(x+a3*h,ytemp,ak3)
-      do 13 i=1,n
+      do i=1,n
         ytemp(i)=y(i)+h*(b41*dydx(i)+b42*ak2(i)+b43*ak3(i))
-13    continue
+      enddo
       call derivs(x+a4*h,ytemp,ak4)
-      do 14 i=1,n
+      do i=1,n
         ytemp(i)=y(i)+h*(b51*dydx(i)+b52*ak2(i)+b53*ak3(i)+b54*ak4(i))
-14    continue
+      enddo
       call derivs(x+a5*h,ytemp,ak5)
-      do 15 i=1,n
+      do  i=1,n
         ytemp(i)=y(i)+h*(b61*dydx(i)+b62*ak2(i)+b63*ak3(i)+b64*ak4(i)+
      *b65*ak5(i))
-15    continue
+      enddo
       call derivs(x+a6*h,ytemp,ak6)
-      do 16 i=1,n
+      do  i=1,n
         yout(i)=y(i)+h*(c1*dydx(i)+c3*ak3(i)+c4*ak4(i)+c6*ak6(i))
-16    continue
-      do 17 i=1,n
+      enddo
+      do  i=1,n
         yerr(i)=h*(dc1*dydx(i)+dc3*ak3(i)+dc4*ak4(i)+dc5*ak5(i)+dc6*
      *ak6(i))
-17    continue
+      enddo
       return
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
