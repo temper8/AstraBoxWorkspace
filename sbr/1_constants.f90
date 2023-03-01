@@ -10,8 +10,8 @@ module constants
     real(wp), parameter :: tin  = 1e-7_wp
 
     real(wp), parameter :: pi = acos(-one) !! число Пи = 3.1415....
-    real(wp), parameter :: pi2 = 2.d0*pi
-    real(wp), parameter :: pi4 = 4.d0*pi
+    real(wp), parameter :: pi2 = 2.0_wp*pi
+    real(wp), parameter :: pi4 = 4.0_wp*pi
     real(wp), parameter :: piq = sqrt(pi)
 
     real(wp), parameter :: talfa  = 3.5_wp    !! alpha particles' birth energy, MeV
@@ -32,6 +32,41 @@ module constants
     !! cnst1=(m_e/m_p)**2, CGS
     real(wp), parameter :: cnst2 = 0.359680922e-35_wp
     !! cnst2=(m_e/e)**2,  CGS
+
 contains
     
+    subroutine show_constants() 
+
+        print *, '---------------------------------------' 
+        print *, "zero    = ", zero          
+        print *, "one     = ", one     
+        print *, "two     = ",  two     
+        print *, "tiny    = ",  tiny     
+        print *, "tin     = ", tin     
+        print *
+        print *, "4*ATAN  = ", 4.d0*datan(1.d0)
+        print *, "pi      = ", pi
+        print *, "pi2     = ", pi2     
+        print *, "pi4     = ", pi4     
+        print *, "piq     = ", piq             
+        print *
+        print *, "talfa   = ", talfa   
+        print *, "zalfa   = ", zalfa     
+        print *, "xmalfa  = ", xmalfa     
+        print *, "clt     = ", clt     
+        print *     
+        print *, "pme     = ", pme     
+        print *, "pqe     = ", pqe   
+        print *, "xlog    = ", xlog     
+        print *, "c0      = ", c0   
+        print *, "c1      = ", c1     
+        print *, "xsgs    = ", xsgs
+        print *, "xwtt    = ", xwtt
+        print *
+        print *, "cnst1 = ", cnst1
+        print *, "cnst2 = ", cnst2
+        print *, '---------------------------------------'
+
+    end subroutine show_constants
+
 end module constants 
