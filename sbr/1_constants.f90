@@ -6,8 +6,11 @@ module constants
     real(wp), parameter :: zero = 0.0_wp 
     real(wp), parameter :: one  = 1.0_wp
     real(wp), parameter :: two  = 2.0_wp
+    real(wp), parameter :: one_third = 1.0_wp/3.0_wp
+
     real(wp), parameter :: tiny = 1.e-100_wp
     real(wp), parameter :: tin  = 1e-7_wp
+    
 
     real(wp), parameter :: pi = acos(-one) !! число Пи = 3.1415....
     real(wp), parameter :: pi2 = 2.0_wp*pi
@@ -20,7 +23,8 @@ module constants
 
     real(wp), parameter :: clt = 3.0e+10_wp  !! скорость света
 
-    real(wp), parameter :: pme  = 9.11e-28_wp
+    real(wp), parameter :: pme_wp  = 9.11e-28_wp
+    real(wp), parameter :: pme  = 9.11e-28
     real(wp), parameter :: pqe  = 4.803e-10_wp
     real(wp), parameter :: xlog = 16.0_wp + dlog(16.0_wp)
     real(wp), parameter :: c0 = sqrt(pi4*pqe**2/pme)
@@ -38,33 +42,35 @@ contains
     subroutine show_constants() 
 
         print *, '---------------------------------------' 
-        print *, "zero    = ", zero          
-        print *, "one     = ", one     
-        print *, "two     = ",  two     
-        print *, "tiny    = ",  tiny     
-        print *, "tin     = ", tin     
+        print *, "zero       = ", zero          
+        print *, "one        = ", one     
+        print *, "two        = ", two
+        print *, "one_third  = ", one_third
+        print *, "tiny       = ", tiny     
+        print *, "tin        = ", tin     
         print *
-        print *, "4*ATAN  = ", 4.d0*datan(1.d0)
-        print *, "pi      = ", pi
-        print *, "pi2     = ", pi2     
-        print *, "pi4     = ", pi4     
-        print *, "piq     = ", piq             
+        print *, "4*ATAN     = ", 4.d0*datan(1.d0)
+        print *, "pi         = ", pi
+        print *, "pi2        = ", pi2     
+        print *, "pi4        = ", pi4     
+        print *, "piq        = ", piq             
         print *
-        print *, "talfa   = ", talfa   
-        print *, "zalfa   = ", zalfa     
-        print *, "xmalfa  = ", xmalfa     
-        print *, "clt     = ", clt     
+        print *, "talfa      = ", talfa   
+        print *, "zalfa      = ", zalfa     
+        print *, "xmalfa     = ", xmalfa     
+        print *, "clt        = ", clt     
         print *     
-        print *, "pme     = ", pme     
-        print *, "pqe     = ", pqe   
-        print *, "xlog    = ", xlog     
-        print *, "c0      = ", c0   
-        print *, "c1      = ", c1     
-        print *, "xsgs    = ", xsgs
-        print *, "xwtt    = ", xwtt
+        print *, "pme_wp     = ", pme_wp
+        print *, "pme        = ", pme     
+        print *, "pqe        = ", pqe   
+        print *, "xlog       = ", xlog     
+        print *, "c0         = ", c0   
+        print *, "c1         = ", c1     
+        print *, "xsgs       = ", xsgs
+        print *, "xwtt       = ", xwtt
         print *
-        print *, "cnst1 = ", cnst1
-        print *, "cnst2 = ", cnst2
+        print *, "cnst1  = ", cnst1
+        print *, "cnst2  = ", cnst2
         print *, '---------------------------------------'
 
     end subroutine show_constants
