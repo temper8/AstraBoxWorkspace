@@ -251,7 +251,7 @@ contains
     function make_spline_approximation(spectr) result(appx_spectr)
         !! approximation of input LH spectrum
             use constants, only: zero, xsgs
-            use spline
+            use spline_module
             use rt_parameters, only: nnz, ntet, pabs0
             implicit none
             type(spectrum), intent(in) :: spectr
@@ -425,7 +425,7 @@ module spectrum1D
     subroutine spectrum_approximation(ispectr)
     !! approximation of input LH spectrum
         use constants, only: zero, xsgs
-        use spline
+        use spline_module
         use rt_parameters, only: nnz, ntet, pabs0
         implicit none
         integer, intent(in) :: ispectr

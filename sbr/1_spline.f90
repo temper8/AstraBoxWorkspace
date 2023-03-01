@@ -1,4 +1,4 @@
-module spline
+module spline_module
     !! сплайны
     use kind_module
     implicit none
@@ -95,4 +95,4 @@ contains
         dy=ax*ya(klo)+bx*ya(khi)+ax*((3.d0*aa-1d0)*y2a(klo)-(3.d0*bb-1d0)*y2a(khi))*hh
         ddy=6.d0*ax*ax*(a*y2a(klo)+b*y2a(khi))*hh
     end   
-end module spline
+end module spline_module

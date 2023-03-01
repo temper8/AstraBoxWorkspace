@@ -125,7 +125,7 @@ cc*********************************************************************
       subroutine ourlhcd2017(spectr, outpe,pe_out)      
       use constants
       use approximation
-      use spline
+      use spline_module
       use chebyshev
       use plasma
       use rt_parameters
@@ -2558,9 +2558,9 @@ cu    uses derivs,rkck
       h=htry
 1     call rkck(y,dydx,n,x,h,ytemp,yerr,derivs)
       errmax=0.d0
-      do 11 i=1,n
+      do i=1,n
         errmax=max(errmax,abs(yerr(i)/yscal(i)))
-11    continue
+      enddo
       errmax=errmax/eps
       if(errmax.gt.1.d0)then
         htemp=safety*h*(errmax**pshrnk)
@@ -2576,9 +2576,9 @@ cu    uses derivs,rkck
         endif
         hdid=h
         x=x+h
-        do 12 i=1,n
+        do i=1,n
           y(i)=ytemp(i)
-12      continue
+        enddo
         return
       endif
       end

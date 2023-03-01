@@ -58,7 +58,7 @@ contains
         use constants
         use approximation
         use rt_parameters
-        use spline
+        use spline_module
         use chebyshev
         implicit none
         integer, intent(in)  :: NA1
@@ -244,7 +244,7 @@ contains
     real(wp) function fn(x)
     !! plasma  density,  cm^-3
         use constants, only: zero
-        use spline      
+        use spline_module      
         real(wp), intent(in) :: x
         real(wp) :: pa, r, y, dy
         real(wp), parameter :: alfa=4.d0, dr=.02d0
@@ -269,7 +269,7 @@ contains
     real(wp) function fn1(x,fnp)
     !! plasma density and its derivative
         use constants, only: zero
-        use spline      
+        use spline_module      
         real(wp), intent(in) :: x
         real(wp), intent(out) :: fnp
         real(wp) :: r, pa, y1, y, s, dy, dy1 
@@ -315,7 +315,7 @@ contains
     real(wp) function ft(x)
     !! electron temperature, erg
         use constants, only: zero
-        use spline
+        use spline_module
         real(wp), intent(in) :: x
         real(wp) :: pa, r, y, dy
         real(wp), parameter :: alfa=4.d0, dr=.02d0
@@ -333,7 +333,7 @@ contains
     real(wp) function fti(x)
     !! ion temperature, kev
         use constants, only: zero
-        use spline      
+        use spline_module      
         real(wp), intent(in) :: x
         real(wp) :: pa, r, y, dy
         real(wp), parameter :: alfa=4.d0, dr=.02d0
@@ -350,7 +350,7 @@ contains
     real(wp) function zefff(x)
     !! z_effective profile
         use constants, only: zero    
-        use spline      
+        use spline_module      
         real(wp), intent(in) :: x
         real(wp) :: pa, r, y, dy
         real(wp), parameter :: alfa=4.d0, dr=.02d0
@@ -368,7 +368,7 @@ contains
     subroutine calc_enorm
         use constants
         use rt_parameters, only: nr, inew
-        use spline
+        use spline_module
         use maxwell
         implicit none
         integer j, klo,khi,ierr
@@ -405,7 +405,7 @@ contains
     subroutine init_maxwell
         use constants
         use rt_parameters, only: nr, inew
-        use spline
+        use spline_module
         use maxwell        
         implicit none
         integer j
