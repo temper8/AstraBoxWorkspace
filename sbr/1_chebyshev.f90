@@ -1,4 +1,5 @@
 module chebyshev
+    use kind_module
     implicit none
     
 contains
@@ -13,12 +14,12 @@ contains
     ! are negligible. Parameters: Maximum expected value of n, and ð. 
         implicit none
         INTEGER n,NMAX
-        DOUBLE PRECISION a,b,c(n),func,PI
+        real(wp) a,b,c(n),func,PI
         EXTERNAL func
         PARAMETER (NMAX=50, PI=3.141592653589793d0)
         INTEGER j,k
-        DOUBLE PRECISION bma,bpa,fac,y,f(NMAX)
-        DOUBLE PRECISION sum
+        real(wp) bma,bpa,fac,y,f(NMAX)
+        real(wp) sum
         bma=0.5d0*(b-a)
         bpa=0.5d0*(b+a)
         do k=1,n
@@ -44,9 +45,9 @@ contains
     ! and the result is returned as the function value.
         implicit none
         INTEGER m
-        DOUBLE PRECISION chebev,a,b,x,c(m)
+        real(wp) chebev,a,b,x,c(m)
         INTEGER j
-        DOUBLE PRECISION d,dd,sv,y,y2
+        real(wp) d,dd,sv,y,y2
         if ((x-a)*(x-b).gt.0.d0) pause 'x not in range in chebev'
         d=0.d0
         dd=0.d0
@@ -69,9 +70,9 @@ contains
     ! are c(1:n).
         implicit none
         INTEGER n
-        DOUBLE PRECISION a,b,c(n),cder(n)
+        real(wp) a,b,c(n),cder(n)
         INTEGER j
-        DOUBLE PRECISION con
+        real(wp) con
         cder(n)=0.d0
         cder(n-1)=2*(n-1)*c(n)
         do j=n-2,1,-1

@@ -1,8 +1,8 @@
 module manager_mod
-    use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64
+    use kind_module
     implicit none
 
-    real(dp) :: yn3
+    real(wp) :: yn3
     !! common /abefo/ yn3
     integer :: iroot
     !!common /beo/ iroot
@@ -22,20 +22,20 @@ contains
         implicit none
         type (spectrum) spectr
         type (spectrum_point) point
-        real*8 pabs
+        real(wp) pabs
         integer iznzap(mpnt),iwzap(mpnt),irszap(mpnt)
-        real*8 rzap(mpnt),tetzap(mpnt),xmzap(mpnt),yn3zap(mpnt)
+        real(wp) rzap(mpnt),tetzap(mpnt),xmzap(mpnt),yn3zap(mpnt)
         !common /a0a1/ ynzm(1001),pm(1001) 
         !common /a0a2/ tet1,tet2
-        ! real*8 plost,pnab
+        ! real(wp) plost,pnab
         !common /a0a4/ plost,pnab
-        real*8 rzz,tetzz,xmzz
+        real(wp) rzz,tetzz,xmzz
         common /abc/ rzz,tetzz,xmzz,iznzz,iwzz,irszz
         common /abcd/ irs
         common /abcde/ izn
         common /abcdg/ iabsorp
         !common /abefo/ yn3
-        real*8 pow
+        real(wp) pow
         common /acg/ pow
         !common /a0gh/ pabs
         common /aef2/ icall1,icall2
@@ -47,9 +47,9 @@ contains
         integer iw0, ifail, iabsirp, inak0,ib,ie,izn
         integer lfree, nmax, iabsorp, i, nb1,nb2
         integer iznzz, iwzz, irszz
-        real(dp) htet, hr, yn, rin, xmin, rstart
-        real(dp) xnr, powexit, dltpow,  pow1, pgamma, xm
-        real(dp) tetin0, tetin, tet
+        real(wp) htet, hr, yn, rin, xmin, rstart
+        real(wp) xnr, powexit, dltpow,  pow1, pgamma, xm
+        real(wp) tetin0, tetin, tet
 
         pabs = spectr%max_power*pabs0/1.d2
         print *, 'pabs =', pabs, spectr%max_power, pabs0
@@ -246,22 +246,22 @@ contains
     end    
 
 
-    real*8 function rini(xm,tet,xnr,point,hr,ifail) !sav2009
+    real(wp) function rini(xm,tet,xnr,point,hr,ifail) !sav2009
         use constants, only : zero
         use rt_parameters, only : inew
         use spectrum_mod
         implicit none
         type(spectrum_point) :: point
-        real(dp) xm, tet,xnr,hr
+        real(wp) xm, tet,xnr,hr
         integer ifail, ntry
-        real(dp) :: vgrp(3),vph(3)
-        real(dp) :: ynz,ynpopq
+        real(wp) :: vgrp(3),vph(3)
+        real(wp) :: ynz,ynpopq
         common /bcef/ ynz,ynpopq
-        real(dp) :: g11,g12,g22,g33,gg,g,si,co
+        real(wp) :: g11,g12,g22,g33,gg,g,si,co
         common/metrika/g11,g12,g22,g33,gg,g,si,co !sav2009
-        real(dp) :: pa, prt, prm
-        real(dp) :: f1,f2
-        real(dp),  parameter :: rhostart=1.d0
+        real(wp) :: pa, prt, prm
+        real(wp) :: f1,f2
+        real(wp),  parameter :: rhostart=1.d0
         integer, parameter :: ntry_max=5
         ifail = 1
         rini = zero

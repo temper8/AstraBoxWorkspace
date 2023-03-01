@@ -1,57 +1,57 @@
 module plasma
-    use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64        
+    use kind_module  
     implicit none
     integer ngrid, nspl
     !! ASTRA radial grid number
-    real(dp) tcur
+    real(wp) tcur
     !! время (придумать название для переменной получше)
-    real(dp) rm
+    real(wp) rm
     !! minor radius in mid-plane, cm
-    real(dp) b_tor0, b_tor
+    real(wp) b_tor0, b_tor
     !! временно нужно две переменных, тоже нужно исправить
-    real(dp) r0
-    real(dp) z0
-    real(dp) rh1
-    real(dp), dimension(:),allocatable:: con,tem,temi,zeff,afld
-    real(dp), dimension(:),allocatable:: rh,rha,drhodr,delta,ell,gamm,amy
+    real(wp) r0
+    real(wp) z0
+    real(wp) rh1
+    real(wp), dimension(:),allocatable:: con,tem,temi,zeff,afld
+    real(wp), dimension(:),allocatable:: rh,rha,drhodr,delta,ell,gamm,amy
 
-    real(dp) tet1, tet2
+    real(wp) tet1, tet2
     !! бывший common /a0a2/ 
 
-    real(dp) xmi,cnye,cnyi,xsz,vt0 
+    real(wp) xmi,cnye,cnyi,xsz,vt0 
     ! common /a0ef3/ xmi,cnye,cnyi,xsz,vt0 
-    real(dp) cnstvc
+    real(wp) cnstvc
 
-    real(dp) ww
+    real(wp) ww
     ! common /a0ef2/ ww
 
-    real(dp) cltn
+    real(wp) cltn
     ! common /a0ef1/ cltn    
 
-    real(dp) vperp(50,100),cnstal,zza,zze,valfa!,kv
+    real(wp) vperp(50,100),cnstal,zza,zze,valfa!,kv
     !common /a0i5/ vperp(50,100),cnstal,zza,zze,valfa!,kv
 
-    real(dp) vpmax
+    real(wp) vpmax
 
-    real(dp) vk(100), sk(100)
+    real(wp) vk(100), sk(100)
     !common /a0i2/ vk(100)
 
     integer, parameter :: ipsy = 5, ncoef = 5
     !!   ipsy = number of polinomial decomposition coefficients
     !!   used for interpolation of Zakharov's moments.
-    real(dp), dimension(ipsy) :: cdl,cly,cgm,cmy,coeffs
+    real(wp), dimension(ipsy) :: cdl,cly,cgm,cmy,coeffs
 
 
-    real(dp) y2dn(501),y2tm(501),y2tmi(501)
+    real(wp) y2dn(501),y2tm(501),y2tmi(501)
     !! бывший common /a0l3/
-    real(dp) y2zeff(501)
+    real(wp) y2zeff(501)
     !! бывший common /a0l5/ 
 
     integer ncheb
-    real(dp) chebne(50),chebdne(50),chebddne(50)    
+    real(wp) chebne(50),chebdne(50),chebddne(50)    
     !! бывший common/ne_cheb
 
-    real(dp) enorm(100), fst(100)
+    real(wp) enorm(100), fst(100)
     !! em поле и еще что-то
 contains
     subroutine init_plasma(NA1, ABC, BTOR, RTOR, UPDWN, GP2, AMETR, RHO, SHIF, ELON, TRIA,MU, NE, TE, TI, ZEF, UPL)
@@ -62,11 +62,11 @@ contains
         use chebyshev
         implicit none
         integer, intent(in)  :: NA1
-        real(dp), intent(in) :: ABC, BTOR, RTOR, UPDWN, GP2
-        real(dp), dimension(*) :: AMETR, RHO, SHIF, ELON, TRIA,MU,  NE, TE, TI, ZEF, UPL
+        real(wp), intent(in) :: ABC, BTOR, RTOR, UPDWN, GP2
+        real(wp), dimension(*) :: AMETR, RHO, SHIF, ELON, TRIA,MU,  NE, TE, TI, ZEF, UPL
         integer i, k
         integer, parameter :: N  = 501
-        real(dp) :: znak_tor, znak_pol, fpol, dfmy
+        real(wp) :: znak_tor, znak_pol, fpol, dfmy
 
         ngrid = NA1
         nspl = ngrid
@@ -175,8 +175,8 @@ contains
         use approximation
         use rt_parameters
         implicit none
-        real(dp) :: xly, xlyp, arg1, arg2  
-        real(dp) :: hr, dn1, dn2, dn3, sss
+        real(wp) :: xly, xlyp, arg1, arg2  
+        real(wp) :: hr, dn1, dn2, dn3, sss
     !!!   
         xly = fdf(one,cly,ncoef,xlyp)
         arg1=(zplus-z0)/(xly*rm)
@@ -227,7 +227,7 @@ contains
         use rt_parameters
         implicit none
         integer j
-        real(dp) hr, rxx, vk0, sk0
+        real(wp) hr, rxx, vk0, sk0
         !--------------------------------------------------------
         ! find volums and surfaces
         !--------------------------------------------------------
@@ -241,13 +241,13 @@ contains
         end do        
     end subroutine
 
-    real(dp) function fn(x)
+    real(wp) function fn(x)
     !! plasma  density,  cm^-3
         use constants, only: zero
         use spline      
-        real(dp), intent(in) :: x
-        real(dp) :: pa, r, y, dy
-        real(dp), parameter :: alfa=4.d0, dr=.02d0
+        real(wp), intent(in) :: x
+        real(wp) :: pa, r, y, dy
+        real(wp), parameter :: alfa=4.d0, dr=.02d0
         pa=dabs(x)
         if(pa.le.rh(nspl)) then
             call splnt(rh,con,y2dn,nspl,pa,y,dy)
@@ -258,22 +258,22 @@ contains
         fn=y*1.d+13    !cm^-3
     end    
 
-    real(dp) function fvt(r)
+    real(wp) function fvt(r)
     !! нет описания
-        real(dp), intent(in) :: r
-        real(dp) :: pt
+        real(wp), intent(in) :: r
+        real(wp) :: pt
         pt=ft(r)
         fvt=sqrt(pt/9.11d-28)
     end
 
-    real(dp) function fn1(x,fnp)
+    real(wp) function fn1(x,fnp)
     !! plasma density and its derivative
         use constants, only: zero
         use spline      
-        real(dp), intent(in) :: x
-        real(dp), intent(out) :: fnp
-        real(dp) :: r, pa, y1, y, s, dy, dy1 
-        real(dp), parameter :: alfa=4.d0, dr=.02d0
+        real(wp), intent(in) :: x
+        real(wp), intent(out) :: fnp
+        real(wp) :: r, pa, y1, y, s, dy, dy1 
+        real(wp), parameter :: alfa=4.d0, dr=.02d0
         pa=abs(x)
         if(pa.le.rh(nspl)) then
             call splnt(rh,con,y2dn,nspl,pa,y,dy)
@@ -287,14 +287,14 @@ contains
         fnp=dy*1.d+13
     end
 
-    real(dp) function fn2(r, fnp, fnpp)
+    real(wp) function fn2(r, fnp, fnpp)
     !! plasma density and its first and second derivatives
         use constants, only: zero
         use chebyshev
-        real(dp), intent(in) :: r
-        real(dp), intent(out) :: fnp, fnpp
-        real(dp) :: x, y1, y, s, dy, ddy 
-        real(dp), parameter :: alfa=4.d0, dr=.02d0
+        real(wp), intent(in) :: r
+        real(wp), intent(out) :: fnp, fnpp
+        real(wp) :: x, y1, y, s, dy, ddy 
+        real(wp), parameter :: alfa=4.d0, dr=.02d0
         x=abs(r)
         if(x.le.1.d0) then
             y=chebev(zero,1.d0,chebne,ncheb,x)
@@ -312,13 +312,13 @@ contains
         fnpp=ddy
     end
 
-    real(dp) function ft(x)
+    real(wp) function ft(x)
     !! electron temperature, erg
         use constants, only: zero
         use spline
-        real(dp), intent(in) :: x
-        real(dp) :: pa, r, y, dy
-        real(dp), parameter :: alfa=4.d0, dr=.02d0
+        real(wp), intent(in) :: x
+        real(wp) :: pa, r, y, dy
+        real(wp), parameter :: alfa=4.d0, dr=.02d0
         pa=abs(x) !#@sav
         if(pa.le.rh(nspl)) then
             call splnt(rh,tem,y2tm,nspl,pa,y,dy)
@@ -330,13 +330,13 @@ contains
         ft=y*0.16d-8      ! erg
     end    
 
-    real(dp) function fti(x)
+    real(wp) function fti(x)
     !! ion temperature, kev
         use constants, only: zero
         use spline      
-        real(dp), intent(in) :: x
-        real(dp) :: pa, r, y, dy
-        real(dp), parameter :: alfa=4.d0, dr=.02d0
+        real(wp), intent(in) :: x
+        real(wp) :: pa, r, y, dy
+        real(wp), parameter :: alfa=4.d0, dr=.02d0
         pa=abs(x) !#@sav
         if(pa.le.rh(nspl)) then
             call splnt(rh,temi,y2tmi,nspl,pa,y,dy)
@@ -347,13 +347,13 @@ contains
         fti=y              ! kev
     end
     
-    real(dp) function zefff(x)
+    real(wp) function zefff(x)
     !! z_effective profile
         use constants, only: zero    
         use spline      
-        real(dp), intent(in) :: x
-        real(dp) :: pa, r, y, dy
-        real(dp), parameter :: alfa=4.d0, dr=.02d0
+        real(wp), intent(in) :: x
+        real(wp) :: pa, r, y, dy
+        real(wp), parameter :: alfa=4.d0, dr=.02d0
         pa=abs(x) !#@sav
         if(pa.le.rh(nspl)) then
             call splnt(rh,zeff,y2zeff,nspl,pa,y,dy)
@@ -372,9 +372,9 @@ contains
         use maxwell
         implicit none
         integer j, klo,khi,ierr
-        real(dp) :: efld
-        real(dp) :: r, pn, vt, tmp, xlogj,vmax
-        real(dp) :: fnr,fnrr, dens
+        real(wp) :: efld
+        real(wp) :: r, pn, vt, tmp, xlogj,vmax
+        real(wp) :: fnr,fnrr, dens
         !real*8 fn1,fn2
         do j=1,nr
             r=dble(j)/dble(nr+1)
@@ -409,7 +409,7 @@ contains
         use maxwell        
         implicit none
         integer j
-        real(dp) r, vclt
+        real(wp) r, vclt
         do j=1,nr
             r=dble(j)/dble(nr+1)
             vclt=3.d10/fvt(r)
@@ -423,7 +423,7 @@ contains
 
     end subroutine
 
-    real(dp) function obeom(ptet,pa)
+    real(wp) function obeom(ptet,pa)
         use constants
         use approximation
         implicit real*8 (a-h,o-z)
@@ -459,7 +459,7 @@ contains
         obeom=dsqrt(g)
     end
 
-    real(dp) function ploshad(ptet,pa)
+    real(wp) function ploshad(ptet,pa)
         use constants
         use approximation
         implicit real*8 (a-h,o-z)
@@ -493,15 +493,15 @@ contains
         ploshad=dsqrt(xj)
     end
 
-    real(dp) function gaussint(f,a,b,r,eps)
+    real(wp) function gaussint(f,a,b,r,eps)
     !! что-то про гаусс
         implicit none
-        real(dp) w(12), x(12)
-        real(dp) f, a, b, r, eps
-        real(dp) aa, bb, c1, c2, s8, s16, u, y, delta
+        real(wp) w(12), x(12)
+        real(wp) f, a, b, r, eps
+        real(wp) aa, bb, c1, c2, s8, s16, u, y, delta
         integer i
         !!      save w,x,const !sav#
-        real(dp), parameter :: const = 1.0d-12
+        real(wp), parameter :: const = 1.0d-12
         data w &
         /0.101228536290376, 0.222381034453374, 0.313706645877887, &
          0.362683783378362, 0.027152459411754, 0.062253523938648, &

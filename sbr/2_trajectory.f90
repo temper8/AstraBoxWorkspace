@@ -1,17 +1,17 @@
 module trajectory
-    use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64       
+    use kind_module
     implicit none
     integer, parameter :: length = 5000000
     integer, parameter :: mpnt = 10000
 
     integer nrefj(mpnt)
     !! common/refl/nrefj(mpnt)
-    real(dp) dland(length),dcoll(length),perpn(length),dalf(length)
-    real(dp) vel(length),jrad(length),iww(length),tetai(length)
-    real(dp) xnpar(length),izz(length)
+    real(wp) dland(length),dcoll(length),perpn(length),dalf(length)
+    real(wp) vel(length),jrad(length),iww(length),tetai(length)
+    real(wp) xnpar(length),izz(length)
     !! бывший common/agh/xnpar,vel,dland,dcoll,dalf,perpn,tetai,jrad,iww,izz
-    real(dp) mbeg(mpnt),mend(mpnt),mbad(mpnt),rbeg(mpnt) !sav2008
-    real(dp) tetbeg(mpnt),xnrbeg(mpnt),xmbeg(mpnt),yn3beg(mpnt)
+    real(wp) mbeg(mpnt),mend(mpnt),mbad(mpnt),rbeg(mpnt) !sav2008
+    real(wp) tetbeg(mpnt),xnrbeg(mpnt),xmbeg(mpnt),yn3beg(mpnt)
     !! common/viewdat/mbeg,mend,mbad,rbeg,tetbeg,xnrbeg,xmbeg,yn3beg   
     data mbad /mpnt*0/
 contains
@@ -23,13 +23,13 @@ subroutine view(tview,iview,nnz,ntet) !sav2008
     use plasma
     use rt_parameters, only :  nr, itend0, kv, nmaxm    
     use spectrum1D, only: ynzm, pm      
-    implicit real*8 (a-h,o-z)
-    real(dp), intent(in) :: tview
+    implicit real(wp) (a-h,o-z)
+    real(wp), intent(in) :: tview
 
     integer, intent(in) :: iview, nnz, ntet  !sav#
     common /bcef/ ynz,ynpopq
     common /vth/ vthc(length),poloidn(length)
-    real*8 vthcg,npoli
+    real(wp) vthcg,npoli
     common /a0ghp/ vlf,vrt,dflf,dfrt
     
     integer i, n, itr, ntraj
@@ -37,9 +37,9 @@ subroutine view(tview,iview,nnz,ntet) !sav2008
     integer jznak,jdlt,mn,mm,jchek,itet,inz
     integer, parameter :: unit_bias = 10
     integer, parameter :: m=7
-    real(dp), parameter :: pleft=1.d-10 !m may be chaged together with name(m)
-    real(dp) ptt(m),pll(m),pcc(m),paa(m)
-    real(dp) pt_c(m),pl_c(m),pc_c(m),pa_c(m)
+    real(wp), parameter :: pleft=1.d-10 !m may be chaged together with name(m)
+    real(wp) ptt(m),pll(m),pcc(m),paa(m)
+    real(wp) pt_c(m),pl_c(m),pc_c(m),pa_c(m)
     character(40) fname
     character*40 name(m)
     save name !sav#

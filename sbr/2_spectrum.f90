@@ -1,17 +1,17 @@
 module spectrum_mod
-    use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64
+    use kind_module
     implicit none    
 
     type spectrum_point
-        real(dp) nz
+        real(wp) nz
         !! 
-        real(dp) ny
+        real(wp) ny
         !!
-        real(dp) Ntor   
+        real(wp) Ntor   
         !! Ntau=-Ntor   
-        real(dp) Npol
+        real(wp) Npol
         !! Ntet=Npol
-        real(dp) power
+        real(wp) power
         !! power
 
     contains
@@ -20,13 +20,13 @@ module spectrum_mod
     type spectrum
         integer size
         !! size of spectrum
-        real(dp) input_power
+        real(wp) input_power
         !! power of spectrum
-        real(dp) power_ratio
+        real(wp) power_ratio
         !! доля входной мощности
-        real(dp) max_power
+        real(wp) max_power
         !!
-        real(dp) sum_power
+        real(wp) sum_power
         !! суммарная power        
         integer direction
         !! направление спектра   +1 или -1 или 0 - полный
@@ -60,7 +60,7 @@ contains
         implicit none
         class(spectrum),  intent(inout) :: this
         type(spectrum_point) :: p           
-        real(dp) max_power, pnorm
+        real(wp) max_power, pnorm
         integer i
         max_power = 0
         pnorm = this%power_ratio*xsgs/ntet
@@ -158,7 +158,7 @@ contains
         character (len = *), value :: file_name 
         logical                     :: res
         integer i,n,stat
-        real(dp) sum_power
+        real(wp) sum_power
         !integer, value :: size
         print *, file_name      
         ! Check if the file exists
@@ -257,13 +257,13 @@ contains
             type(spectrum), intent(in) :: spectr
             type(spectrum) :: appx_spectr
             integer :: ispectr, ispl
-            real(dp), allocatable :: ynzm0(:),pm0(:)
-            real(dp), allocatable :: ynzm(:),pm(:)
-            real(dp), allocatable :: yn2z(:),powinp(:)
+            real(wp), allocatable :: ynzm0(:),pm0(:)
+            real(wp), allocatable :: ynzm(:),pm(:)
+            real(wp), allocatable :: yn2z(:),powinp(:)
             integer innz, i
-            real(dp) dxx, xx0, xx1, xx2, yy1, yy2, pinp
-            real(dp) dpw, dpower, pwcurr, ptot, dynn
-            real(dp) pmax, pnorm, plaun
+            real(wp) dxx, xx0, xx1, xx2, yy1, yy2, pinp
+            real(wp) dpw, dpower, pwcurr, ptot, dynn
+            real(wp) pmax, pnorm, plaun
             ispectr = spectr%direction
             plaun = spectr%input_power
             ispl = spectr%size
@@ -348,15 +348,15 @@ module spectrum1D
     type(spectrum) :: pos_spectr, neg_spectr
     integer :: ispl
     !! size of spectrum
-    real(dp) :: plaun
+    real(wp) :: plaun
     !! power of spectrum
-    real(dp) :: ynzm0(1001)
+    real(wp) :: ynzm0(1001)
     !+
-    real(dp) :: pm0(1001)
+    real(wp) :: pm0(1001)
     !+ 
-    real(dp) :: ynzm(1001), pm(1001)
+    real(wp) :: ynzm(1001), pm(1001)
     !! бывший common /a0a1/ ynzm(1001),pm(1001)     
-    real(dp) :: pabs
+    real(wp) :: pabs
     !! бывший common /a0gh/ pabs
 
     integer, parameter, private :: HEADER_LENGTH = 53
@@ -365,10 +365,10 @@ module spectrum1D
     subroutine read_positive_spectrum(file_name, p_in)
         implicit none
         character(*) file_name
-        real(dp) :: p_in        
+        real(wp) :: p_in        
         integer, parameter :: iunit = 20        
         integer :: i, i1
-        real(dp) :: anz,apz
+        real(wp) :: anz,apz
         
         open(iunit, file= file_name)
         do i = 1, HEADER_LENGTH
@@ -394,10 +394,10 @@ module spectrum1D
     subroutine read_negative_spectrum(file_name, p_in)
         implicit none
         character(*) file_name
-        real(dp) :: p_in
+        real(wp) :: p_in
         integer, parameter :: iunit = 20        
         integer :: i, i1
-        real(dp) :: anz, apz
+        real(wp) :: anz, apz
 
         open(iunit, file= file_name)        
         do i = 1, HEADER_LENGTH
@@ -429,11 +429,11 @@ module spectrum1D
         use rt_parameters, only: nnz, ntet, pabs0
         implicit none
         integer, intent(in) :: ispectr
-        real(dp) yn2z(1001),powinp(1001)
+        real(wp) yn2z(1001),powinp(1001)
         integer innz, i
-        real(dp) dxx, xx0, xx1, xx2, yy1, yy2, pinp
-        real(dp) dpw, dpower, pwcurr, ptot, dynn
-        real(dp) pmax, pnorm
+        real(wp) dxx, xx0, xx1, xx2, yy1, yy2, pinp
+        real(wp) dpw, dpower, pwcurr, ptot, dynn
+        real(wp) pmax, pnorm
         call splne(ynzm0,pm0,ispl,yn2z)
         innz=100*ispl
         dxx=(ynzm0(ispl)-ynzm0(1))/innz
@@ -511,7 +511,7 @@ module spectrum1D
         type(spectrum) :: spectr
         type(spectrum_point) :: p
         integer i 
-        real(dp) :: pmax
+        real(wp) :: pmax
         pmax = 0
         spectr = spectrum(nnz)
         do i= 1, nnz

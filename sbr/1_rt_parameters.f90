@@ -1,34 +1,34 @@
 module rt_parameters
-    use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64
+    use kind_module
     implicit none
 !   physical parameters 
-    real(dp) :: freq
+    real(wp) :: freq
     !! Freq,     RF frequency, GHz
-    real(dp) :: xmi1
+    real(wp) :: xmi1
     !!  Mi1/Mp,  relative mass of ions 1
-    real(dp) :: zi1
+    real(wp) :: zi1
     !! charge of ions 1
-    real(dp) :: xmi2
+    real(wp) :: xmi2
     !! Mi2/Mp,  relative mass of ions 2
-    real(dp) :: zi2
+    real(wp) :: zi2
     !! charge of ions 2
-    real(dp) :: dni2 
+    real(wp) :: dni2 
     !!  0.03   Ni2/Ni1, relative density of ions 2
-    real(dp) :: xmi3
+    real(wp) :: xmi3
     !!  Mi3/Mp,  relative mass of ions 3
-    real(dp) :: zi3
+    real(wp) :: zi3
     !!  charge of ions 3
-    real(dp) :: dni3
+    real(wp) :: dni3
     !!  Ni3/Ni1, relative density of ions 3
 
 !!!!!!!!!!!!!  parameters for alphas calculations !!!
     integer  ::  itend0
     !! itend0,   if = 0, no alphas
-    real(dp) ::  energy
+    real(wp) ::  energy
     !! energy,   max. perp. energy of alphas (MeV)
-    real(dp) ::  factor   
+    real(wp) ::  factor   
     !! factor,   factor in alpha source
-    real(dp) ::  dra   
+    real(wp) ::  dra   
     !! dra,      relative alpha source broadening (dr/a)
     integer  ::  kv    
     !! kv,       V_perp  greed number    
@@ -36,27 +36,27 @@ module rt_parameters
 !!!!!!!!!!!!! numerical parameters !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     integer  ::  nr     
     !! nr,  radial grid number  <= 505
-    real(dp) ::  hmin1
+    real(wp) ::  hmin1
     !! hmin1, rel.(hr) min. step in the Fast comp. mode, <1.d0
-    real(dp) ::  rrange
+    real(wp) ::  rrange
     !! rrange,   rel.(hr) size of a 'turning' point region, <1.d0
-    real(dp) ::  eps
+    real(wp) ::  eps
     !! eps,      accuracy
-    real(dp) ::  hdrob
+    real(wp) ::  hdrob
     !! hdrob,    h4 correction,
-    real(dp) ::  cleft
+    real(wp) ::  cleft
     !! cleft,    left Vz plato border shift (<1)
-    real(dp) ::  cright
+    real(wp) ::  cright
     !! cright,   right Vz plato border shift (>1)
-    real(dp) ::  cdel
+    real(wp) ::  cdel
     !! cdel,     (left part)/(Vz plato size)
-    real(dp) ::  rbord 
+    real(wp) ::  rbord 
     !! rbord,    relative radius of reflection, <1.
-    real(dp) ::  pchm
+    real(wp) ::  pchm
     !! pchm,     threshold between 'strong' and weak' absorption, <1.
-    real(dp) ::  pabs0
+    real(wp) ::  pabs0
     !! pabs,     part of remaining power interp. as absorption
-    real(dp) ::  pgiter
+    real(wp) ::  pgiter
     !! pgiter,   relative accuracy to stop iterations
     integer ::   ni1     
     !! ni1,      grid number in the left part of Vz plato
@@ -93,9 +93,9 @@ module rt_parameters
     !! ipol,      +-1, Bpol direction in right coord{drho,dteta,dfi}
 
   !!!!!!!!!!!!!  grill parameters and input LH spectrum !!!!!!!!!!!!
-    real(dp) ::  zplus 
+    real(wp) ::  zplus 
     !! Zplus,    upper grill corner in centimeters
-    real(dp) ::  zminus
+    real(wp) ::  zminus
     !! Zminus,   lower grill corner in centimeters
     integer ::   ntet
     !! ntet,     theta grid number

@@ -1,19 +1,20 @@
 module chang_cooper_module
+    use kind_module
     implicit none
     
 contains
 subroutine chang_cooper_solver(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
     ! схема Ченга-Купера для уравнения Фоккера-Планка
     implicit none
-    real*8, intent(in)  :: alfa2      
+    real(wp), intent(in)  :: alfa2      
     integer, intent(in) :: nt, n
-    real*8, intent(in)  :: h, dt
-    real*8, intent(in)  :: ybeg, yend
-    real*8, intent(in)  :: d1(n+1),d2(n+1),d3(n+1)
-    real*8, intent(inout) :: y(n+2)
+    real(wp), intent(in)  :: h, dt
+    real(wp), intent(in)  :: ybeg, yend
+    real(wp), intent(in)  :: d1(n+1),d2(n+1),d3(n+1)
+    real(wp), intent(inout) :: y(n+2)
     integer i, it, iz
-    real*8 xx(n+1), a(n),b(n),c(n),f(n)
-    real*8 y1(n)
+    real(wp) xx(n+1), a(n),b(n),c(n),f(n)
+    real(wp) y1(n)
     !print *, 'TK abc n = ', n
     do i=1,n+1
         xx(i)=h/2.d0+h*dble(i-1) !+shift
@@ -63,15 +64,15 @@ end subroutine
 ! --
 subroutine chang_cooper_abcoef(alfa2, A,B,C,f,Y,dt,n,ybeg,yend,xx,h,df)
     implicit none
-    real*8, intent(in)    :: alfa2
-    real*8, intent(inout) :: a(n),b(n),c(n),f(n),y(n+2)
+    real(wp), intent(in)    :: alfa2
+    real(wp), intent(inout) :: a(n),b(n),c(n),f(n),y(n+2)
     integer, intent(in)   :: n
-    real*8, intent(in)    :: dt, ybeg, yend, h
-    real*8, intent(in)    :: xx(n+1)
-    real*8, intent(in)    :: df(n+1)
+    real(wp), intent(in)    :: dt, ybeg, yend, h
+    real(wp), intent(in)    :: xx(n+1)
+    real(wp), intent(in)    :: df(n+1)
 
     integer i
-    real*8 z, r, tmp1,tmp2,tmp3
+    real(wp) z, r, tmp1,tmp2,tmp3
 
     r=dt/h
     do i=1,n
@@ -94,22 +95,22 @@ subroutine chang_cooper_abcoef(alfa2, A,B,C,f,Y,dt,n,ybeg,yend,xx,h,df)
 
     function B1(xx, alfa2) result(res)
         implicit none
-        real*8 xx,alfa2,beta, res
+        real(wp) xx,alfa2,beta, res
         res = -alfa2+1.d0/(xx*xx)
     end function
 
       
     function C1(xx,dif) result(res)
         implicit none
-        real*8 xx, dif, res
+        real(wp) xx, dif, res
         res = dif+1.d0/(xx*xx*xx)
     end function
          
     function dlt(xx,h,dif, alfa2) result(res)
         implicit none
-        real*8 res
-        real*8 xx, h, dif, alfa2
-        real*8 w
+        real(wp) res
+        real(wp) xx, h, dif, alfa2
+        real(wp) w
         w = h*B1(xx, alfa2)/C1(xx,dif)
         res = 1.d0/w-1.d0/(dexp(w)-1.d0)
     end function

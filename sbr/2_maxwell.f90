@@ -1,17 +1,17 @@
 module maxwell
-      use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64          
+      use kind_module      
       use constants, only : zero
       implicit none
       integer, parameter :: i0 = 1002
 
-      real(dp) vij(i0,100), fij0(i0,100,2), fij(i0,100,2)
-      real(dp) dfij(i0,100,2), dij(i0,100,2)
+      real(wp) vij(i0,100), fij0(i0,100,2), fij(i0,100,2)
+      real(wp) dfij(i0,100,2), dij(i0,100,2)
 
 contains
       subroutine init_vi(vclt, vi)
-            real*8, intent(in) :: vclt
-            real*8, intent(out) :: vi(i0)            
-            real*8 vmax
+            real(wp), intent(in) :: vclt
+            real(wp), intent(out) :: vi(i0)            
+            real(wp) vmax
             integer i
             vmax = 2.d0*vclt
             do i=1,i0
@@ -20,9 +20,9 @@ contains
       end subroutine      
 
       subroutine init_fmaxw_classic(vclt, enorm, fi, dfi)
-            real*8, intent(in) :: vclt, enorm
-            real*8, intent(out) :: fi(i0), dfi(i0)
-            real*8 vi, vmax
+            real(wp), intent(in) :: vclt, enorm
+            real(wp), intent(out) :: fi(i0), dfi(i0)
+            real(wp) vi, vmax
             integer i
             vmax = 2.d0*vclt
             do i=1,i0
@@ -37,9 +37,9 @@ contains
       end subroutine      
 
       subroutine init_fmaxw_ext(vclt, enorm, fi, dfi)
-            real*8, intent(in) :: vclt, enorm
-            real*8, intent(out) :: fi(i0), dfi(i0)
-            real*8 vi, vmax
+            real(wp), intent(in) :: vclt, enorm
+            real(wp), intent(out) :: fi(i0), dfi(i0)
+            real(wp) vi, vmax
             integer i
             vmax=2.d0*vclt
             do i=1,i0
@@ -55,7 +55,7 @@ contains
 
       double precision function funmaxwell(v,dfunmaxwell)
             implicit none
-            real*8 v,dfunmaxwell,arg,pi2sqrt
+            real(wp) v,dfunmaxwell,arg,pi2sqrt
             parameter(pi2sqrt=2.506628274631d0)
 
             arg=-0.5d0*v**2
@@ -65,9 +65,9 @@ contains
 
       double precision function fmaxw_classic(v,alfa2,dfmaxw)
             implicit none
-            real*8 v,alfa2,dfmaxw
-            real*8 arg,alfa,api,b,psiq,f,df
-            real*8 pi2sqrt,pisqrt,zero
+            real(wp) v,alfa2,dfmaxw
+            real(wp) arg,alfa,api,b,psiq,f,df
+            real(wp) pi2sqrt,pisqrt,zero
             parameter(pi2sqrt=2.506628274631d0,pisqrt=1.77245385090552d0)
             parameter(zero=0.d0)
             
@@ -78,9 +78,9 @@ contains
 
       double precision function fmaxw_ext(v,alfa2,dfmaxw)
             implicit none
-            real*8 v,alfa2,dfmaxw
-            real*8 arg,alfa,api,b,f,df
-            real*8 pi2sqrt,pisqrt,zero
+            real(wp) v,alfa2,dfmaxw
+            real(wp) arg,alfa,api,b,f,df
+            real(wp) pi2sqrt,pisqrt,zero
             parameter(pi2sqrt=2.506628274631d0,pisqrt=1.77245385090552d0)
             parameter(zero=0.d0)
 
@@ -95,9 +95,9 @@ contains
 
       double precision function fmaxw(v,alfa2,dfmaxw)
             implicit none
-            real*8 v,alfa2,dfmaxw
-            real*8 arg,alfa,api,b,f,df
-            real*8 pi2sqrt,pisqrt,zero
+            real(wp) v,alfa2,dfmaxw
+            real(wp) arg,alfa,api,b,f,df
+            real(wp) pi2sqrt,pisqrt,zero
             parameter(pi2sqrt=2.506628274631d0,pisqrt=1.77245385090552d0)
             parameter(zero=0.d0)
             if(alfa2.le.zero) then

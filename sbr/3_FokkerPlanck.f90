@@ -1,4 +1,5 @@
 module FokkerPlanck_module
+    use kind_module
     implicit none
     
 contains
@@ -14,21 +15,21 @@ subroutine fokkerplanck_compute(time, TAU)
 
     type(FokkerPlanck1D) fp_test
 
-    real*8, intent(in) :: time, TAU
-    real*8 t, dtstep, dtau
+    real(wp), intent(in) :: time, TAU
+    real(wp) t, dtstep, dtau
     !integer nr
     !common /a0ab/ nr
     integer, parameter :: ntau = 10
     !integer i0
     !parameter(i0=1002)
-    !real*8 vij,fij0,fij,dfij,dij,enorm,fst
+    !real(wp) vij,fij0,fij,dfij,dij,enorm,fst
     !common/lh/vij(i0,100),fij0(i0,100,2),fij(i0,100,2),dfij(i0,100,2), dij(i0,100,2),enorm(100),fst(100)
     integer n,i,j,it,nt,k
-    real*8 xend,h,dt
-    real*8 znak,alfa2,dt0,h0,r
+    real(wp) xend,h,dt
+    real(wp) znak,alfa2,dt0,h0,r
     !common/ef/ alfa2
     
-    real*8 d0
+    real(wp) d0
     integer jindex,kindex
     common/dddql/ d0,jindex,kindex
     parameter(dt0=0.1d0,h0=0.1d0)
@@ -89,10 +90,10 @@ subroutine fokkerplanck_compute(time, TAU)
     ! инициализация диффузии для схемы савельева
     implicit none
     integer, intent(in) :: n
-    real*8, intent(in) :: h
-    real*8, dimension(:), intent(in) :: vj, dj
-    real*8, dimension(:), intent(out) :: d1, d2, d3
-    real*8, dimension(:), allocatable :: xx
+    real(wp), intent(in) :: h
+    real(wp), dimension(:), intent(in) :: vj, dj
+    real(wp), dimension(:), intent(out) :: d1, d2, d3
+    real(wp), dimension(:), allocatable :: xx
     integer :: i0
     integer i, klo, khi, ierr, klo1, khi1
     integer klo2, klo3, khi2, khi3, ierr1, ierr2, ierr3

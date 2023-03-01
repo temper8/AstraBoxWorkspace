@@ -1,15 +1,15 @@
 module iterator_mod
-    use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64      
+    use kind_module   
     implicit none
-    real(dp) :: vmid(100),vz1(100),vz2(100)
+    real(wp) :: vmid(100),vz1(100),vz2(100)
     integer  :: ibeg(100),iend(100)
 
-    real(dp) :: vrj(101),dj(101),djnew(1001)
-    real(dp) :: dj2(101),d2j(101)
+    real(wp) :: vrj(101),dj(101),djnew(1001)
+    real(wp) :: dj2(101),d2j(101)
 
-    real(dp), dimension(:), allocatable:: vvj, vdfj
+    real(wp), dimension(:), allocatable:: vvj, vdfj
 
-    real(dp) :: vgrid(101,100), dfundv(101,100)
+    real(wp) :: vgrid(101,100), dfundv(101,100)
     !!common/gridv/vgrid(101,100),dfundv(101,100)
     integer  :: nvpt
     !!common/gridv/nvpt
@@ -17,9 +17,9 @@ module iterator_mod
     integer, parameter :: kpt1=20, kpt3=20
 
     integer :: iterat
-    real(dp) :: psum4
+    real(wp) :: psum4
     !!common /vvv2/ psum4
-    real(dp) plost,pnab
+    real(wp) plost,pnab
     !!common /a0a4/ plost,pnab
 contains
     subroutine init_iteration
@@ -58,11 +58,11 @@ contains
         integer, intent(in) :: ispectr
         
         integer i, j, k
-        real(dp) :: cdel, dfout
+        real(wp) :: cdel, dfout
 
         integer :: klo,khi,ierr
-        real(dp) :: r, hr, vt, vto, vmax
-        real(dp) :: v1, v2, vp1, vp2
+        real(wp) :: r, hr, vt, vto, vmax
+        real(wp) :: v1, v2, vp1, vp2
         hr = 1.d0/dble(nr+1)
         k=(3-ispectr)/2
         do j=1,nr

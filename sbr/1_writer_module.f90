@@ -1,15 +1,16 @@
 module writer_module
+    use kind_module
     implicit none
     
 contains
 subroutine write_v_array(v, a, time, array_name)
     !! сохраняет массивы расределения и скорости
     implicit none
-    real*8, intent(in) :: v(:,:)    
-    real*8, intent(in) :: a(:,:,:)
-    real*8, intent(in) :: time
+    real(wp), intent(in) :: v(:,:)    
+    real(wp), intent(in) :: a(:,:,:)
+    real(wp), intent(in) :: time
     character(len=*), intent(in) :: array_name
-    real*8, allocatable :: gv(:), ga(:)
+    real(wp), allocatable :: gv(:), ga(:)
     integer i, N, nshape(3)
     character(120) fname
     integer, parameter :: iu = 21
@@ -38,8 +39,8 @@ subroutine write_v_array(v, a, time, array_name)
     contains
         function glue_v_axis(a) result(g)
             implicit none
-            real*8, intent(in) :: a(:)
-            real*8, allocatable :: g(:)
+            real(wp), intent(in) :: a(:)
+            real(wp), allocatable :: g(:)
             integer i, N
             N = size(a)
             allocate(g(-N:N))
@@ -49,8 +50,8 @@ subroutine write_v_array(v, a, time, array_name)
         end function
         function glue_arrays(a, b) result(g)
             implicit none
-            real*8, intent(in) :: a(:), b(:)
-            real*8, allocatable :: g(:)
+            real(wp), intent(in) :: a(:), b(:)
+            real(wp), allocatable :: g(:)
             integer i, N
             N = size(a)
             allocate(g(-N:N))
@@ -63,9 +64,9 @@ end subroutine
 
 subroutine write_x_array(x, arr, time, array_name)
     implicit none
-    real*8, intent(in) :: x(:,:)    
-    real*8, intent(in) :: arr(:,:)
-    real*8, intent(in) :: time
+    real(wp), intent(in) :: x(:,:)    
+    real(wp), intent(in) :: arr(:,:)
+    real(wp), intent(in) :: time
     character(len=*), intent(in) :: array_name
     
     integer i, N, nshape(2)
@@ -88,8 +89,8 @@ end subroutine
 
 subroutine write_matrix(arr, time, array_name)
     implicit none
-    real*8, intent(in) :: arr(:,:)
-    real*8, intent(in) :: time
+    real(wp), intent(in) :: arr(:,:)
+    real(wp), intent(in) :: time
     character(len=*), intent(in) :: array_name
     
     integer i, N, nshape(2)
@@ -111,7 +112,7 @@ end subroutine
 
 subroutine write_array(arr, N, array_name)
     implicit none
-    real*8, intent(in) :: arr(*)
+    real(wp), intent(in) :: arr(*)
     integer, intent(in) :: N
     character(len=*), intent(in) :: array_name
     
@@ -131,9 +132,9 @@ end subroutine
 
 subroutine write_distribution(arr,N,time)
     implicit none
-    real*8, intent(in) :: arr(*)
+    real(wp), intent(in) :: arr(*)
     integer, intent(in) :: N
-    real*8, intent(in) :: time
+    real(wp), intent(in) :: time
 
     integer i
     integer itime

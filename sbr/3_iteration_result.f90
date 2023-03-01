@@ -1,5 +1,5 @@
 module iteration_result_mod
-    use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64    
+    use kind_module
     implicit none
     type IterationResult
 
@@ -7,38 +7,38 @@ module iteration_result_mod
         !! iteration number 'iteration=',iterat
         integer :: spectr_direction
         !! 'ispectr=',ispectr
-        real(dp) :: P_launched
+        real(wp) :: P_launched
         !!P_launched, MW=',plaun
-        real(dp) :: P_landau
+        real(wp) :: P_landau
         !!'P_landau, MW=',ol
-        real(dp) :: P_coll
+        real(wp) :: P_coll
         !! 'P_coll, MW=',oc
-        real(dp) :: P_alph
+        real(wp) :: P_alph
         !!'P_alph, MW=',oa 
-        real(dp) :: alphas_power
+        real(wp) :: alphas_power
         !!'Alphas power, MW=',fuspow
-        real(dp) :: P_fast
+        real(wp) :: P_fast
         !write(*,*) 'P_fast (landau+coll), MW=',of
-        real(dp) :: P_lost
+        real(wp) :: P_lost
         !write(*,*) 'P_lost, MW=',plost/xsgs
-        real(dp) :: P_not_accounted
+        real(wp) :: P_not_accounted
         !write(*,*) 'P_not accounted, MW=',pnab/xsgs
-        real(dp) :: P_landau_strong_absorption
+        real(wp) :: P_landau_strong_absorption
         !write(*,*) 'P_landau (strong absorption), MW=',ppv1/xsgs
-        real(dp) :: P_landau_weak_absorption
+        real(wp) :: P_landau_weak_absorption
         !write(*,*) 'P_landau (weak absorption), MW=',ppv2/xsgs
-        real(dp) :: P_turns
+        real(wp) :: P_turns
         !write(*,*) 'P_turns, MW=', psum4/xsgs
-        real(dp) :: efficiency
+        real(wp) :: efficiency
         !write(*,*) 'efficiency, I(MA)/P(MW)=',oi/plaun !sav2008
         !call integral(1,nspl,rh,con,avedens) !sav2010
-        real(dp) :: avedens
-        real(dp) :: r0
+        real(wp) :: avedens
+        real(wp) :: r0
         !write (*,*) '<Ne>, m^-3=',avedens*1.d19,' R, m=',r0*1.d-2
-        real(dp) :: eta_eff
+        real(wp) :: eta_eff
         !eta_eff=1.d17*avedens*r0*oi/plaun
         !write (*,*) 'eta_eff=<Ne>*R*I/P, A/(W*m^2)=',eta_eff !sav2010
-        real(dp) :: residual 
+        real(wp) :: residual 
         !! невязка 'nevyazka=', pchg        
     
     contains
@@ -75,7 +75,7 @@ contains
     subroutine iteration_result_save(this, time_stamp)
         !! save Iteration Result to file
         class(IterationResult), intent(in) :: this
-        real(dp), intent(in) :: time_stamp
+        real(wp), intent(in) :: time_stamp
         character(120) fname
         integer, parameter :: iu = 20
         write(fname,'("lhcd/rt-result/", f9.7,".dat")')  time_stamp

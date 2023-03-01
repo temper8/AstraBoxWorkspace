@@ -1,30 +1,30 @@
 module current
-    use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64
+    use kind_module
     implicit none
 
-    real(dp) :: dql(101,100)
+    real(wp) :: dql(101,100)
     !!
-    real(dp) :: pdl(100)
+    real(wp) :: pdl(100)
     !!
-    real(dp) :: vzmin(100)
+    real(wp) :: vzmin(100)
     !!
-    real(dp) :: vzmax(100)
+    real(wp) :: vzmax(100)
     !common /a0i3/ dql(101,100),pdl(100),vzmin(100),vzmax(100)
-    real(dp) :: fcoll(100)
-    real(dp) :: dens(100) 
-    real(dp) :: eta(100)
+    real(wp) :: fcoll(100)
+    real(wp) :: dens(100) 
+    real(wp) :: eta(100)
     !common /a0i4/ fcoll(100),dens(100),eta(100)
-    real(dp) :: dq1(101,100)
-    real(dp) :: dq2(101,100)
-    real(dp) :: pdc(100)
-    real(dp) :: pda(100)
-    real(dp) :: ppv1,ppv2
+    real(wp) :: dq1(101,100)
+    real(wp) :: dq2(101,100)
+    real(wp) :: pdc(100)
+    real(wp) :: pda(100)
+    real(wp) :: ppv1,ppv2
     !common/vvv1/dq1(101,100),dq2(101,100),pdc(100),pda(100),ppv1,ppv2
-    real(dp) :: pdfast(100)
+    real(wp) :: pdfast(100)
     !common /vvv3/ pdfast(100)
-    real(dp) :: dqi0(50,100) 
+    real(wp) :: dqi0(50,100) 
     !common /alph/ dqi0(50,100)    
-    real(dp) :: dncount(101,100)
+    real(wp) :: dncount(101,100)
     !common/findsigma/dncount(101,100)
 contains
 

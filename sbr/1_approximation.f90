@@ -1,6 +1,6 @@
 module approximation
     !+ polinomial approximation
-    use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64      
+    use kind_module    
     implicit none
     
 contains
@@ -8,7 +8,7 @@ contains
 double precision function polin(k,x)
     implicit none
     integer k
-    real(dp) x
+    real(wp) x
     polin=1d0
     if(k.gt.1) polin=x**(k-1)
     return
@@ -17,7 +17,7 @@ end
 double precision function polin1(k,x)
     implicit none
     integer k
-    real(dp) x
+    real(wp) x
     polin1=x**k
     return
 end
@@ -25,7 +25,7 @@ end
 double precision function polin2(k,x)
     implicit none
     integer k
-    real(dp) x
+    real(wp) x
     polin2=x**(k+1)
     return
 end
@@ -41,9 +41,9 @@ subroutine approx(x,y,n,f,m,b)
 !
     implicit real*8 (a-h,o-z)
     integer,  parameter :: np=20
-    real(dp), parameter :: zero=0.d0
-    real(dp) a(np,np),indx(np)
-    real(dp) y(n),x(n),b(*)
+    real(wp), parameter :: zero=0.d0
+    real(wp) a(np,np),indx(np)
+    real(wp) y(n),x(n),b(*)
     integer i,j,k,m,n
     if(m.gt.np) then
         write(*,*)'index error subroutine "approx"'
@@ -78,8 +78,8 @@ end
 subroutine ludcmp(a,n,np,indx,d)
     implicit real*8 (a-h,o-z)
     integer,  parameter :: nmax=501
-    real(dp), parameter :: tiny=1.d-20, zero=0.d0
-    real(dp) a(np,np),indx(n),vv(nmax)
+    real(wp), parameter :: tiny=1.d-20, zero=0.d0
+    real(wp) a(np,np),indx(n),vv(nmax)
     integer i,j,k,m,n,np,imax
     d=1.d0
     do i=1,n
@@ -141,8 +141,8 @@ end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine lubksb(a,n,np,indx,b)
     implicit real*8 (a-h,o-z)
-    real(dp), parameter :: zero=0.d0
-    real(dp)  a(np,np),indx(n),b(n)
+    real(wp), parameter :: zero=0.d0
+    real(wp)  a(np,np),indx(n),b(n)
     integer i,j,ii,ll,n,np 
     ii=0
     do i=1,n
@@ -171,9 +171,9 @@ subroutine lubksb(a,n,np,indx,b)
 end    
 
 double precision function fdf(x,c,n,df)
-    real(dp) x,c(n),df
+    real(wp) x,c(n),df
     integer n,j
-    real(dp) p, dp
+    real(wp) p, dp
     p=c(n)
     dp=0.d0
     do j=n-1,1,-1
@@ -185,9 +185,9 @@ double precision function fdf(x,c,n,df)
 end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 double precision function fdfddf(x,c,n,df,ddf)
-    real(dp) x,c(n),df, ddf
+    real(wp) x,c(n),df, ddf
     integer n,j
-    real(dp) p, dp,ddp
+    real(wp) p, dp,ddp
     p=c(n)
     dp=0d0
     ddp=0d0
