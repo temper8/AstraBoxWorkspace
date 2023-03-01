@@ -1,11 +1,11 @@
 module approximation
-    !+ polinomial approximation
+    !! polinomial approximation
     use kind_module    
     implicit none
     
 contains
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-double precision function polin(k,x)
+real(wp) function polin(k,x)
     implicit none
     integer k
     real(wp) x
@@ -14,7 +14,7 @@ double precision function polin(k,x)
     return
 end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-double precision function polin1(k,x)
+real(wp) function polin1(k,x)
     implicit none
     integer k
     real(wp) x
@@ -22,7 +22,7 @@ double precision function polin1(k,x)
     return
 end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-double precision function polin2(k,x)
+real(wp) function polin2(k,x)
     implicit none
     integer k
     real(wp) x
@@ -170,7 +170,7 @@ subroutine lubksb(a,n,np,indx,b)
     return
 end    
 
-double precision function fdf(x,c,n,df)
+real(wp) function fdf(x,c,n,df)
     real(wp) x,c(n),df
     integer n,j
     real(wp) p, dp
@@ -184,7 +184,7 @@ double precision function fdf(x,c,n,df)
     df=dp
 end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-double precision function fdfddf(x,c,n,df,ddf)
+real(wp) function fdfddf(x,c,n,df,ddf)
     real(wp) x,c(n),df, ddf
     integer n,j
     real(wp) p, dp,ddp
