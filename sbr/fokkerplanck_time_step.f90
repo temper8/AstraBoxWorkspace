@@ -1,6 +1,7 @@
 !! calculation of distribution functions at time t1 = t + TAU !!
 subroutine fokkerplanck_time_step(time, TAU)
     use rt_parameters
+    use writer_module
     use maxwell    
     use plasma, only : fvt, enorm, fst
     implicit none
@@ -59,27 +60,6 @@ subroutine fokkerplanck_time_step(time, TAU)
         real*8, dimension(:), intent(out) :: d1, d2
     end subroutine
 
-    subroutine write_distribution(arr,N,time)
-        implicit none
-        real*8, intent(in) :: arr(*)
-        integer, intent(in) :: N
-        real*8, intent(in) :: time
-    end subroutine write_distribution    
-
-    subroutine write_matrix(arr,time, array_name)
-        implicit none
-        real*8, intent(in) :: arr(:,:)
-        real*8, intent(in) :: time
-        character(len=*), intent(in) :: array_name
-    end subroutine write_matrix        
-
-    subroutine write_v_array(v, a, time, array_name)
-        implicit none
-        real*8, intent(in) :: v(:,:)    
-        real*8, intent(in) :: a(:,:,:)
-        real*8, intent(in) :: time
-        character(len=*), intent(in) :: array_name
-    end subroutine    
     end interface 
 
     dtstep=TAU/dble(ntau) !seconds 

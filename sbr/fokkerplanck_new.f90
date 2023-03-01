@@ -3,6 +3,7 @@ subroutine fokkerplanck_new(time, TAU)
     use FokkerPlanck1D_mod
     use Utils
     use rt_parameters
+    use writer_module
     use maxwell  
     use plasma, only : fvt, enorm, fst
     implicit none
@@ -28,31 +29,6 @@ subroutine fokkerplanck_new(time, TAU)
     common/dddql/ d0,jindex,kindex
     parameter(dt0=0.1d0,h0=0.1d0)
     real time1, time2
-
-   
-    interface 
-    subroutine write_distribution(arr,N,time)
-        implicit none
-        real*8, intent(in) :: arr(*)
-        integer, intent(in) :: N
-        real*8, intent(in) :: time
-    end subroutine write_distribution    
-
-    subroutine write_matrix(arr,time, array_name)
-        implicit none
-        real*8, intent(in) :: arr(:,:)
-        real*8, intent(in) :: time
-        character(len=*), intent(in) :: array_name
-    end subroutine write_matrix        
-
-    subroutine write_v_array(v, a, time, array_name)
-        implicit none
-        real*8, intent(in) :: v(:,:)    
-        real*8, intent(in) :: a(:,:,:)
-        real*8, intent(in) :: time
-        character(len=*), intent(in) :: array_name
-    end subroutine    
-    end interface 
 
     dtstep=TAU/dble(ntau) !seconds 
 

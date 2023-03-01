@@ -1,3 +1,7 @@
+module writer_module
+    implicit none
+    
+contains
 subroutine write_v_array(v, a, time, array_name)
     implicit none
     real*8, intent(in) :: v(:,:)    
@@ -153,3 +157,4 @@ subroutine write_distribution(arr,N,time)
 end subroutine
 
 
+end module writer_module
