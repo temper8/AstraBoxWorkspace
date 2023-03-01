@@ -25,7 +25,6 @@
       if(calls.eq.0) then
             call init_maxwell
             calls=1
-            pause
       end if
 
       end
