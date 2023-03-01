@@ -243,7 +243,7 @@ c--------------------------------------------
                fcoll(j)=.5d-13*dens(j)*zalfa**2*xlog/xmalfa/tmp**1.5d0
                   ddens=dn1*dens(j)
                   tdens=dn2*dens(j)
-                  tt=fti(r)**0.33333d0    ! (ti, keV)^1/3
+                  tt=fti(r)**one_third    ! (ti, keV)^1/3
                source(j)=4d-12*factor*ddens*tdens*dexp(-20d0/tt)/tt**2
                   anb=anb+source(j)*vk(j)
             end if
@@ -303,9 +303,9 @@ c--------------------------------------------
             do j=1,nr
                   r=hr*dble(j)
                   if(r.le.dra) then
-                        tt=fti(zero)**0.33333d0
+                        tt=fti(zero)**one_third
                   else
-                  tt=fti(r-dra)**0.33333d0    ! (shifted ti, kev)^1/3
+                  tt=fti(r-dra)**one_third    ! (shifted ti, kev)^1/3
                   end if
                   ddens=dn1*dens(j)
                   tdens=dn2*dens(j)

@@ -201,7 +201,7 @@ contains
         dn3=dni3*dn1
         sss=zi1**2*dn1/xmi1+zi2**2*dn2/xmi2+zi3**2*dn3/xmi3
         xmi=1836.d0/sss
-        cnstvc=(.75d0*piq*sss/1836.d0)**(1.d0/3.d0)
+        cnstvc=(.75d0*piq*sss/1836.d0)**one_third
         ww=freq*pi2*1.0d+09
         cnye=xlog/pi4
         cnyi=dsqrt(2d0)/(3d0*piq) !%for Vt=sqrt(Te/m)
