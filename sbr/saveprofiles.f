@@ -1,5 +1,5 @@
       subroutine saveprofiles
-       use constants , only :pi4, pme, pqe, c0, zero
+       use constants, only : show_constants
        use spline
        use chebyshev
        use approximation       
@@ -24,6 +24,8 @@
      
       if(calls.eq.0) then
             call init_maxwell
+            call show_constants
+            pause
             calls=1
       end if
 
