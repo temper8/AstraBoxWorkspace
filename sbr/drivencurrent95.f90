@@ -6,6 +6,7 @@
 !!   outjrun(i)  = LH driven runaway current density, MA/m^2
 !!   outnerun(i) = runaway electron density/10^19 m^-3
 !! ******************************************************************
+      use FokkerPlanck_module
       implicit none
  ! variables imported from ASTRA
       integer NRD
@@ -101,7 +102,7 @@
       write(*,*)'driven current, MA=',cup+cum
       write(*,*)
 !
-      call fokkerplanck_new(time, TAU)
+      call fokkerplanck_compute(time, TAU)
 !
       deallocate(outjp,outjm,ohjp,ohjm)
 !

@@ -1,5 +1,9 @@
-!! calculation of distribution functions at time t1=t+dtau !!
-subroutine fokkerplanck_new(time, TAU)
+module FokkerPlanck_module
+    implicit none
+    
+contains
+    !! calculation of distribution functions at time t1=t+dtau !!
+subroutine fokkerplanck_compute(time, TAU)
     use FokkerPlanck1D_mod
     use Utils
     use rt_parameters
@@ -32,7 +36,7 @@ subroutine fokkerplanck_new(time, TAU)
 
     dtstep=TAU/dble(ntau) !seconds 
 
-    print *, 'fokkerplanck_new'
+    print *, 'fokkerplanck_compute'
     write(*,*)'time=',time,' dt=',dtstep
 
     time1 = sys_time()
@@ -134,3 +138,4 @@ subroutine fokkerplanck_new(time, TAU)
     end do
 
 end subroutine
+end module FokkerPlanck_module

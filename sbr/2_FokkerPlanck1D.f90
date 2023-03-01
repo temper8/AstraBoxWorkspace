@@ -1,5 +1,6 @@
 module FokkerPlanck1D_mod ! the module name defines the namespace
     use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64
+    use savelyev_solver_module
     implicit none
     type FokkerPlanck1D 
         !- solver of FP eq
@@ -150,28 +151,7 @@ module FokkerPlanck1D_mod ! the module name defines the namespace
         integer i, ii, it, ibeg, klo, khi, ierr, klo1, khi1
         real(dp) shift, ybeg, yend, tend, dff
 
-        interface 
-        subroutine savelyev_solver(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
-            implicit none
-            real*8, intent(in)  :: alfa2 
-            integer, intent(in) :: nt, n
-            real*8, intent(in)  :: h, dt
-            real*8, intent(in)  :: ybeg, yend        
-            real*8, intent(in)  :: d1(n+1),d2(n+1),d3(n+1)
-            real*8, intent(inout) :: y(n)
-        end subroutine
-  
-  
-        subroutine burying_procedure(v, f0, df0)
-            ! процедура закапывания
-            implicit none
-            real*8,  intent(in)     :: v(:)        
-            real*8,  intent(inout)  :: f0(:)
-            real*8,  intent (inout), optional :: df0(:)
-        end subroutine            
-        end interface
- 
-        !!!!!! grid !!!!!!!!!
+         !!!!!! grid !!!!!!!!!
         !!  shift=h*0.1d0 !0.01d0
         do i=1, this%n+2
             x(i)=this%h*dble(i-1) !+shift
@@ -220,13 +200,78 @@ module FokkerPlanck1D_mod ! the module name defines the namespace
       deallocate(fj)
   
       !if (present(dfj0)) then
-         ! call burying_procedure(vj, fj0, dfj0)
+      !    call burying_procedure(vj, fj0, dfj0)
       !else 
-        !  call burying_procedure(vj, fj0)
+      !    call burying_procedure(vj, fj0)
       !end if
   
   
     end subroutine FokkerPlanck1D_solve_time_step
 
 
+    subroutine burying_procedure(v, f0, df0)
+        ! процедура закапывания
+        implicit none
+        real*8,  intent(in)     :: v(:)        
+        real*8,  intent(inout)  :: f0(:)
+        real*8,  intent (inout), optional :: df0(:)
+        integer i, ii,  i0, ibeg
+        real*8, allocatable  :: f(:), df(:)
+        real*8 fout1, fout2
+    
+        i0 = size(f0)
+        allocate(f(i0), df(i0))
+        
+        f(:)=f0(:)
+        df(:)=0d0
+    
+        do i=2, i0-1
+            df(i)=0.5d0*(f(i+1)-f(i-1))/v(2)
+        end do
+        df(1)=0d0
+        df(i0)=(f(i0)-f(i0-1))/v(2)
+    
+    !   сдвиг расределения вправо. зачем-то ???
+        ii=0
+        ibeg=0
+        do i=i0-1,1,-1
+            if(df(i).gt.0d0) then
+    !          write(*,*) '#1 positive derivs'
+    !          write(*,*) '#1 df>0: i,j,k=',i,j,k
+    !          write(*,*) '#1 dfj(i),i,j,k=',dfj(i),i,j,k
+    !          write(*,*)
+                f0(i)=f0(i+1)
+                if (present(df0)) then
+                    df0(i)=df0(i+1)
+                end if
+                ii=i
+            end if
+            if(f0(i).lt.f0(i+1)) then 
+                f0(i)=f0(i+1)
+                if (present(df0)) then
+                    df0(i)=df0(i+1)
+                end if            
+                ii=i
+            end if
+        end do
+    
+        if(ibeg.gt.0) then
+            call integral(ibeg,i0,v,f,fout1)
+            f(:) = f0(:)
+            if (present(df0)) then
+                df(:) = df0(:)
+            end if
+            
+            call integral(ibeg,i0,v,f,fout2)
+            f0(ibeg:i0) = f(ibeg:i0)*fout1/fout2
+            if (present(df0)) then
+                df0(ibeg:i0) = df(ibeg:i0)*fout1/fout2
+            end if            
+    !!      write(*,*)'#1 j,k,ibeg=',j,k,ibeg
+    !!      write(*,*)'#1 v(ibeg)=',vj(ibeg),' f1/f2=',fout1/fout2
+        end if
+    
+        deallocate(f,df)
+        ibeg=ii
+    end subroutine
  end module FokkerPlanck1D_mod

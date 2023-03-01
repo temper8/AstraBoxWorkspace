@@ -1,4 +1,8 @@
-subroutine teplova_khavin_solver(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
+module chang_cooper_module
+    implicit none
+    
+contains
+subroutine chang_cooper_solver(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
     ! схема Ченга-Купера для уравнения Фоккера-Планка
     implicit none
     real*8, intent(in)  :: alfa2      
@@ -10,23 +14,6 @@ subroutine teplova_khavin_solver(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
     integer i, it, iz
     real*8 xx(n+1), a(n),b(n),c(n),f(n)
     real*8 y1(n)
-    interface
-    subroutine TK_abcoef(alfa2, A,B,C,f,Y,dt,n,ybeg,yend,xx,h,df)
-        implicit none
-        real*8, intent(in)    :: alfa2
-        real*8, intent(inout) :: a(n),b(n),c(n),f(n),y(n+2)
-        integer, intent(in)   :: n
-        real*8, intent(in)    :: dt, ybeg, yend, h
-        real*8, intent(in)    :: xx(n+1)
-        real*8, intent(in)    :: df(n+1)
-    end subroutine
-    subroutine tridag(a,b,c,r,u,n)
-        implicit none
-        integer, intent(in)    :: n
-        real*8,  intent(in)    :: a(n), b(n), c(n), r(n)
-        real*8,  intent(inout) :: u(n)
-    end subroutine
-    end interface
     !print *, 'TK abc n = ', n
     do i=1,n+1
         xx(i)=h/2.d0+h*dble(i-1) !+shift
@@ -38,7 +25,7 @@ subroutine teplova_khavin_solver(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
     
     do it=1, nt
            !call ABCcoef(a,b,c,f,y1,dt,n,ybeg,yend,x,xx,h,D1)
-        call TK_abcoef(alfa2, a,b,c,f,y1, dt, n, ybeg, yend, xx, h, d1)
+        call chang_cooper_abcoef(alfa2, a,b,c,f,y1, dt, n, ybeg, yend, xx, h, d1)
         call tridag(a,b,c,f,y1,n)
                   
         !do i=1,n
@@ -74,7 +61,7 @@ subroutine teplova_khavin_solver(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
 end subroutine
 
 ! --
-subroutine TK_abcoef(alfa2, A,B,C,f,Y,dt,n,ybeg,yend,xx,h,df)
+subroutine chang_cooper_abcoef(alfa2, A,B,C,f,Y,dt,n,ybeg,yend,xx,h,df)
     implicit none
     real*8, intent(in)    :: alfa2
     real*8, intent(inout) :: a(n),b(n),c(n),f(n),y(n+2)
@@ -131,3 +118,5 @@ end
 !cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 
+
+end module Chang_Cooper_module
