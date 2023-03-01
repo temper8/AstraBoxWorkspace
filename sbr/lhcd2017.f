@@ -1976,32 +1976,33 @@ cu    uses derivs,mmid,pzextr
         xnew=-1.d29
         eps1=safe1*eps
         a(1)=nseq(1)+1
-        do 11 k=1,kmaxx
+        do k=1,kmaxx
           a(k+1)=a(k)+nseq(k+1)
-11      continue
-        do 13 iq=2,kmaxx
-          do 12 k=1,iq-1
+        enddo
+        do iq=2,kmaxx
+          do k=1,iq-1
             alf(k,iq)=eps1**((a(k+1)-a(iq+1))/((a(iq+1)-a(1)+1.d0)*(2*k+
      *1)))
-12        continue
-13      continue
+          enddo
+        enddo
         epsold=eps
-        do 14 kopt=2,kmaxx-1
+        do kopt=2,kmaxx-1
           if(a(kopt+1).gt.a(kopt)*alf(kopt-1,kopt))goto 1
-14      continue
-1       kmax=kopt
+        enddo
+1      continue
+       kmax=kopt
       endif
       h=htry
-      do 15 i=1,nv
+      do i=1,nv
         ysav(i)=y(i)
         dysav(i)=dydx(i)
-15    continue
+      enddo
       if(h.ne.hnext.or.x.ne.xnew)then
         first=.true.
         kopt=kmax
       endif
       reduct=.false.
-2     do 17 k=1,kmax
+2     do k=1,kmax
         xnew=x+h
         if(xnew.eq.x) then
             write(*,*) 'step size underflow in difeq'
@@ -2031,9 +2032,9 @@ cu    uses derivs,mmid,pzextr
         call rzextr(k,xest,yseq,y,yerr,nv) !rational extrapolation
         if(k.ne.1)then
           errmax=tiny
-          do 16 i=1,nv
+          do i=1,nv
             errmax=max(errmax,abs(yerr(i)/yscal(i)))
-16        continue
+          enddo
           errmax=errmax/eps
           km=k-1
           err(km)=(errmax/safe1)**(1.d0/(2*km+1))
@@ -2058,7 +2059,7 @@ cu    uses derivs,mmid,pzextr
             goto 3
           endif
         endif
-17    continue
+      enddo
 3     red=min(red,redmin)
       red=max(red,redmax)
       h=h*red
@@ -2068,7 +2069,7 @@ cu    uses derivs,mmid,pzextr
       hdid=h
       first=.false.
       wrkmin=1.d35
-      do 18 kk=1,km
+      do kk=1,km
         fact=max(err(kk),scalmx)
         work=fact*a(kk+1)
         if(work.lt.wrkmin)then
@@ -2076,7 +2077,7 @@ cu    uses derivs,mmid,pzextr
           wrkmin=work
           kopt=kk+1
         endif
-18    continue
+      enddo
       hnext=h/scale
       if(kopt.ge.k.and.kopt.ne.kmax.and..not.reduct)then
         fact=max(scale/alf(kopt-1,kopt),scalmx)
