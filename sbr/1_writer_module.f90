@@ -3,6 +3,7 @@ module writer_module
     
 contains
 subroutine write_v_array(v, a, time, array_name)
+    !! сохраняет массивы расределения и скорости
     implicit none
     real*8, intent(in) :: v(:,:)    
     real*8, intent(in) :: a(:,:,:)
