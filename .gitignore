@@ -1,5 +1,6 @@
 .vscode/
 races/
+doc/
 *.dat
 *.dir
 *.bak
