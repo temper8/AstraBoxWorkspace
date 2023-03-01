@@ -62,6 +62,8 @@ contains
         print *     
         print *, "pme_wp     = ", pme_wp
         print *, "pme        = ", pme     
+        print *, "9.11d-28   = ", 9.11d-28     
+       
         print *, "pqe        = ", pqe   
         print *, "xlog       = ", xlog     
         print *, "c0         = ", c0   
