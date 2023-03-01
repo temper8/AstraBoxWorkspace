@@ -23,8 +23,8 @@ module constants
 
     real(wp), parameter :: clt = 3.0e+10_wp  !! скорость света
 
-    real(wp), parameter :: pme_wp  = 9.11e-28_wp
-    real(wp), parameter :: pme  = 9.11e-28
+    real(wp), parameter :: pme  = 9.11e-28_wp
+    real(wp), parameter :: pme_e  = 9.11e-28
     real(wp), parameter :: pqe  = 4.803e-10_wp
     real(wp), parameter :: xlog = 16.0_wp + dlog(16.0_wp)
     real(wp), parameter :: c0 = sqrt(pi4*pqe**2/pme)
@@ -60,7 +60,7 @@ contains
         print *, "xmalfa     = ", xmalfa     
         print *, "clt        = ", clt     
         print *     
-        print *, "pme_wp     = ", pme_wp
+        print *, "pme_e      = ", pme_e
         print *, "pme        = ", pme     
         print *, "9.11d-28   = ", 9.11d-28     
        
