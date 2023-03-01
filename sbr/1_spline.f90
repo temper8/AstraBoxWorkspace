@@ -1,4 +1,5 @@
 module spline
+    !! сплайны
     use kind_module
     implicit none
     
@@ -27,7 +28,7 @@ contains
             end do
     return
     end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     subroutine splnt(xa,ya,y2a,n,x,y,dy)
         real(wp), parameter :: zero=0d0
         integer n
