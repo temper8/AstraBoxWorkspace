@@ -1,6 +1,6 @@
 ---
 project: FRTS project
-author: Popov Lab
+author: Popov's Lab
 preprocess: False
 src_dir: sbr/
 extensions: f90
@@ -12,5 +12,5 @@ exclude: saveprofiles.f
 ---
 
 This is my Fortran project!
-
 Код рейтрейсинга
+Тут что-то про него надо написать
