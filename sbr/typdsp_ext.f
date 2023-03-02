@@ -13,7 +13,8 @@ C NCH= 5 - terminal, 0 - file (old format), 1 - file (new format)
 	double precision	YN,YQ,TTOUT(ITIMES),TOUT(ITIMES,NRW)
 	integer NCH,NP1,ITBE,ITEND,ITEN,IERR,MODEX,NLINSC,NVAR,NNJ,JN0
 	integer JBE,JEND,J,JEN,JJ,J1,JLR,KILLBL,length,WarningColor
-	character*6 CH6,STRI*118,STRMN*40,CONN(6),FNAME*132
+	character*6 CH6,STRMN*40,CONN(6)
+	character(256) FNAME, STRI
 	logical	EXI
 	save	STRMN,CONN,JN0,NLINSC,WarningColor
 	data	STRMN/' R=     a=     B=     I=     q=     <n>='/
@@ -35,17 +36,18 @@ C otherwise	Unknown option => MODEX=0
 C Write output to a file:
 	J = length(RDNAME)
 	J1 = length(EQNAME)
-	FNAME=AWD(1:length(AWD))//'dat/'//RDNAME(1:J)//'.'
-     >			//EQNAME(1:J1)//char(0)
-	JEND = KILLBL(FNAME,132)
-	call	SETFNA_EXT(FNAME,JEND)
+	!FNAME=AWD(1:length(AWD))//'dat/XData'
+	!JEND = KILLBL(FNAME,132)
+	!call	SETFNA_EXT(FNAME,JEND)
+	print *, time
+	write(FNAME,'("dat/XData/", f9.7,".dat")')  time
 C	write(*,*)'Returned:  "',FNAME(1:JEND),'"',JEND
 	call colovm(WarningColor)
-	STRI='>>>  XData are written into the file: '//FNAME(1:JEND)//' '
-	write(*,*)STRI(1:JEND+37)
+	STRI='>>>  XData are written into the file: '//FNAME//' '
+	write(*,*) STRI
 	JLR = XWH-125
 C	call textvm(JN0,JLR,STRI,37+JEND)
-	call	OPENWT(7,FNAME(1:JEND),0,IERR)
+	call	OPENWT(7,FNAME,0,IERR)
 	if(IERR.gt.0)	then
 	   write(*,*)'>>> TYPDSP: Output file error'
 	   stop
