@@ -1,5 +1,5 @@
 ---
-project: FRTS project
+project: FRTC project
 author: Popov's Lab
 preprocess: False
 src_dir: sbr/
@@ -11,7 +11,7 @@ exclude: debug.f
 exclude: saveprofiles.f
 ---
 
-This is my Fortran project!
+FRTC project!
 
 Код рейтрейсинга
 
