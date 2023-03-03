@@ -1,6 +1,6 @@
       subroutine saveprofiles
        use constants, only : show_constants
-       use spline
+       use spline_module
        use chebyshev
        use approximation       
        use plasma
