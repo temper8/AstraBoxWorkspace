@@ -14,7 +14,7 @@ C NCH= 5 - terminal, 0 - file (old format), 1 - file (new format)
 	integer NCH,NP1,ITBE,ITEND,ITEN,IERR,MODEX,NLINSC,NVAR,NNJ,JN0
 	integer JBE,JEND,J,JEN,JJ,J1,JLR,KILLBL,length,WarningColor
 	character*6 CH6,STRMN*40,CONN(6)
-	character(256) FNAME, STRI
+	character(132) FNAME, STRI, tmp
 	logical	EXI
 	save	STRMN,CONN,JN0,NLINSC,WarningColor
 	data	STRMN/' R=     a=     B=     I=     q=     <n>='/
@@ -39,12 +39,12 @@ C Write output to a file:
 	!FNAME=AWD(1:length(AWD))//'dat/XData'
 	!JEND = KILLBL(FNAME,132)
 	!call	SETFNA_EXT(FNAME,JEND)
-	print *, time
+	!FNAME=REPEAT('*',132)
 	write(FNAME,'("dat/XData/", f9.7,".dat")')  time
 C	write(*,*)'Returned:  "',FNAME(1:JEND),'"',JEND
 	call colovm(WarningColor)
-	STRI='>>>  XData are written into the file: '//FNAME//' '
-	write(*,*) STRI
+	JEND = KILLBL(FNAME,132)
+	print '(">>>  XData are written into the file: ", A)', FNAME(1:JEND)
 	JLR = XWH-125
 C	call textvm(JN0,JLR,STRI,37+JEND)
 	call	OPENWT(7,FNAME,0,IERR)
@@ -66,10 +66,10 @@ C	YQ=(1.+YQ*(1.+YD**2*(2.-1.2*YD)))/(MU(NA)*(1.+YQ))
 	YQ=1./MU(NA)
 	call FMTF4(STRI(48:51),YQ)
 	call FMTF4(STRI(57:60),YN)
-	write(STRI(62:76),103)TIME
-	call FMTF4(STRI(77:80),1000.*TAU)
+	write(STRI(62:78),103)TIME
+	call FMTF4(STRI(79:82),1000.*TAU)
  102	format('   Time',16(3X,1A4))
- 103	format('Time=',1F6.3,' dt=')
+ 103	format('Time=',1F6.5,' dt=')
  104	format(1X,1A120)
  	 write(7,*) 'Ext format'
 	 write(7,104)STRI
@@ -95,7 +95,7 @@ C Writing radial data
 	    JEND=16
  1	    JEN=MIN0(NROUT,JEND)
 
- 		 write(7,'(99A15))') 'a',(NAMER(J),J=1,NROUT)
+ 		 write(7,'(99A20))') 'a',(NAMER(J),J=1,NROUT)
 
 		do  j=1, NP1 
 			SELECT CASE (MODEX) 
