@@ -1,5 +1,6 @@
 module constants 
     !! модуль с математическими и физическими константами
+    !! nt_001 тестовый комментарий
     use kind_module
     implicit none
 
