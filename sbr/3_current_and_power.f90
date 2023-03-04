@@ -60,8 +60,13 @@ subroutine dfind(j,i,v,powpr,pil,pic,pia,df,decv,refr,vlf,vrt,ifast)
     use constants
     use plasma
     use rt_parameters
-    implicit real*8 (a-h,o-z)
-    integer i,j,ifast,k
+    implicit none
+    integer, intent(in) :: i,j, ifast
+    real(wp), intent(in) ::  v,powpr,pil,pic,pia,df,decv,refr,vlf,vrt
+    integer k
+    real(wp) :: pchgl, pchgc, pchga, denom, powlandau, powdamped
+    real(wp) :: fff, dd, domin, parn, dvz, dnpar, weight, addd
+    real(wp) :: arg, hevis, adda
      !common /a0i3/ dql(101,100),pdl(100),vzmin(100),vzmax(100)
      !common /a0i4/ fcoll(100),dens(100),eta(100)
      !common/vvv1/dq1(101,100),dq2(101,100),pdc(100),pda(100),ppv1,ppv2
