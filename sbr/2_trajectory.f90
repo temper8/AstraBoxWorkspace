@@ -11,7 +11,8 @@ module trajectory
     real(wp) xnpar(length)
     integer izz(length),iww(length),jrad(length)
     !! бывший common/agh/xnpar,vel,dland,dcoll,dalf,perpn,tetai,jrad,iww,izz
-    real(wp) mbeg(mpnt),mend(mpnt),mbad(mpnt),rbeg(mpnt) !sav2008
+    integer mbeg(mpnt),mend(mpnt),mbad(mpnt)
+    real(wp) rbeg(mpnt) !sav2008
     real(wp) tetbeg(mpnt),xnrbeg(mpnt),xmbeg(mpnt),yn3beg(mpnt)
     !! common/viewdat/mbeg,mend,mbad,rbeg,tetbeg,xnrbeg,xmbeg,yn3beg   
     data mbad /mpnt*0/
