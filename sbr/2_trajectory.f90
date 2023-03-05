@@ -15,7 +15,7 @@ module trajectory
     real(wp) rbeg(mpnt) !sav2008
     real(wp) tetbeg(mpnt),xnrbeg(mpnt),xmbeg(mpnt),yn3beg(mpnt)
     !! common/viewdat/mbeg,mend,mbad,rbeg,tetbeg,xnrbeg,xmbeg,yn3beg   
-    data mbad /mpnt*0/
+    !data mbad /mpnt*0/
 contains
 
 subroutine init_trajectory
@@ -33,6 +33,7 @@ subroutine init_trajectory
     tetai = zero
     xnpar = zero
     izz = zero
+    mbad = zero
 end subroutine 
 
 
