@@ -15,7 +15,24 @@ module trajectory
     !! common/viewdat/mbeg,mend,mbad,rbeg,tetbeg,xnrbeg,xmbeg,yn3beg   
     data mbad /mpnt*0/
 contains
- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+subroutine init_trajectory
+    implicit none
+    nrefj = 0
+    
+    dland = zero
+    dcoll = zero
+    perpn = zero 
+    dalf  = zero
+    vel = zero
+    jrad = zero
+    iww = zero
+    tetai = zero
+    xnpar = zero
+    izz = zero
+end subroutine 
+
+
 subroutine view(tview,iview,nnz,ntet) !sav2008
 !!!writing trajectories into a file
     use constants

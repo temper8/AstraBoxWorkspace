@@ -135,7 +135,7 @@ cc*********************************************************************
       use rt_parameters
       !use spectrum1D
       use maxwell      
-      use trajectory, only: view, nrefj
+      use trajectory, only: view, nrefj, init_trajectory
       use spectrum_mod
       use manager_mod
       use current
@@ -364,7 +364,7 @@ c------------------------------------
       vzmin=cltn
       vzmax=-cltn
       kzero=kv
-      nrefj=0
+      call init_trajectory
 
       if(itend0.gt.0) then
             do j=1,nr           ! begin 'rho' cycle
@@ -374,7 +374,7 @@ c------------------------------------
                   call alphas(dqi0,vperp,j,kv,galfa)
             end do              ! end 'rho' cycle
       end if
-
+      
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!sign of driven current in right coordinate system {dro,dteta,dfi}:
 !!!!!curdir=+1.0 for current drive in positive direction "dfi"
