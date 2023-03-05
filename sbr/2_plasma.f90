@@ -71,9 +71,9 @@ contains
         ngrid = NA1
         nspl = ngrid
         if (.not. allocated(rh)) then
-            allocate(rh(N),rha(N),drhodr(N),con(N),tem(N))
-            allocate(temi(N),zeff(N), afld(N))
-            allocate(delta(N),ell(N),gamm(N),amy(N))
+            allocate(rh(N),rha(N),drhodr(N),con(N),tem(N), source=0.0_wp)
+            allocate(temi(N),zeff(N), afld(N), source=0.0_wp)
+            allocate(delta(N),ell(N),gamm(N),amy(N), source=0.0_wp)
         end if
         do i=1, ngrid
             rh(i)=AMETR(i)/ABC
@@ -87,7 +87,7 @@ contains
             zeff(i)=ZEF(i)
             afld(i)=UPL(i)/RTOR/GP2 !!variant
         end do
-        !rh(ngrid)=1.d0
+        rh(ngrid)=1.d0
         rh1=rh(1)          !saving the first ASTRA radial grid element
         rh(1) = 0.0d0         !shifting the first element to zero
         rha(1) = 0.0d0        !shifting the first element to zero
