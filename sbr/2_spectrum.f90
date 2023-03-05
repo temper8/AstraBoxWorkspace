@@ -324,7 +324,7 @@ contains
             pmax=-1d+10
             do i=1,nnz
                 call splnt(ynzm0,pm0,yn2z,ispl,ynzm(i),powinp(i),dynn)
-                !pm(i)=pm(i)*pnorm
+                pm(i)=pm(i)*pnorm
                 if (pm(i).gt.pmax) pmax=pm(i)
                 ynzm(i)=dble(ispectr)*ynzm(i) !sav2009
             end do
@@ -333,6 +333,7 @@ contains
             do i= 1, nnz
                 appx_spectr%data(i) = spectrum_point(nz= ynzm(i), ny = 0, power = pm(i), Ntor = 0, Npol = 0)
             end do
+            appx_spectr%input_power = plaun
             appx_spectr%max_power = pmax
             appx_spectr%direction = ispectr
             appx_spectr%power_ratio = spectr%power_ratio
