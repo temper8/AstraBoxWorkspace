@@ -7,8 +7,9 @@ module trajectory
     integer nrefj(mpnt)
     !! common/refl/nrefj(mpnt)
     real(wp) dland(length),dcoll(length),perpn(length),dalf(length)
-    real(wp) vel(length),jrad(length),iww(length),tetai(length)
-    real(wp) xnpar(length),izz(length)
+    real(wp) vel(length),tetai(length)
+    real(wp) xnpar(length)
+    integer izz(length),iww(length),jrad(length)
     !! бывший common/agh/xnpar,vel,dland,dcoll,dalf,perpn,tetai,jrad,iww,izz
     real(wp) mbeg(mpnt),mend(mpnt),mbad(mpnt),rbeg(mpnt) !sav2008
     real(wp) tetbeg(mpnt),xnrbeg(mpnt),xmbeg(mpnt),yn3beg(mpnt)
