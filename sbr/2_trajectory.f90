@@ -18,6 +18,7 @@ module trajectory
 contains
 
 subroutine init_trajectory
+    use constants
     implicit none
     nrefj = 0
     
