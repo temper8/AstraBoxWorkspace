@@ -25,7 +25,7 @@
       if(calls.eq.0) then
             call init_maxwell
             call show_constants
-            pause
+            !pause
             calls=1
       end if
 
