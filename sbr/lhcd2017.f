@@ -68,8 +68,10 @@ cc*********************************************************************
             print *, 'spectrum_type',spectrum_type
             !pause
             if (spectrum_type == 1) then
-                  spectr = pos_spectr !make_spline_approximation(pos_spectr)
-                  call spectr%calc_max_power
+                  !spectr = pos_spectr 
+                  !call spectr%calc_max_power
+                  spectr = make_spline_approximation(pos_spectr)
+                  
             else
                   spectr = pos_spectr
                   call spectr%calc_max_power
@@ -95,8 +97,10 @@ cc*********************************************************************
        outpem=zero       
        if(neg_spectr%input_power > zero) then
             if (spectrum_type == 1) then
-                  spectr = neg_spectr !make_spline_approximation(neg_spectr)
-                  call spectr%calc_max_power
+                  !spectr = neg_spectr
+                  !call spectr%calc_max_power
+                  spectr = make_spline_approximation(neg_spectr)
+                  
             else
                   spectr = neg_spectr
                   call spectr%calc_max_power
@@ -182,6 +186,8 @@ cc*********************************************************************
       do j=1,nr
             rxx(j+1)=hr*dble(j)
       end do
+      
+      call find_volums_and_surfaces
 
       ppv1=zero
       ppv2=zero
