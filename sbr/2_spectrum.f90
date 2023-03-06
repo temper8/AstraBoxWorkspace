@@ -3,10 +3,10 @@ module spectrum_mod
     implicit none    
 
     type spectrum_point
-        real(wp) nz
-        !! 
-        real(wp) ny
-        !!
+        !real(wp) nz и ny не нужны
+        ! 
+        !real(wp) ny
+        !
         real(wp) Ntor   
         !! Ntau=-Ntor   
         real(wp) Npol
@@ -68,7 +68,7 @@ contains
         do i = 1, this%size
             p = this%data(i)
             p%power = p%power*pnorm
-            p%nz = this%direction * p%nz
+            p%Ntor = this%direction * p%Ntor
             this%data(i) = p
             if (p%power>max_power)  max_power = p%power
         end do        
@@ -89,7 +89,7 @@ contains
         n = 0
         do i = 1, this%size
             p = this%data(i)
-            if (p%nz>0) then
+            if (p%Ntor>0) then
                 
                 n = n + 1                
                 tmp_spectr%data(n) = p
@@ -126,9 +126,9 @@ contains
         n = 0
         do i = 1, this%size
             p = this%data(i)
-            if (p%nz<0) then
+            if (p%Ntor<0) then
                 n = n + 1                
-                p%nz = -p%nz
+                p%Ntor = -p%Ntor
                 tmp_spectr%data(n) = p
                 tmp_spectr%sum_power = tmp_spectr%sum_power + p%power
             end if
@@ -186,7 +186,7 @@ contains
         print *,'Spectrum size = ',  n
         rewind(20)
         do i=1,n
-            read (20,*) spectr%data(i)%nz, spectr%data(i)%ny, spectr%data(i)%power
+            read (20,*) spectr%data(i)%Ntor, spectr%data(i)%Npol, spectr%data(i)%power
             sum_power = sum_power + spectr%data(i)%power
         enddo
         !sum_power
@@ -214,14 +214,14 @@ contains
         do i = 1, spectr%size
             p = spectr%data(i)
 
-            if (p%nz>0) then
+            if (p%Ntor>0) then
                 pos_n = pos_n + 1                
                 pos_spectr%data(pos_n) = p
                 pos_spectr%sum_power = pos_spectr%sum_power + p%power
             end if
-            if (p%nz<0) then
+            if (p%Ntor<0) then
                 neg_n = neg_n + 1                
-                p%nz = -p%nz
+                p%Ntor = -p%Ntor
                 tmp_spectr%data(neg_n) = p
                 tmp_spectr%sum_power = tmp_spectr%sum_power + p%power
             endif
@@ -271,7 +271,7 @@ contains
             allocate(ynzm0(ispl),pm0(ispl))
             allocate(yn2z(ispl),powinp(ispl))
             do i = 1, spectr%size
-                ynzm0(i) = spectr%data(i)%nz
+                ynzm0(i) = spectr%data(i)%Ntor
                 pm0(i) = spectr%data(i)%power
             end do
 
@@ -331,7 +331,7 @@ contains
             !pabs=pabs0*pmax/1.d2
             appx_spectr = spectrum(nnz)
             do i= 1, nnz
-                appx_spectr%data(i) = spectrum_point(nz= ynzm(i), ny = 0, power = pm(i), Ntor = 0, Npol = 0)
+                appx_spectr%data(i) = spectrum_point(power = pm(i), Ntor = ynzm(i), Npol = 0)
             end do
             appx_spectr%input_power = plaun
             appx_spectr%max_power = pmax
@@ -498,7 +498,7 @@ module spectrum1D
         integer i
         do i= 1, spectr%size
             p = spectr%data(i)
-            ynzm0(i) = p%nz
+            ynzm0(i) = p%Ntor
             pm0(i) = p%power
         end do        
         plaun = spectr%input_power
@@ -516,7 +516,7 @@ module spectrum1D
         pmax = 0
         spectr = spectrum(nnz)
         do i= 1, nnz
-            p = spectrum_point(nz= ynzm(i), ny = 0, power = pm(i), Ntor = 0, Npol = 0)
+            p = spectrum_point(power = pm(i), Ntor = ynzm(i), Npol = 0)
             if (pm(i) > pmax) pmax=pm(i)
             spectr%data(i) = p
         end do

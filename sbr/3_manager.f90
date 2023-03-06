@@ -96,7 +96,7 @@ contains
                     !    find initial radius for a trajectory
                     !    on the 1th iteration
                     !-----------------------------------------
-                    yn = point%nz
+                    yn = point%Ntor
                     pow = point%power
                     !yn=ynzm(inz) !sav2008, yn is introduced
                     !pow=pm(inz)
@@ -185,7 +185,7 @@ contains
                     end if
                     if (ipri.gt.1) then
                         tetin0=tet1+htet*(itet-1)
-                        write (*,111) tetin0, point%nz
+                        write (*,111) tetin0, point%Ntor
 
 111                     format(1x,'traj. with tet0=',f10.5,1x,', Ninput=',f10.5,1x,'failed')
                     end if
@@ -275,15 +275,15 @@ contains
             if (inew.gt.0) then !g' in ST and poloidal grill direction
                 !yn3 = zero                 !Nfi=0
                 !xm = yn*dsqrt(g22)/si      !given Npar at Nfi=0
-                yn3 = point%ny**dsqrt(g33)/co     
-                xm = point%nz*dsqrt(g22)/si
+                yn3 = point%Npol**dsqrt(g33)/co     
+                xm = point%Ntor*dsqrt(g22)/si
 !!              xm=yn*dsqrt(g22)         !given yn=(N*jpol) at Nfi=0
             else !usual tokamak and toroidal grill direction
                 !xm = zero               !N2=0
                 !yn3 = yn*dsqrt(g33)/co  !if given Npar at Nteta=0
 !!              yn3=yn*dsqrt(g33)       !if given Nfi at Nteta=0
-                yn3 = point%nz*dsqrt(g33)/co    
-                xm = point%ny*dsqrt(g22)/si
+                yn3 = point%Ntor*dsqrt(g33)/co    
+                xm = point%Npol*dsqrt(g22)/si
             end if
             ivar = 0
             iroot = 2
