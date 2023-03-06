@@ -12,4 +12,5 @@
       CHORDN = LINEAV(1)
       NTRUN = NTIMES
       call TYPDSP_EXT(0,CHORDN,NTRUN,TTOUT,TOUT)
+      call TYPDSP_TIME(0,CHORDN,NTRUN,TTOUT,TOUT)
       end subroutine
