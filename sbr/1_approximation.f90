@@ -4,7 +4,7 @@ module approximation
     implicit none
     
 contains
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 real(wp) function polin(k,x)
     implicit none
     integer k
@@ -13,7 +13,7 @@ real(wp) function polin(k,x)
     if(k.gt.1) polin=x**(k-1)
     return
 end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 real(wp) function polin1(k,x)
     implicit none
     integer k
@@ -21,7 +21,7 @@ real(wp) function polin1(k,x)
     polin1=x**k
     return
 end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 real(wp) function polin2(k,x)
     implicit none
     integer k
@@ -29,16 +29,15 @@ real(wp) function polin2(k,x)
     polin2=x**(k+1)
     return
 end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 subroutine approx(x,y,n,f,m,b)
-!
-!     y(i)=y(x(i))  the data to be approximated
-!     n             number of points in the input data
-!     m             number of coefficients of decomposition
-!                   over base functions "f(k,x)" :
-!                          y(x)=sum_1^m [b(k)*f(k,x)]
-!     b(i)          found decomposition coefficients
-!
+!!     \(y(i)=y(x(i))\)  the data to be approximated.  
+!!     \(n\)  number of points in the input data.  
+!!     \(m\)  number of coefficients of decomposition
+!!            over base functions \(f(k,x)\) :  
+!!     \(y(x)=sum_1^m [b(k)*f(k,x)]\)  
+!!     \(b(i)\)  found decomposition coefficients 
+
     implicit real*8 (a-h,o-z)
     integer,  parameter :: np=20
     real(wp), parameter :: zero=0.d0
@@ -74,7 +73,7 @@ subroutine approx(x,y,n,f,m,b)
     call ludcmp(a,m,np,indx,d)
     call lubksb(a,m,np,indx,b)
 end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 subroutine ludcmp(a,n,np,indx,d)
     implicit real*8 (a-h,o-z)
     integer,  parameter :: nmax=501
@@ -138,7 +137,7 @@ subroutine ludcmp(a,n,np,indx,d)
     if(a(n,n).eq.zero) a(n,n)=tiny
     return
 end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 subroutine lubksb(a,n,np,indx,b)
     implicit real*8 (a-h,o-z)
     real(wp), parameter :: zero=0.d0
@@ -183,7 +182,7 @@ real(wp) function fdf(x,c,n,df)
     fdf=p
     df=dp
 end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 real(wp) function fdfddf(x,c,n,df,ddf)
     real(wp) x,c(n),df, ddf
     integer n,j
@@ -200,7 +199,7 @@ real(wp) function fdfddf(x,c,n,df,ddf)
     df=dp
     ddf=ddp
 end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
 end module approximation
 
