@@ -68,7 +68,7 @@ subroutine view(tview,iview,nnz,ntet) !sav2008
     if(iview.eq.0) return
     print *, 'view_time=',tview
     print *, name(m)
-    write(fname,'("lhcd/out/traj", f17.15,".dat")') tview
+    write(fname,'("lhcd/traj/", f9.7,".dat")') tview
     print *, fname
     name(m) = fname
     print *, name(m)
