@@ -27,13 +27,14 @@ contains
 
     end subroutine
 
-    !!!!!!! -- fill abc matrix
+    
     subroutine savelyev_abccoef(alfa2, a,b,c, f, y, dt, n, ybeg, yend, xx, h, d1,d2,d3)
+        !! -- fill abc matrix
         implicit none
         real(wp), intent(in)    :: alfa2
         real(wp), intent(inout) :: a(n),b(n),c(n),f(n),y(n)
         real(wp), intent(in)    :: dt
-        integer, intent(in)     :: n
+        integer,  intent(in)    :: n
         real(wp), intent(in)    :: ybeg, yend, h
         real(wp), intent(in)    :: xx(n+1)
         real(wp), intent(in)    :: d1(n+1),d2(n+1),d3(n+1)
@@ -90,86 +91,85 @@ contains
         c(n)=0d0
     end
 
-    real(wp) function rplusk(x,dif, alfa2)
+    real(wp) function rplusk(x, dif, alfa2)
         implicit none
-        real(wp) x,dif
-        real(wp) alfa2      
+        real(wp), intent(in)    :: x,dif
+        real(wp), intent(in)    :: alfa2      
         rplusk=0.5d0*(rs(x, alfa2)+dabs(rs(x, alfa2)))/k(x,dif)
     end
 
     real(wp) function rplusk2(x, dif, alfa2)
         implicit none
         integer iunit
-        real(wp) x,dif
-        real(wp) alfa2      
+        real(wp), intent(in)    :: x,dif
+        real(wp), intent(in)    :: alfa2      
         rplusk2=0.5d0*(rs(x, alfa2)+dabs(rs(x, alfa2)))/k2(x,dif)
     end
 
     real(wp) function rmink(x, dif, alfa2)
         implicit none
-        real(wp) x,dif
-        real(wp) alfa2      
+        real(wp), intent(in)    :: x,dif
+        real(wp), intent(in)    :: alfa2      
         rmink = 0.5d0*(rs(x, alfa2)-dabs(rs(x, alfa2)))/k(x,dif)
     end
 
     real(wp) function rmink2(x,dif, alfa2)
         implicit none
-        real(wp) x,dif
-        real(wp) alfa2      
+        real(wp), intent(in)    :: x,dif
+        real(wp), intent(in)    :: alfa2      
         rmink2=0.5d0*(rs(x, alfa2)-dabs(rs(x, alfa2)))/k2(x,dif)
     end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     real(wp) function rs(x, alfa2)
         implicit none
-        real(wp) x
-        real(wp) alfa2
+        real(wp), intent(in) :: x
+        real(wp), intent(in) :: alfa2
         !common/ef/ alfa2
         rs=1d0/x**2-alfa2
     end
 
     real(wp) function q(x)
         implicit none
-        real(wp) x
+        real(wp), intent(in) :: x
         q=2d0/x**3
     end
 
     real(wp) function qf(x)
         implicit none
-        real(wp) x
+        real(wp), intent(in) :: x
         qf=-1d0/x**2
     end
 
     real(wp) function k(x,dif)
         implicit none
-        integer iunit
-        real(wp) x,dif,d,razn
+        real(wp), intent(in) :: x, dif
         k=dif+1d0/x**3
     end
 
     real(wp) function k2(x,dif)
         implicit none
-        integer iunit
-        real(wp) x,dif,d,razn
+        real(wp), intent(in) :: x,dif
+        real(wp) d
         k2=d(x)+1d0/x**3
     end
 
     real(wp) function kinv(x,dif)
         implicit none
-        integer iunit
-        real(wp) x,dif,razn,d
+        real(wp), intent(in) :: x,dif
         kinv=x**3/(dif*x**3+1d0)
     end
 
     real(wp) function kinv2(x,dif)
         implicit none
-        integer iunit
-        real(wp) x,dif,razn,d,kino
+        
+        real(wp), intent(in)    :: x,dif
+        real(wp) d
         kinv2=x**3/(d(x)*x**3+1d0)
     end
 
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     subroutine tridag(a,b,c,r,u,n)
+        !! создает трехдиагональнйю матрицу
         implicit none
         integer, intent(in)    :: n
         real(wp),  intent(in)    :: a(n), b(n), c(n), r(n)
