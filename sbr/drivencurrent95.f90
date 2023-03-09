@@ -290,46 +290,6 @@ subroutine currlhcd_old(i0,v,f,f0,curs,curs0)
 end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-      subroutine ddc(diffusion)
-      use maxwell
-      implicit none
-      common/testf/ tcur
-
-      integer ntau,tc,koltoch,i,j,k,klo
-      real*8 curtime,tcur
-      real*16 tau0,spacing,curtime0
-      parameter(tau0=3.000990745207882E-002)
-      !common/lh/dij(1002,100,2)
-      real*8 b,b1,b2,d,diffusion
-!      real*8,dimension(:),allocatable:: diffusion
-      integer i1,iunit6
-      b1=0
-      b2=60
-      j=10
-      k=1
-!      allocate (diffusion(500))
-! write(*,*)'time=',tcur
-! do tc=1,koltoch
-!       spacing=0.008/koltoch
-!       curtime=tau0+spacing*tc!-0.0002
-!      curtime0=curtime+0.000000001
-!      if((tcur-curtime)*(tcur-curtime0).lt.zero) then
-!       if((tcur-0.0301)*(tcur-0.0302).lt.zero) then
-!       open(iunit6,file='lhcd/distribution/ddc.dat',position="append")
-!      do i1=1,500
-!      b=b1+(b2/500)*(i1-1)
-!      diffusion(i1)=d(b)
-!       do i=1,1001
-!        write(iunit6,*) i, diffusion
-!       end do
-!      write(iunit6,*)
-!       close(iunit6)
-!       end if
-! end do
-! !     deallocate(diffusion)
-      end
 
       real*8 function d(x)
       use maxwell
