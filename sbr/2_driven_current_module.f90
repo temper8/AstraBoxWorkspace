@@ -53,7 +53,5 @@ contains
             close(io)
 		end if
 
-
-
     end subroutine driven_current_result_save       
 end module driven_current_module
