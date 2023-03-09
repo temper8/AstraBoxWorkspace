@@ -7,7 +7,8 @@ module maxwell
       real(wp) vij(i0,100), fij0(i0,100,2), fij(i0,100,2)
       real(wp) dfij(i0,100,2), dij(i0,100,2)
 
-      real(wp) d0
+      logical flag_d0
+      !! бывший d0
       integer jindex,kindex
       !!common/dddql/ d0,jindex,kindex
       

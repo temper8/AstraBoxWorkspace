@@ -195,6 +195,7 @@ contains
 
 
     real(wp) function d(x)
+        !! возможно одна из самых замедляющих функций
         use maxwell
         implicit none
         !integer i0
@@ -208,7 +209,7 @@ contains
         !common/dddql/ d0,jindex,kindex
 
         d=zero
-        if(d0.eq.zero) return
+        if(flag_d0) return
         j=jindex
         if(x.ge.vij(i0,j)) return
         k=kindex
