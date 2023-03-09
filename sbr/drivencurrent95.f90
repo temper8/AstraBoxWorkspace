@@ -96,6 +96,7 @@
 !
       rc_result = DrivenCurrentResult(cup= cup, cp= cp, cum= cum, cm=cm, cup0= cup0, cp0=cp0, cum0= cum0, cm0= cm0)
       call rc_result%print(time)
+      call rc_result%save(time)
 !
       call fokkerplanck_compute(time, TAU)
 !
