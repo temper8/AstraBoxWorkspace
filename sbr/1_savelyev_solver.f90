@@ -2,10 +2,10 @@ module savelyev_solver_module
     use kind_module
     implicit none
     
-    PRIVATE :: q, k
+    PRIVATE :: q, k, d
 contains
     subroutine savelyev_solver(alfa2, nt, h, dt, n, ybeg, yend, d1,d2,d3, y)
-        ! разностная схема Савельева для уравнения Фоккера-Планка
+        !! разностная схема Савельева для уравнения Фоккера-Планка
         implicit none
         real(wp), intent(in)  :: alfa2      
         integer, intent(in)   :: nt, n
