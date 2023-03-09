@@ -203,9 +203,9 @@ contains
         !common/lh/vij(i0,100),fij0(i0,100,2),fij(i0,100,2),dfij(i0,100,2),dij(i0,100,2),enorm(100),fst(100)
         real(wp), dimension(:), allocatable:: vvj,ddj
         integer klo,khi,ierr
-        real(wp)  d0,  x
-        integer jindex,kindex,k,j,i
-        common/dddql/ d0,jindex,kindex
+        real(wp)  x
+        integer k,j,i
+        !common/dddql/ d0,jindex,kindex
 
         d=zero
         if(d0.eq.zero) return

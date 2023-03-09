@@ -7,6 +7,10 @@ module maxwell
       real(wp) vij(i0,100), fij0(i0,100,2), fij(i0,100,2)
       real(wp) dfij(i0,100,2), dij(i0,100,2)
 
+      real(wp) d0
+      integer jindex,kindex
+      !!common/dddql/ d0,jindex,kindex
+      
 contains
       subroutine init_vi(vclt, vi)
             real(wp), intent(in) :: vclt

@@ -29,9 +29,9 @@ subroutine fokkerplanck_compute(time, TAU)
     real(wp) znak,alfa2,dt0,h0,r
     !common/ef/ alfa2
     
-    real(wp) d0
-    integer jindex,kindex
-    common/dddql/ d0,jindex,kindex
+    !real(wp) d0
+    !integer jindex,kindex
+    !common/dddql/ d0,jindex,kindex
     parameter(dt0=0.1d0,h0=0.1d0)
     real time1, time2
 
@@ -53,6 +53,8 @@ subroutine fokkerplanck_compute(time, TAU)
         r=dble(j)/dble(nr+1)
         xend=3.d10/fvt(r)
         do k=1,2
+            kindex=k
+            d0=zero ! d(x) enable
             znak=2.d0*dble(k)-3.d0
             fp_test = FokkerPlanck1D(znak*enorm(j), xend, vij(:,j), fij0(:,j,k))
             call fp_test%init_zero_diffusion
@@ -62,6 +64,7 @@ subroutine fokkerplanck_compute(time, TAU)
             end do
             fij0(:,j,k) = fp_test%f
 
+            d0=1.d0 ! d(x) disable
             fp_test = FokkerPlanck1D(znak*enorm(j), xend, vij(:,j), fij(:,j,k))
             call fp_test%init_diffusion(dij(:,j,k))
             do i=1, ntau
