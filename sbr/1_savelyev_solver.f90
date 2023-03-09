@@ -8,16 +8,17 @@ contains
         ! разностная схема Савельева для уравнения Фоккера-Планка
         implicit none
         real(wp), intent(in)  :: alfa2      
-        integer, intent(in) :: nt, n
+        integer, intent(in)   :: nt, n
         real(wp), intent(in)  :: h, dt
         real(wp), intent(in)  :: ybeg, yend
         real(wp), intent(in)  :: d1(n+1),d2(n+1),d3(n+1)
         real(wp), intent(inout) :: y(n)
+
         integer i, it
         real(wp) xx(n+1), a(n),b(n),c(n),f(n)
 
         do i=1,n+1
-            xx(i)=h/2.d0+h*dble(i-1) !+shift
+            xx(i) = h/2.d0 + h*dble(i-1) !+shift
         end do
     
         do it=1,nt
@@ -46,16 +47,16 @@ contains
         real(wp) dc,as(n+1),k2,d
         !external kinv,rs,rmink,rplusk,q,kinv2,rmink2,rplusk2,d
 
-        sum=(kinv(xx(1) - h/2d0, d2(1)) + kinv(xx(1) + h/2d0, d3(1)))*h/2d0
-        as(1)=h/sum
+        sum = (kinv(xx(1) - h/2d0, d2(1)) + kinv(xx(1) + h/2d0, d3(1)))*h/2d0
+        as(1) = h/sum
 
-        sum=(kinv(xx(2)-h/2d0, d2(2))+kinv(xx(2)+h/2d0, d3(2)))*h/2d0
-        as(2)=h/sum
+        sum = (kinv(xx(2)-h/2d0, d2(2))+kinv(xx(2)+h/2d0, d3(2)))*h/2d0
+        as(2) = h/sum
 
-        r=h/2d0*dabs(rs(xx(1)+h/2d0, alfa2))/k(xx(1)+h/2d0, d3(1))
-        kappa=1d0/(1d0+r)
-        sum=(rmink(xx(1), d1(1), alfa2) + rmink(xx(2), d1(2), alfa2))*h/2d0
-        bmin=sum/h
+        r = h/2d0*dabs(rs(xx(1)+h/2d0, alfa2))/k(xx(1)+h/2d0, d3(1))
+        kappa = 1d0/(1d0+r)
+        sum = (rmink(xx(1), d1(1), alfa2) + rmink(xx(2), d1(2), alfa2))*h/2d0
+        bmin = sum/h
 
         sum = (rplusk(xx(1), d1(1), alfa2) + rplusk(xx(2), d1(2), alfa2))*h/2d0
         bplus = sum/h
@@ -86,9 +87,9 @@ contains
             b(i) = -(1d0/dt + a(i) + c(i) + dc) 
             f(i) = -y(i)/dt
         end do
-        f(n)=f(n)-c(n)*yend
-        a(1)=0d0
-        c(n)=0d0
+        f(n) = f(n)-c(n)*yend
+        a(1) = 0d0
+        c(n) = 0d0
     end
 
     real(wp) function rplusk(x, dif, alfa2)
@@ -100,7 +101,6 @@ contains
 
     real(wp) function rplusk2(x, dif, alfa2)
         implicit none
-        integer iunit
         real(wp), intent(in)    :: x,dif
         real(wp), intent(in)    :: alfa2      
         rplusk2=0.5d0*(rs(x, alfa2)+dabs(rs(x, alfa2)))/k2(x,dif)
@@ -113,7 +113,7 @@ contains
         rmink = 0.5d0*(rs(x, alfa2)-dabs(rs(x, alfa2)))/k(x,dif)
     end
 
-    real(wp) function rmink2(x,dif, alfa2)
+    real(wp) function rmink2(x, dif, alfa2)
         implicit none
         real(wp), intent(in)    :: x,dif
         real(wp), intent(in)    :: alfa2      
@@ -149,7 +149,6 @@ contains
     real(wp) function k2(x,dif)
         implicit none
         real(wp), intent(in) :: x,dif
-        real(wp) d
         k2=d(x)+1d0/x**3
     end
 
@@ -161,9 +160,7 @@ contains
 
     real(wp) function kinv2(x,dif)
         implicit none
-        
-        real(wp), intent(in)    :: x,dif
-        real(wp) d
+        real(wp), intent(in) :: x,dif
         kinv2=x**3/(d(x)*x**3+1d0)
     end
 
@@ -194,4 +191,45 @@ contains
             u(j)=u(j)-gam(j+1)*u(j+1)
         end do
     end subroutine
+
+
+
+    real(wp) function d(x)
+        use maxwell
+        implicit none
+        !integer i0
+        !parameter(i0=1002)
+        !real*8 vij,fij0,fij,dfij,dij,enorm,fst
+        !common/lh/vij(i0,100),fij0(i0,100,2),fij(i0,100,2),dfij(i0,100,2),dij(i0,100,2),enorm(100),fst(100)
+        real(wp), dimension(:), allocatable:: vvj,ddj
+        integer klo,khi,ierr
+        real(wp)  d0,  x
+        integer jindex,kindex,k,j,i
+        common/dddql/ d0,jindex,kindex
+
+        d=zero
+        if(d0.eq.zero) return
+        j=jindex
+        if(x.ge.vij(i0,j)) return
+        k=kindex
+
+        allocate(vvj(i0),ddj(i0))
+
+        do i=1,i0
+            vvj(i)=vij(i,j)
+            ddj(i)=dij(i,j,k)
+        end do
+
+        call lock(vvj,i0,x,klo,khi,ierr)
+        if(ierr.eq.1) then
+            write(*,*)'lock error in finction d2(x)'
+            write(*,*)'j=',j,' v=',x
+            write(*,*)'vj(1)=',vvj(1),' vj(i0)=',vvj(i0)
+            pause
+            stop
+        end if
+        d=ddj(klo)
+        deallocate(vvj, ddj)
+    end
+
 end module savelyev_solver_module
