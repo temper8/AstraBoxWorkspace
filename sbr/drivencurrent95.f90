@@ -7,6 +7,7 @@
 !!   outnerun(i) = runaway electron density/10^19 m^-3
 !! ******************************************************************
       use FokkerPlanck_module
+      use driven_current_module
       implicit none
  ! variables imported from ASTRA
       integer NRD
@@ -21,6 +22,7 @@
       real*8,dimension(:),allocatable:: outjp,outjm,ohjp,ohjm
       real*8 dt, cup,cup0,cum,cum0,cp,cm,cp0,cm0,aiint
       real*8, parameter :: zero=0.d0, eps=1.d-2 
+      type(DrivenCurrentResult) rc_result
 !
       inpt=NA1
       allocate(outjp(inpt),outjm(inpt),ohjp(inpt),ohjm(inpt))
@@ -92,15 +94,8 @@
 !!!!       write(*,*) i,outj(i)
       end do
 !
-
-      write(*,*)'time=',time
-      write(*,*)'cup=',cup,' cp=',cp
-      write(*,*)'cum=',cum,' cm=',cm
-      write(*,*)'cup0=',cup0,' cp0=',cp0
-      write(*,*)'cum0=',cum0,' cm0=',cm0
-      write(*,*)'sigma driven current, MA=',cp0+cm0
-      write(*,*)'driven current, MA=',cup+cum
-      write(*,*)
+      rc_result = DrivenCurrentResult(cup= cup, cp= cp, cum= cum, cm=cm, cup0= cup0, cp0=cp0, cum0= cum0, cm0= cm0)
+      call rc_result%print(time)
 !
       call fokkerplanck_compute(time, TAU)
 !
