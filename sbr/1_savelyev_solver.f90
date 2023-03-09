@@ -33,25 +33,25 @@ contains
         real(wp), intent(in)    :: alfa2
         real(wp), intent(inout) :: a(n),b(n),c(n),f(n),y(n)
         real(wp), intent(in)    :: dt
-        integer, intent(in)   :: n
+        integer, intent(in)     :: n
         real(wp), intent(in)    :: ybeg, yend, h
         real(wp), intent(in)    :: xx(n+1)
         real(wp), intent(in)    :: d1(n+1),d2(n+1),d3(n+1)
 
         integer i,iunit,iunit2
         real(wp) a1(n),b1(n),c1(n),f1(n),a2(n),b2(n),c2(n),f2(n)
-        real(wp) kinv,rs,rmink,rplusk,q,qf,r1,rmink2,rplusk2,kinv2
+        !real(wp) kinv,rs,rmink,rplusk,q,qf,r1,rmink2,rplusk2,kinv2
         real(wp) r,kappa,sum,bmin,bplus,sum2,sum3,sum4
-        real(wp) dc,as(n+1),k,k2,d
-        external kinv,rs,rmink,rplusk,q,kinv2,rmink2,rplusk2,d
+        real(wp) dc,as(n+1),k2,d
+        !external kinv,rs,rmink,rplusk,q,kinv2,rmink2,rplusk2,d
 
-        sum=(kinv(xx(1) - h/2d0, d2(1), alfa2) + kinv(xx(1) + h/2d0, d3(1), alfa2))*h/2d0
+        sum=(kinv(xx(1) - h/2d0, d2(1)) + kinv(xx(1) + h/2d0, d3(1)))*h/2d0
         as(1)=h/sum
 
-        sum=(kinv(xx(2)-h/2d0, d2(2), alfa2)+kinv(xx(2)+h/2d0, d3(2), alfa2))*h/2d0
+        sum=(kinv(xx(2)-h/2d0, d2(2))+kinv(xx(2)+h/2d0, d3(2)))*h/2d0
         as(2)=h/sum
 
-        r=h/2d0*dabs(rs(xx(1)+h/2d0, d3(1), alfa2))/k(xx(1)+h/2d0, d3(1))
+        r=h/2d0*dabs(rs(xx(1)+h/2d0, alfa2))/k(xx(1)+h/2d0, d3(1))
         kappa=1d0/(1d0+r)
         sum=(rmink(xx(1), d1(1), alfa2) + rmink(xx(2), d1(2), alfa2))*h/2d0
         bmin=sum/h
@@ -92,32 +92,29 @@ contains
 
     real(wp) function rplusk(x,dif, alfa2)
         implicit none
-        integer iunit
-        real(wp) x,k,rs,dif,d,razn
+        real(wp) x,dif
         real(wp) alfa2      
         rplusk=0.5d0*(rs(x, alfa2)+dabs(rs(x, alfa2)))/k(x,dif)
     end
 
-    real(wp) function rplusk2(x,dif, alfa2)
+    real(wp) function rplusk2(x, dif, alfa2)
         implicit none
         integer iunit
-        real(wp) x,k2,rs,dif,d,razn
+        real(wp) x,dif
         real(wp) alfa2      
         rplusk2=0.5d0*(rs(x, alfa2)+dabs(rs(x, alfa2)))/k2(x,dif)
     end
 
-    real(wp) function rmink(x,dif, alfa2)
+    real(wp) function rmink(x, dif, alfa2)
         implicit none
-        integer iunit
-        real(wp) x,k,rs,dif,d,razn
+        real(wp) x,dif
         real(wp) alfa2      
-        rmink=0.5d0*(rs(x, alfa2)-dabs(rs(x, alfa2)))/k(x,dif)
+        rmink = 0.5d0*(rs(x, alfa2)-dabs(rs(x, alfa2)))/k(x,dif)
     end
 
     real(wp) function rmink2(x,dif, alfa2)
         implicit none
-        integer iunit
-        real(wp) x,k2,rs,dif,d,razn
+        real(wp) x,dif
         real(wp) alfa2      
         rmink2=0.5d0*(rs(x, alfa2)-dabs(rs(x, alfa2)))/k2(x,dif)
     end
