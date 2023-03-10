@@ -8,7 +8,8 @@ module manager_mod
     !!common /beo/ iroot
     integer :: ivar
     !!common /bdeo/ ivar    
-
+    real(wp) :: ynz, ynpopq
+    !common /bcef/ ynz,ynpopq
 contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     subroutine manager(iterat,iw0, ntet, spectr)
@@ -51,6 +52,8 @@ contains
         real(wp) xnr, powexit, dltpow,  pow1, pgamma, xm
         real(wp) tetin0, tetin, tet
 
+        ynz = 0
+        ynpopq = 0
         pabs = spectr%max_power*pabs0/1.d2
         print *, 'pabs =', pabs, spectr%max_power, pabs0
         lenstor = length
@@ -255,8 +258,8 @@ contains
         real(wp) xm, tet,xnr,hr
         integer ifail, ntry
         real(wp) :: vgrp(3),vph(3)
-        real(wp) :: ynz,ynpopq
-        common /bcef/ ynz,ynpopq
+        !real(wp) :: ynz,ynpopq
+        !common /bcef/ ynz,ynpopq
         real(wp) :: g11,g12,g22,g33,gg,g,si,co
         common/metrika/g11,g12,g22,g33,gg,g,si,co !sav2009
         real(wp) :: pa, prt, prm

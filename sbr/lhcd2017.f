@@ -151,7 +151,7 @@ cc*********************************************************************
      &,rxx(102),pwe(102),wrk(102)
       !dimension vmid(100),vz1(100),vz2(100),ibeg(100),iend(100)
       !common /a0a4/ plost,pnab
-      common /bcef/ ynz,ynpopq
+      !common /bcef/ ynz,ynpopq
       common /a0ghp/ vlf,vrt,dflf,dfrt
       common/plosh/ zv1(100,2),zv2(100,2)!,sk(100)
       common /asou/ rsou(102),sou(102),npta
@@ -777,7 +777,7 @@ c---------------------------------------------
       use approximation
       use plasma
       use rt_parameters
-      use manager_mod, only: ivar, iroot
+      use manager_mod, only: ivar, iroot, ynz,ynpopq
       implicit real*8 (a-h,o-z)
       external extd4
       real*8 pabs
@@ -787,7 +787,7 @@ c---------------------------------------------
       common /abcde/ izn!,iw
       common /abcdg/ iabsorp
       common /bcg/ hrad
-      common /bcef/ ynz,ynpopq
+      !common /bcef/ ynz,ynpopq
       common /be1/ xnr1,xnr2,xnr3,xnr4
       common /be2/ ider
       common /bg/ im4
@@ -959,6 +959,7 @@ c-------------------------------------
       use constants
       use plasma
       use rt_parameters
+      use manager_mod, only: ynz, ynpopq
       implicit real*8 (a-h,o-z)
       external extd2
       real*8 pabs
@@ -966,7 +967,7 @@ c-------------------------------------
       common /abcd/ irs
       common /abcde/ izn!,iw
       common /abcdg/ iabsorp
-      common /bcef/ ynz,ynpopq
+      !common /bcef/ ynz,ynpopq
       common /bcg/ hrad
       common /cefn/ iconv,irefl
       common /ceg/ ipow,jfoundr
@@ -1100,13 +1101,14 @@ c---------------------------------------
       use constants
       use plasma
       use rt_parameters
+      use manager_mod, only: ivar, ynz, ynpopq
       implicit real*8 (a-h,o-z)
       external derivs
       common /abcd/ irs
       common /abcde/ izn!,iw
       common /abcdg/ iabsorp
-      common /bdeo/ ivar
-      common /bcef/ ynz,ynpopq
+      !common /bdeo/ ivar
+      !common /bcef/ ynz,ynpopq
       common /df/ pdec14,pdec24,pdec34,idec
       common /dg/ pintld4,pintcl4,pintal4
       parameter(hbeg=1.d-4,iturns=1,maxat=3,nvar=4) !sav2008
@@ -1248,10 +1250,10 @@ c---------------------------------------
       use approximation
       use plasma
       use rt_parameters
-      use manager_mod, only: ivar, iroot, yn3
+      use manager_mod, only: ivar, iroot, yn3, ynz,ynpopq
       implicit real*8 (a-h,o-z)
       common /abcde/ izn!,iw
-      common /bcef/ ynz,ynpopq
+      !common /bcef/ ynz,ynpopq
       common /aef2/ icall1,icall2
       common /be1/ xnr1,xnr2,xnr3,xnr4
       common /be2/ ider
@@ -1607,9 +1609,9 @@ c    reflection
       use approximation
       use plasma
       use rt_parameters            
-      use manager_mod, only: yn3
+      use manager_mod, only: yn3, ynz,ynpopq
       implicit real*8 (a-h,o-z)
-      common /bcef/ ynz,ynpopq
+      !common /bcef/ ynz,ynpopq
       common /aef2/ icall1,icall2
       common /cefn/ iconv,irefl
       common /df/ pdec14,pdec24,pdec34,idec
