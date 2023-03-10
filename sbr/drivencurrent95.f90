@@ -105,6 +105,7 @@
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+
       subroutine lhcurrent(outj,ohj,cuj,cujoh,inpt,ispectr)
 !!      implicit real*8 (a-h,o-z)
       use plasma, only : rh, rh1, fn1,fn2, fvt, sk
@@ -128,13 +129,6 @@
       !common/lh/ vij(i0,100), fij0(i0,100,2), fij(i0,100,2), dfij(i0,100,2), dij(i0,100,2), enorm(100), fst(100)
       real*8,dimension(:),allocatable:: vj, fj, fj0, cur, cur0, currnt, rxx, wrk
       parameter(ismthout=1)
-      interface 
-      function currlhcd(v,f) result(curs)
-            implicit none
-            real*8 v(:),f(:)
-            real*8 curs
-      end function
-      end interface
 
       allocate(vj(i0),fj(i0),fj0(i0),cur(nr),cur0(nr),currnt(nr+2),rxx(nr+2),wrk(nr+2))
 !---------------------------------------------------
@@ -251,23 +245,7 @@
       deallocate(vj,fj,fj0,cur,cur0,currnt,rxx,wrk)
       end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-function currlhcd(v,f) result(curs)
-      implicit none
-      real*8 v(:),f(:)
-      real*8 curs      
-      integer i0,k
 
-      real*8 vl,vr,fl,fr
-      curs=0.d0
-      i0 = size(v)
-      do k=1,i0-1
-            vl=v(k)
-            vr=v(k+1)
-            fl=f(k)
-            fr=f(k+1)
-            curs=curs+(fl*vl+fr*vr)/2d0*(vr-vl)
-      end do
-end
 
 subroutine currlhcd_old(i0,v,f,f0,curs,curs0)
       implicit none

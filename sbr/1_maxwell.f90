@@ -13,6 +13,25 @@ module maxwell
       !!common/dddql/ d0,jindex,kindex
       
 contains
+
+      function currlhcd(v,f) result(curs)
+            implicit none
+            real(wp), intent(in) :: v(:),f(:)
+            real(wp) curs      
+            integer i0,k
+
+            real(wp) vl,vr,fl,fr
+            curs=0.d0
+            i0 = size(v)
+            do k=1,i0-1
+                  vl=v(k)
+                  vr=v(k+1)
+                  fl=f(k)
+                  fr=f(k+1)
+                  curs=curs+(fl*vl+fr*vr)/2d0*(vr-vl)
+            end do
+      end
+
       subroutine init_vi(vclt, vi)
             real(wp), intent(in) :: vclt
             real(wp), intent(out) :: vi(i0)            
