@@ -113,7 +113,7 @@
       use rt_parameters, only : nr, inew
       implicit none
       real*8 outj(*),ohj(*),cuj,cujoh,curs,curs0,curdir
-      real*8 currn,pqe,vt0,ccur,cfull,cfull0
+      real*8 currn,vt0,ccur,cfull,cfull0
       real*8 r,pn,fnr,fnrr,vt,vto!,rh1
       integer klo,khi,ierr,nrr,i,j,inpt,ispectr,ismthout
       !common /a0ab/ nr
@@ -134,7 +134,7 @@
 !---------------------------------------------------
 ! initial constants
 !---------------------------------------------------
-      pqe=4.803e-10
+      !pqe=4.803e-10
       vt0=fvt(zero)
       ccur=pqe*vt0*0.333d-9
       curdir=-dble(ispectr)

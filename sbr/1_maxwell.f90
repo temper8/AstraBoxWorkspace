@@ -1,12 +1,12 @@
 module maxwell
       use kind_module      
-      use constants, only : zero
+      use constants, only : zero, pisqrt, pi2sqrt, pqe
       implicit none
       integer, parameter :: i0 = 1002
 
       real(wp) v_grid(i0,100)
       !! сетка обычных скоростей
-      
+
       real(wp) vij(i0,100), fij0(i0,100,2), fij(i0,100,2)
       real(wp) dfij(i0,100,2), dij(i0,100,2)
 
@@ -93,36 +93,29 @@ contains
             end do
       end subroutine      
 
-      double precision function funmaxwell(v,dfunmaxwell)
+      real(wp) function funmaxwell(v,dfunmaxwell)
             implicit none
-            real(wp) v,dfunmaxwell,arg,pi2sqrt
-            parameter(pi2sqrt=2.506628274631d0)
+            real(wp) v,dfunmaxwell,arg
 
             arg=-0.5d0*v**2
             funmaxwell=dexp(arg)/pi2sqrt
             dfunmaxwell=-v*funmaxwell
       end      
 
-      double precision function fmaxw_classic(v,alfa2,dfmaxw)
+      real(wp) function fmaxw_classic(v,alfa2,dfmaxw)
             implicit none
             real(wp) v,alfa2,dfmaxw
             real(wp) arg,alfa,api,b,psiq,f,df
-            real(wp) pi2sqrt,pisqrt,zero
-            parameter(pi2sqrt=2.506628274631d0,pisqrt=1.77245385090552d0)
-            parameter(zero=0.d0)
             
             arg=-0.5d0*v**2*(1.d0+0.5d0*alfa2*v**2)
             fmaxw_classic=dexp(arg)/pi2sqrt
             dfmaxw=-v*(1.d0+alfa2*v**2)*fmaxw_classic
       end
 
-      double precision function fmaxw_ext(v,alfa2,dfmaxw)
+      real(wp) function fmaxw_ext(v,alfa2,dfmaxw)
             implicit none
             real(wp) v,alfa2,dfmaxw
             real(wp) arg,alfa,api,b,f,df
-            real(wp) pi2sqrt,pisqrt,zero
-            parameter(pi2sqrt=2.506628274631d0,pisqrt=1.77245385090552d0)
-            parameter(zero=0.d0)
 
             alfa=dsqrt(alfa2)
             api=2.d0*alfa*dexp(-0.25d0/alfa2)/pisqrt
@@ -133,13 +126,11 @@ contains
             dfmaxw=df/b/pi2sqrt
       end      
 
-      double precision function fmaxw(v,alfa2,dfmaxw)
+      real(wp) function fmaxw(v,alfa2,dfmaxw)
             implicit none
             real(wp) v,alfa2,dfmaxw
             real(wp) arg,alfa,api,b,f,df
-            real(wp) pi2sqrt,pisqrt,zero
-            parameter(pi2sqrt=2.506628274631d0,pisqrt=1.77245385090552d0)
-            parameter(zero=0.d0)
+
             if(alfa2.le.zero) then
                   arg=-0.5d0*v**2*(1.d0-0.5d0*alfa2*v**2)
                   fmaxw=dexp(arg)/pi2sqrt
@@ -155,13 +146,12 @@ contains
             end if
       end      
 
-      double precision function psiq(v,alfa2)
+      real(wp) function psiq(v,alfa2)
 !!! psiq=exp(ksiV**2)*erfcc(ksiV)*exp(-0.25/alfa2)
             implicit none
-            double precision v,alfa2,df
-            double precision x,t,z,f,asymp,alfa,q,u
-            double precision zero,zmax,pisqrt
-            parameter(zero=0.d0,zmax=10.d0,pisqrt=1.77245385090552d0)
+            real(wp) v,alfa2,df
+            real(wp) x,t,z,f,asymp,alfa,q,u
+            real(wp), parameter :: zmax = 10.d0
             
             alfa=dsqrt(alfa2)
             q=-0.25d0/alfa2
@@ -186,9 +176,9 @@ contains
 
       function erfcc(x)
             implicit none
-            double precision erfcc,x
-            double precision t,z,zero,zmax,pisqrt
-            parameter(zero=0.d0,zmax=10.d0,pisqrt=1.77245385090552d0)
+            real(wp) erfcc,x
+            real(wp) t,z
+            real(wp), parameter :: zmax = 10.d0
             
             z=abs(x)
             if(z.gt.zmax) then !asymptotics

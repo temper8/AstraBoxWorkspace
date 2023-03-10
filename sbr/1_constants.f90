@@ -17,7 +17,9 @@ module constants
     real(wp), parameter :: pi2 = 2.0_wp*pi
     real(wp), parameter :: pi4 = 4.0_wp*pi
     real(wp), parameter :: piq = sqrt(pi)
-
+    real(wp), parameter :: pisqrt = sqrt(pi)
+    real(wp), parameter :: pi2sqrt = sqrt(pi2)
+    !pi2sqrt=2.506628274631d0,pisqrt=1.77245385090552d0)
     real(wp), parameter :: talfa  = 3.5_wp    !! alpha particles' birth energy, MeV
     real(wp), parameter :: zalfa  = 2.0_wp    !! alpha particles' electrical charge
     real(wp), parameter :: xmalfa = 4.0_wp  !! alpha particles' atomic mass
