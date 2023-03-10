@@ -42,6 +42,8 @@ contains
             real(wp) :: vt_grid(i0)            
             real(wp) vmax
             integer i
+            !r=dble(j)/dble(nr+1)
+            !vclt=3.d10/fvt(r)
             vmax = 2.d0*vclt
             do i=1,i0
                   vt_grid(i)=dble(i-1)*vmax/dble(i0-1)
