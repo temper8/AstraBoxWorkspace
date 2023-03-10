@@ -44,7 +44,7 @@ contains
         real(wp) a1(n),b1(n),c1(n),f1(n),a2(n),b2(n),c2(n),f2(n)
         !real(wp) kinv,rs,rmink,rplusk,q,qf,r1,rmink2,rplusk2,kinv2
         real(wp) r,kappa,sum,bmin,bplus,sum2,sum3,sum4
-        real(wp) dc,as(n+1),k2,d
+        real(wp) dc,as(n+1)
         !external kinv,rs,rmink,rplusk,q,kinv2,rmink2,rplusk2,d
 
         sum = (kinv(xx(1) - h/2d0, d2(1)) + kinv(xx(1) + h/2d0, d3(1)))*h/2d0
@@ -155,13 +155,13 @@ contains
     real(wp) function kinv(x,dif)
         implicit none
         real(wp), intent(in) :: x,dif
-        kinv=x**3/(dif*x**3+1d0)
+        kinv=x**3/(dif*x**3 + 1d0)
     end
 
     real(wp) function kinv2(x,dif)
         implicit none
         real(wp), intent(in) :: x,dif
-        kinv2=x**3/(d(x)*x**3+1d0)
+        kinv2=x**3/(d(x)*x**3 + 1d0)
     end
 
 
