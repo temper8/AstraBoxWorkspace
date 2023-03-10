@@ -33,7 +33,17 @@ subroutine init_trajectory
     tetai = zero
     xnpar = zero
     izz = zero
+
+    mbeg = zero
+    mend = zero
     mbad = zero
+
+    rbeg = zero
+
+    tetbeg = zero
+    xnrbeg = zero
+    xmbeg = zero
+    yn3beg = zero
 end subroutine 
 
 
