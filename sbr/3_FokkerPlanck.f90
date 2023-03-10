@@ -13,7 +13,7 @@ subroutine fokkerplanck_compute(time, TAU)
     use plasma, only : fvt, enorm, fst
     implicit none
 
-    type(FokkerPlanck1D) fp_test
+    type(FokkerPlanck1D) fokker_planck
 
     real(wp), intent(in) :: time, TAU
     real(wp) t, dtstep, dtau
@@ -56,22 +56,22 @@ subroutine fokkerplanck_compute(time, TAU)
             kindex=k
             flag_d0=.TRUE. ! d(x) enable
             znak=2.d0*dble(k)-3.d0
-            fp_test = FokkerPlanck1D(znak*enorm(j), xend, vij(:,j), fij0(:,j,k))
-            call fp_test%init_zero_diffusion
+            fokker_planck = FokkerPlanck1D(znak*enorm(j), xend, vij(:,j), fij0(:,j,k))
+            call fokker_planck%init_zero_diffusion
             do i=1, ntau
-                call fp_test%solve_time_step(dt, nt)
+                call fokker_planck%solve_time_step(dt, nt)
                 !call fokkerplanck1D_iter(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij0(:,j,k), out_fj)
             end do
-            fij0(:,j,k) = fp_test%f
+            fij0(:,j,k) = fokker_planck%f
 
             flag_d0=.FALSE. ! d(x) disable
-            fp_test = FokkerPlanck1D(znak*enorm(j), xend, vij(:,j), fij(:,j,k))
-            call fp_test%init_diffusion(dij(:,j,k))
+            fokker_planck = FokkerPlanck1D(znak*enorm(j), xend, vij(:,j), fij(:,j,k))
+            call fokker_planck%init_diffusion(dij(:,j,k))
             do i=1, ntau
-                call fp_test%solve_time_step(dt, nt)
+                call fokker_planck%solve_time_step(dt, nt)
                 !call fokkerplanck1D_iter(alfa2, h, n, dt, nt, xend, d1, d2, d3, vij(:,j), fij(:,j,k),out_fj, dfij(:,j,k))
             end do
-            fij(:,j,k) = fp_test%f
+            fij(:,j,k) = fokker_planck%f
         end do
    
         call write_distribution(fij0(:,j,2), i0, time)
