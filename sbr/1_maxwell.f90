@@ -4,6 +4,9 @@ module maxwell
       implicit none
       integer, parameter :: i0 = 1002
 
+      real(wp) v_grid(i0,100)
+      !! сетка обычных скоростей
+      
       real(wp) vij(i0,100), fij0(i0,100,2), fij(i0,100,2)
       real(wp) dfij(i0,100,2), dij(i0,100,2)
 
@@ -31,6 +34,19 @@ contains
                   curs=curs+(fl*vl+fr*vr)/2d0*(vr-vl)
             end do
       end
+      
+      function create_vt_grid(vclt) result(vt_grid)
+            !! создание сетки тепловых скоростей
+            implicit none
+            real(wp), intent(in) :: vclt
+            real(wp) :: vt_grid(i0)            
+            real(wp) vmax
+            integer i
+            vmax = 2.d0*vclt
+            do i=1,i0
+                  vt_grid(i)=dble(i-1)*vmax/dble(i0-1)
+            end do
+      end function
 
       subroutine init_vi(vclt, vi)
             real(wp), intent(in) :: vclt
