@@ -66,17 +66,16 @@ cc*********************************************************************
       outpep=zero
       if(pos_spectr%input_power > zero) then
             print *, 'spectrum_type',spectrum_type
-            !pause
-            if (spectrum_type == 1) then
-                  !spectr = pos_spectr 
-                  !call spectr%calc_max_power
+            select case (spectrum_type)
+            case (0)
                   spectr = make_spline_approximation(pos_spectr)
-                  
-            else
+            case (1)
+                  spectr = pos_spectr 
+                  call spectr%calc_max_power
+            case (2)
                   spectr = pos_spectr
                   call spectr%calc_max_power
-                  !pause
-            endif
+            end select
             call ourlhcd2017(spectr, outpep,pe_p)
       else
             dij(:,:,1)=zero
@@ -95,16 +94,17 @@ cc*********************************************************************
        print *, 'negative spectrum'
        pe_m=zero
        outpem=zero       
-       if(neg_spectr%input_power > zero) then
-            if (spectrum_type == 1) then
-                  !spectr = neg_spectr
-                  !call spectr%calc_max_power
+       if(neg_spectr%input_power > zero) then        
+            select case (spectrum_type)
+            case (0)
                   spectr = make_spline_approximation(neg_spectr)
-                  
-            else
+            case (1)
+                  spectr = neg_spectr 
+                  call spectr%calc_max_power
+            case (2)
                   spectr = neg_spectr
                   call spectr%calc_max_power
-            endif            
+            end select            
             call ourlhcd2017(spectr, outpem,pe_m)              
        else
             dij(:,:,2)=zero
