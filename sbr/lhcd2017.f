@@ -75,6 +75,9 @@ cc*********************************************************************
             case (2)
                   spectr = pos_spectr
                   call spectr%calc_max_power
+            case (3)
+                  print *, '2D spectrum'
+                  stop                  
             end select
             call ourlhcd2017(spectr, outpep,pe_p)
       else
@@ -104,6 +107,9 @@ cc*********************************************************************
             case (2)
                   spectr = neg_spectr
                   call spectr%calc_max_power
+            case (3)
+                  print *, '2D spectrum'
+                  stop
             end select            
             call ourlhcd2017(spectr, outpem,pe_m)              
        else
