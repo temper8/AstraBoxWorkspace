@@ -1,8 +1,8 @@
 {
-  "name": "a1_zerro_10_Imp1_5f8",
+  "name": "a1_zerro_1D",
   "setting": {
     "Comments": {
-      "value": "import from WaveTop\n\n\n\n\n",
+      "value": "import from WaveTop\n\n\n\n\n\n",
       "title": "Comments",
       "type": "text"
     },
@@ -311,7 +311,22 @@
     },
     "spectrum": {
       "spectrum_type": "spectrum_1D",
-      "source": "D:/Dev/WaveTOP/data/spectrum/a1_zerro_10_Imp1_5f8f/spcpz.dat"
+      "source": "D:/Dev/WaveTOP/data/spectrum/a1_zerro_10_Imp1_5f8f/spcpz.dat",
+      "parameters": {
+        "angle": {
+          "title": "Angle",
+          "value": 0.0,
+          "type": "float",
+          "unit": "deg",
+          "description": "Rotation on spectrum"
+        },
+        "spline": {
+          "title": "Spline",
+          "value": true,
+          "type": "logical",
+          "description": "Apply spline approximation"
+        }
+      }
     }
   }
 }
